@@ -14,6 +14,13 @@ class RouteServiceProvider extends ServiceProvider
     protected $api_prefix = 'api';
 
     /**
+     * Parameter prefix
+     * 
+     * @var string 
+     */
+    protected $parameter_prefix = ':';
+
+    /**
      * Defines route model bindings and pattern filters 
      * 
      * @return void

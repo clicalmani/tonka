@@ -118,9 +118,6 @@ return [
         App\Providers\AppServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\EventServiceProvider::class,
-        App\Providers\FunctionProvider::class,
-        App\Providers\HttpResponseProvider::class,
         App\Providers\AuthServiceProvider::class,
-        App\Providers\MessageServiceProvider::class,
     ]
 ];

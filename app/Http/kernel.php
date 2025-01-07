@@ -18,7 +18,7 @@ return [
      * 
      */
     'api' => [
-        'api' => App\Http\Middlewares\Authenticate::class,
+        // ...
     ],
 
     /**
