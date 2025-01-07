@@ -8,7 +8,5 @@
  */
 require __DIR__.'/vendor/autoload.php';
 
-$app = require_once __DIR__ . '/bootstrap/app.php';
-
-$app->make();
-$app->run();
+(require_once __DIR__ . '/bootstrap/app.php')
+    ->handleCommands();

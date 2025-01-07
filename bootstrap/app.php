@@ -5,6 +5,6 @@
  * |           ***** Create the Application *****
  * |---------------------------------------------------------------
  */
-return new Clicalmani\Foundation\Maker\Application(
-    dirname(__DIR__)
-);
+
+return Clicalmani\Foundation\Maker\Application::setup(rootPath: dirname(__DIR__))
+            ->run();

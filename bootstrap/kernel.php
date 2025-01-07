@@ -27,7 +27,7 @@ return [
          * 
          */
         [
-            // \App\Authenticate\MaintenenceRedirect::class
+            // ...
         ],
 
         /**
@@ -37,7 +37,7 @@ return [
          * 
          */
         [
-            //
+            // ...
         ]
     ]
 ];

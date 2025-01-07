@@ -7,6 +7,30 @@ return [
     | Application Timezone
     |--------------------------------------------------------------------------
     |
+    | Here you may specify the application name which will be used in the 
+    | application. The name is used to identify the application.
+    |
+    */
+
+    'name' => env('APP_NAME', 'Tonka'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Application Timezone
+    |--------------------------------------------------------------------------
+    |
+    | Here you may specify the application version which will be used in the 
+    | application. The version is for versioning the application.
+    |
+    */
+
+    'version' => env('APP_VERSION', '1.0.0'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Application Timezone
+    |--------------------------------------------------------------------------
+    |
     | Here you may specify the default timezone for your application, which
     | will be used by the PHP date and date-time functions. We have gone
     | ahead and set this to a sensible default for you out of the box.
@@ -14,6 +38,32 @@ return [
     */
 
     'timezone' => 'UTC',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Application Locale Configuration
+    |--------------------------------------------------------------------------
+    |
+    | The application locale determines the default locale that will be used
+    | by the translation service provider. You are free to set this value
+    | to any of the locales which will be supported by the application.
+    |
+    */
+
+    'locale' => 'en',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Application Fallback Locale
+    |--------------------------------------------------------------------------
+    |
+    | The fallback locale determines the locale to use when the current one
+    | is not available. You may change the value to correspond to any of
+    | the language folders that are provided through your application.
+    |
+    */
+
+    'fallback_locale' => 'en',
 
     /*
     |---------------------------------------------------------------------------
@@ -59,7 +109,7 @@ return [
         Clicalmani\Foundation\Providers\RouteServiceProvider::class,
         Clicalmani\Foundation\Providers\LogServiceProvider::class,
         Clicalmani\Foundation\Providers\ContainerServiceProvider::class,
-        Clicalmani\Foundation\Providers\InputValidationServiceProvider::class,
+        Clicalmani\Foundation\Providers\ValidationServiceProvider::class,
         
         /*
          * Application Service Providers...
@@ -68,6 +118,9 @@ return [
         App\Providers\AppServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\EventServiceProvider::class,
+        App\Providers\FunctionProvider::class,
+        App\Providers\HttpResponseProvider::class,
         App\Providers\AuthServiceProvider::class,
+        App\Providers\MessageServiceProvider::class,
     ]
 ];
