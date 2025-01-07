@@ -32,7 +32,10 @@ class RouteServiceProvider extends ServiceProvider
                 Route::group(fn() => require_once root_path( $this->api_handler ) )
                     ->prefix( $this->api_prefix )
                     ->middleware('api');
-            } else require_once root_path( $this->web_handler );
+            } else {
+                Route::group(fn() => require_once root_path( $this->web_handler ) )
+                    ->middleware('web');
+            }
         });
     }
 
@@ -45,6 +48,7 @@ class RouteServiceProvider extends ServiceProvider
         /**
          * Global patterns
          */
-        // Route::pattern('id', '[0-9]+');
+        
+        // ...
     }
 }
