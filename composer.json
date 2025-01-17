@@ -11,17 +11,7 @@
         "clicalmani/foundation": ">=2.0.3",
         "clicalmani/routing": ">=1.0",
         "clicalmani/xpower": ">=1.2.1",
-        "dompdf/dompdf": "^2.0",
-        "fedapay/fedapay-php": "^0.4.0",
-        "guzzlehttp/guzzle": "^7.9",
-        "kwn/number-to-words": "^2.6",
-        "mpdf/mpdf": "^8.1",
-        "php-amqplib/php-amqplib": "^3.6",
-        "phpoffice/phpspreadsheet": "^1.23",
-        "phpoffice/phpword": "^1.0",
-        "phpstan/phpstan": "^1.10",
-        "symfony/console": "^6.3",
-        "webklex/php-imap": "^5.5"
+        "symfony/console": "^6.3"
     },
     "autoload": {
         "psr-4": {
