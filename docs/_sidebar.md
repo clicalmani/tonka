@@ -1,4 +1,4 @@
-[![logo](logo.png ':class=sidebar-logo')]()
+<!-- [![logo](logo.png ':class=sidebar-logo')]() -->
 
 - Getting Started
   - [Introduction](./introduction.md)
