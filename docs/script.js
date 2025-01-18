@@ -1,11 +1,11 @@
 window.$docsify = {
     enableSidebarCollapse: true,
-    logo: '/tonka/_media/icon.svg',
+    logo: '/_media/icon.svg',
     search: 'auto',
-    repo: 'https://github.com/clicalmani/Tonka',
+    repo: 'https://github.com/clicalmani/tonka',
     coverpage: true,
     onlyCover: true,
-    name: "Tonka - Documentation", // Must configure when publishing
+    name: "Tonka Framework - Documentation", // Must configure when publishing
     hideSidebar: false, // Configurable when publishing
     subMaxLevel: 2, // Configurable when publishing
     basePath: "/tonka/", // Configurable when publishing
