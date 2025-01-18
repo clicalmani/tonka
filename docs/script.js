@@ -1,6 +1,6 @@
 window.$docsify = {
     enableSidebarCollapse: true,
-    logo: '/_media/icon.svg',
+    logo: '/tonka/_media/icon.svg',
     search: 'auto',
     repo: 'https://github.com/clicalmani/tonka',
     coverpage: true,
