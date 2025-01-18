@@ -9,9 +9,10 @@ window.$docsify = {
     hideSidebar: false, // Configurable when publishing
     subMaxLevel: 2, // Configurable when publishing
     basePath: "/tonka/", // Configurable when publishing
-    homepage: "README.md", // Configurable when publishing
+    homepage: "./README.md", // Configurable when publishing
     alias: {
       '/.*/_sidebar.md': '/_sidebar.md',
+      '/.*/README.md': '/README.md',
     },
     loadSidebar: true,
     subMaxLevel: 4,
