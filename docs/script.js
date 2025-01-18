@@ -6,6 +6,7 @@ window.$docsify = {
     coverpage: true,
     onlyCover: true,
     name: "Tonka Framework - Documentation", // Must configure when publishing
+    nameLink: "/tonka/README.md", // Configurable when publishing
     hideSidebar: false, // Configurable when publishing
     subMaxLevel: 2, // Configurable when publishing
     basePath: "/tonka/", // Configurable when publishing
@@ -17,7 +18,6 @@ window.$docsify = {
     loadSidebar: true,
     subMaxLevel: 4,
     sidebarDisplayLevel: 1,
-    name: '',
     search: {
       noData: {
         '/': 'No results!'
