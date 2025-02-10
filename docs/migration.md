@@ -104,13 +104,13 @@ By following these steps, you can create a new table in your database while ensu
 
 ### Update an Existing Table in the Database
 
-To update an existing table, you need to add the `AlterOption` attribute to the table entity and then implement the `alter` method of the entity class.
+To update an existing table, you need to add the [AlterOption](https://github.com/clicalmani/database/factory/alteroption) attribute to the table entity and then implement the `alter` method of the entity class.
 
 First, add the `AlterOption` attribute to the table entity to specify the changes you want to make to the table structure.
 
 Next, implement the `alter` method in the entity class. This method will contain the logic to apply the specified changes to the existing table.
 
-Example:
+Here is an example:
 
 ```php
 use Clicalmani\Database\Factory\Entity;

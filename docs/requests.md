@@ -1,3 +1,38 @@
+- [Introduction](requests.md?id=introduction)
+- [Interacting With The Request](requests.md?id=interacting-with-the-request)
+    - [Accessing the Request](requests.md?id=accessing-the-request)
+    - [Dependency Injection and Route Parameters](requests.md?id=dependency-injection-and-route-parameters)
+    - [Request URI, Host, and Method](requests.md?id=request-uri,-host,-and-method)
+        - [Retrieving the Request URL](requests.md?id=retrieving-the-request-url)
+        - [Retrieving the Request Host](requests.md?id=retrieving-the-request-host)
+        - [Retrieving the Request Method](requests.md?id=retrieving-the-request-method)
+    - [Retrieving Request Headers](requests.md?id=retrieving-request-headers)
+    - [Retrieving the Client IP Address](requests.md?id=retrieving-the-client-ip-address)
+    - [Inspecting Requested Content Types](requests.md?id=inspecting-requested-content-types)
+- [Input](requests.md?id=input)
+    - [Retrieving Input](requests.md?id=retrieving-input)
+    - [Retrieving All Input Data](requests.md?id=retrieving-all-input-data)
+    - [Retrieving Input as a Collection](requests.md?id=retrieving-input-as-a-collection)
+    - [Retrieving a Specific Input Value](requests.md?id=retrieving-a-specific-input-value)
+    - [Retrieving Query Parameters](requests.md?id=retrieving-query-parameters)
+    - [Retrieving JSON Input](requests.md?id=retrieving-json-input)
+    - [Retrieving Input from a Nested Array](requests.md?id=retrieving-input-from-a-nested-array)
+    - [Checking for Input Presence](requests.md?id=checking-for-input-presence)
+- [Files](requests.md?id=files)
+    - [Retrieving Uploaded Files](requests.md?id=retrieving-uploaded-files)
+    - [Retrieving a Single File](requests.md?id=retrieving-a-single-file)
+    - [Checking if a File is Present](requests.md?id=checking-if-a-file-is-present)
+    - [Validating Uploaded Files](requests.md?id=validating-uploaded-files)
+    - [Storing Uploaded Files](requests.md?id=storing-uploaded-files)
+    - [Retrieving the Original Filename](requests.md?id=retrieving-the-original-filename)
+    - [Retrieving the File Extension](requests.md?id=retrieving-the-file-extension)
+    - [Validating Successful Uploads](requests.md?id=validating-successful-uploads)
+- [Configuring Trusted Proxies](requests.md?id=configuring-trusted-proxies)
+    - [Setting Trusted Proxies](requests.md?id=setting-trusted-proxies)
+    - [Configuring Trusted Headers](requests.md?id=configuring-trusted-headers)
+    - [Configuring Trusted Hosts](requests.md?id=configuring-trusted-hosts)
+    - [Setting Trusted Hosts](requests.md?id=setting-trusted-hosts)
+
 ## Introduction
 
 Requests are a fundamental part of web development and API interactions. They allow clients to communicate with servers, retrieve data, and perform various operations. Understanding how to make and handle requests is crucial for building robust and efficient applications. This documentation will guide you through the basics of making requests, handling responses, and troubleshooting common issues.
@@ -185,7 +220,7 @@ class PathController extends Controller
 }
 ```
 
-In this example, the `checkPath` method checks if the request path starts with `admin/`. If it does, it executes the logic for admin routes. It also checks if the request matches a [named route](routing.md?id=named-routes) using the `routeIs` method. If it does, it executes the logic for named routes.
+In this example, the `checkPath` method checks if the request path starts with `admin/`. If it does, it executes the logic for admin routes. It also checks if the request matches a [named route](routing.md?id=named-routes) using the `named` method. If it does, it executes the logic for named routes.
 
 ### Retrieving the Request URL
 
@@ -303,7 +338,7 @@ In this example, the `showMethod` method retrieves the HTTP method of the incomi
 
 ### Retrieving Request Headers
 
-You may retrieve a request header from the `Clicalmani\Foundation\Http\Requests\Request` instance using the `header` method. If the header is not present on the request, `null` will be returned. However, the `header` method accepts an optional second argument that will be returned if the header is not present on the request:
+You may retrieve a request header from the `Request` instance using the `header` method. If the header is not present on the request, `null` will be returned. However, the `header` method accepts an optional second argument that will be returned if the header is not present on the request:
 
 ```php
 namespace App\Http\Controllers;
@@ -535,12 +570,237 @@ if ($request->has(['name', 'email'])) {
 }
 ```
 
-#### Retrieving Old Input
+## Files
 
-To retrieve old input data (e.g., after form validation failure), use the `old` method:
+### Retrieving Uploaded Files
+
+To retrieve uploaded files from the request, you can use the `file` method provided by the `Request` class. This method allows you to access files that were uploaded via a form.
+
+#### Retrieving a Single File
+
+To retrieve a single file, use the `file` method with the name of the file input:
 
 ```php
-$oldName = $request->old('name');
+$file = $request->file('photo');
 ```
 
-These methods provide a flexible way to access and manipulate input data from the request, making it easier to handle user input in your application.
+#### Checking if a File is Present
+
+To check if a file is present in the request, use the `hasFile` method:
+
+```php
+if ($request->hasFile('photo')) {
+    // Logic if 'photo' file is present
+}
+```
+
+#### Validating Uploaded Files
+
+You can validate uploaded files using the `validate` method. For example, to ensure that an uploaded file is an image and does not exceed a certain size:
+
+```php
+$request->validate([
+    'photo' => 'required|image|max:2048',
+]);
+```
+
+#### Storing Uploaded Files
+
+To store an uploaded file, use the `store` method. This method stores the file on the default disk and returns the path to the file:
+
+```php
+$file->store('photo.jpeg');
+$file->move(storage_path('/public/uploads'), 'photo.jpeg');
+$path = $file->storage->store('photo.jpeg');
+```
+
+You can also specify a disk to store the file on:
+
+```php
+$path = $file->storage->store('photo.jpg', 's3');
+```
+
+#### Retrieving the Original Filename
+
+To retrieve the original filename of the uploaded file, use the `getClientOriginalName` method:
+
+```php
+$originalName = $file->getClientOriginalName();
+```
+
+#### Retrieving the File Extension
+
+To retrieve the file extension of the uploaded file, use the `getClientOriginalExtension` method:
+
+```php
+$extension = $file->getClientOriginalExtension();
+```
+
+These methods provide a convenient way to handle file uploads in your application, ensuring that you can easily access, validate, and store uploaded files.
+
+### Validating Successful Uploads
+
+You may want to verify if the uploaded is valid. You can do this by calling the `isValid` method. 
+
+Here is an example of how to validate a successful upload:
+
+```php
+if ($request->file('photo')?->isValid()) {
+    // Logic if the file was successfully uploaded
+} else {
+    // Logic if the file upload failed
+}
+```
+
+## Configuring Trusted Proxies
+
+When your application is behind a proxy, you may need to configure trusted proxies to ensure that the request information is correctly interpreted. This is particularly important for applications that rely on the client's IP address or HTTPS detection.
+
+### Setting Trusted Proxies
+
+To configure trusted proxies, you can use the `setTrustedProxies` method provided by the `Request` class. This method allows you to specify which proxies are trusted and how to handle forwarded headers.
+
+Here is an example of how to set trusted proxies in the `AppServiceProvider` class:
+
+```php
+<?php
+namespace App\Providers;
+
+use Clicalmani\Foundation\Http\Requests\Request;
+use Clicalmani\Foundation\Providers\ServiceProvider;
+
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * Bootstrap
+     * 
+     * @return void
+     */
+    public function boot(): void
+    {
+        Request::setTrustedProxies(
+            ['192.168.1.1', '192.168.1.2'], // List of trusted proxy IP addresses
+            Request::HEADER_X_FORWARDED_ALL // Headers to trust
+        );
+    }
+}
+```
+
+In this example, the `setTrustedProxies` method is used to specify that the proxies with IP addresses `192.168.1.1` and `192.168.1.2` are trusted. The `HEADER_X_FORWARDED_ALL` constant indicates that all `X-Forwarded-*` headers should be trusted.
+
+### Configuring Trusted Headers
+
+You can also configure which headers should be trusted by the application. This is useful if your proxy uses custom headers for forwarding information.
+
+Here is an example of how to configure trusted headers:
+
+```php
+use Clicalmani\Foundation\Http\Requests\Request;
+
+Request::setTrustedHeaderNames([
+    Request::HEADER_FORWARDED => 'X-Forwarded-For',
+    Request::HEADER_CLIENT_IP => 'X-Forwarded-Client-IP',
+    Request::HEADER_CLIENT_HOST => 'X-Forwarded-Host',
+    Request::HEADER_CLIENT_PROTO => 'X-Forwarded-Proto',
+    Request::HEADER_CLIENT_PORT => 'X-Forwarded-Port',
+]);
+```
+
+In this example, the `setTrustedHeaderNames` method is used to specify custom headers for forwarding information. The application will trust these headers when determining the client's IP address, host, protocol, and port.
+
+Now that trusted proxies and headers are set, we can use a middleware to ensure that the incoming request is trustworthy.
+
+Here is an example of middleware that verify trusted proxies and headers:
+
+```php
+namespace App\Http\Middleware;
+
+use Clicalmani\Foundation\Http\Requests\Request;
+use Closure;
+
+class TrustProxies
+{
+    /**
+     * Handler
+     * 
+     * @param Request $request Current request object
+     * @param Response $response Http response
+     * @param callable $next 
+     * @return int|false
+     */
+    public function handle(Request $request, Response $response, callable $next) : int|false
+    {
+        if (FALSE === $request->isTrustworthy()) {
+            return $response->setStatus(403, 'FORBIDEN', 'This request is not trustworthy');
+        }
+
+        return $next($request);
+    }
+}
+```
+
+## Configuring Trusted Hosts
+
+When your application is behind a proxy or load balancer, you may need to configure trusted hosts to ensure that the request information is correctly interpreted. This is particularly important for applications that rely on the client's host information for security or routing purposes.
+
+### Setting Trusted Hosts
+
+To configure trusted hosts, you can use the `setTrustedHosts` method provided by the `Request` class. This method allows you to specify which hosts are trusted.
+
+Here is an example of how to set trusted hosts in your application:
+
+```php
+<?php
+<?php
+namespace App\Providers;
+
+use Clicalmani\Foundation\Http\Requests\Request;
+use Clicalmani\Foundation\Providers\ServiceProvider;
+
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * Bootstrap
+     * 
+     * @return void
+     */
+    public function boot(): void
+    {
+        Request::setTrustedHosts([
+            'example.com',
+            'subdomain.example.com',
+        ]);
+    }
+}
+```
+
+In this example, we use the `setTrustedHosts` method in the `AppServiceProvider` to specify that the hosts `example.com` and `subdomain.example.com` are trusted.
+
+Now that trusted hosts are defined, we can use a middleware to ensure that the incoming request is trusted.
+
+Here is an example of middleware that verify trusted hosts:
+
+```php
+namespace App\Http\Middleware;
+
+use Clicalmani\Foundation\Http\Requests\Request;
+use Closure;
+
+class TrustHosts
+{
+    /**
+     * Handler
+     * 
+     * @param Request $request Current request object
+     * @param Response $response Http response
+     * @param callable $next 
+     * @return int|false
+     */
+    public function handle(Request $request, Response $response, callable $next) : int|false
+    {
+        if (FALSE === $request->isTrustworthy()) return $response->forbiden();
+
+        return $next($request);
+    }
+}
+```

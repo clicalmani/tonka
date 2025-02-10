@@ -1,3 +1,13 @@
+- [Introduction](configuration.md?id=introduction)
+- [Environment Configuration](configuration.md?id=environment-configuration)
+- [Retrieving Environment Configuration](configuration.md?id=retrieving-environment-configuration)
+- [Accessing Configuration Values](configuration.md?id=accessing-configuration-values)
+- [App Debug Mode](configuration.md?id=app-debug-mode)
+    - [Enabling Debug Mode](configuration.md?id=enabling-debug-mode)
+    - [Disabling Debug Mode](configuration.md?id=disabling-debug-mode)
+    - [Accessing Debug Mode in Code](configuration.md?id=accessing-debug-mode-in-code)
+- [Maintenance Mode](configuration.md?id=maintenance-mode)
+
 ## Introduction
 
 All Tonka configuration files reside in the `config` directory. This directory contains all the necessary configuration files required for the proper functioning of the Tonka application. Each file within this directory is structured to handle specific configuration settings, ensuring that the application runs smoothly and efficiently.
@@ -120,14 +130,18 @@ By properly managing the `APP_DEBUG` environment variable, you can control the l
 
 ## Maintenance Mode
 
-Tonka provides maintenance mode through a route service. A route service is a class that extends the `Clicalmani\Foundation\Providers\RouteService` base class and implements the `redirect` method. This method is responsible for handling the redirection of requests when the application is in maintenance mode.
+Tonka provides maintenance mode through a route service. A route service is a class that extends the [Clicalmani\Foundation\Providers\RouteService](https://github.com/clicalmani/foundation/providers/routeservice) base class and implements the `redirect` method. This method is responsible for handling the redirection of requests when the application is in maintenance mode.
 
 Here is an example of a route service class for maintenance mode:
 
 ```php
+<?php
+
+namespace App\Authenticate;
+
 use Clicalmani\Foundation\Providers\RouteService;
 
-class MaintenanceModeService extends RouteService
+class MaintenenceRedirect extends RouteService
 {
     /**
      * Constructor
@@ -162,9 +176,9 @@ class MaintenanceModeService extends RouteService
 }
 ```
 
-In this example, the `MaintenanceModeService` class extends the `RouteService` base class and implements the `redirect` method to return a 503 Service Unavailable response with a maintenance message.
+In this example, the `MaintenenceRedirect` class extends the `RouteService` base class and implements the `redirect` method to return a 503 Service Unavailable response with a maintenance message.
 
-To enable maintenance mode, you can register the `MaintenanceModeService` in your application's route configuration. This will ensure that all incoming requests are redirected to the maintenance mode response when the application is under maintenance.
+To enable maintenance mode, you can register the `MaintenenceRedirect` in your application's route configuration. This will ensure that all incoming requests are redirected to the maintenance mode response when the application is under maintenance.
 
 By using a route service for maintenance mode, Tonka provides a flexible and customizable way to handle maintenance periods, ensuring that users are informed and requests are properly managed during downtime.
 
@@ -177,8 +191,26 @@ Next, register your custom route service in the kernel file located in the `boot
 
 return [
     'tps' => [
-        // Other services...
-        MaintenanceModeService::class,
+        /**
+         * |-------------------------------------------------------------------
+         * |                    Route Third Party Services
+         * |-------------------------------------------------------------------
+         * 
+         */
+        [
+            // Other services ...
+            \App\Authenticate\MaintenenceRedirect::class,
+        ],
+
+        /**
+         * |-------------------------------------------------------------------
+         * |                    Response Third Party Services
+         * |-------------------------------------------------------------------
+         * 
+         */
+        [
+            //
+        ]
     ],
 ];
 ```

@@ -1,3 +1,9 @@
+- [Introduction](csrf.md?id=introduction)
+- [An Explanation of the Vulnerability](csrf.md?id=an-explanation-of-the-vulnerability)
+- [How CSRF Works](csrf.md?id=how-csrf-works)
+- [Example Scenario](csrf.md?id=example-scenario)
+- [Mitigation Strategies](csrf.md?id=mitigation-strategies)
+
 ## Introduction
 
 Cross-site request forgeries are a type of malicious exploit whereby unauthorized commands are performed on behalf of an authenticated user. Thankfully, Tonka makes it easy to protect your application from cross-site request forgery (CSRF) attacks.
@@ -22,9 +28,15 @@ Cross-Site Request Forgery (CSRF) is a type of attack that occurs when a malicio
 
 ### Mitigation Strategies
 
-- **CSRF Tokens**: Include unique tokens in forms and verify them on the server side to ensure the request is legitimate.
-- **SameSite Cookies**: Use the `SameSite` attribute for cookies to prevent them from being sent with cross-site requests.
-- **Referer Header Validation**: Check the `Referer` header to ensure requests are coming from trusted sources.
-- **User Interaction**: Require user interaction (e.g., re-entering a password) for sensitive actions.
+Tonka automatically generates a CSRF “token” for each active user session managed by the application. This token makes it possible to verify that the authenticated user is indeed the person who is actually making the requests to the application. Since this token is stored in the user's session and changes each time user session refresh, a malicious application cannot access it.
+
+We need then to include the generated token in forms to ensure the request is legitimate. Here is an example:
+
+```html
+<form method="post" action="/profile">
+    @csrf
+    ...
+</form>
+```
 
 By implementing these strategies, web applications can significantly reduce the risk of CSRF attacks.

@@ -1,4 +1,4 @@
-<!-- [![logo](logo.png ':class=sidebar-logo')]() -->
+<!-- [![logo](_media/logo.png ':class=sidebar-logo')]() -->
 
 - Getting Started
   - [Introduction](introduction.md)
@@ -12,16 +12,12 @@
   - [CSRF Protection](csrf.md)
   - [Controllers](controllers.md)
   - [Requests](requests.md)
+  - [Responses](responses.md)
+  - [Views](views.md)
 - Database
-  - [Configuration](configuration.md)
+  - [Getting Started](database.md)
   - [Query Builder](query_builder.md)
   - [Entities](entities.md)
   - [Migration](migration.md)
   - [Seeding](seeding.md)
-  - [ORM](orm.md)
-- Routing
-  - [Basic](routing/basic.md)
-  - [Middlewares](routing/middlewares.md)
-  - [CSRF Protection](routing/csrf.md)
-  - [Controllers](routing/controllers.md)
-  - [Requests](routing/requests.md)
+  - [Object Mapping](orm.md)

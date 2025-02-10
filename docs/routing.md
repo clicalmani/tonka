@@ -1,4 +1,26 @@
-# Routing
+<h1>Routing</h1>
+
+- [Basic Routing](routing.md?id=basic-routing)
+- [The Default Routes Files](routing.md?id=the-default-routes-files)
+    - [Web Routes](routing.md?id=web-routes)
+    - [API Routes](routing.md?id=api-routes)
+- [Available Router Methods](routing.md?id=available-router-methods)
+- [Dependency Injection](routing.md?id=dependency-injection)
+- [CSRF Protection](routing.md?id=csrf-protection)
+- [Route Parameters](routing.md?id=route-parameters)
+    - [Required Parameters](routing.md?id=required-parameters)
+    - [Optional Parameters](routing.md?id=optional-parameters)
+    - [Parameter Validation](routing.md?id=parameter-validation)
+- [Advance Routing](routing.md?id=advance-routing)
+- [Named Routes](routing.md?id=named-routes)
+- [Inspecting the Current Route](routing.md?id=inspecting-the-current-route)
+- [Route Groups](routing.md?id=route-groups)
+    - [Middlewares](routing.md?id=middlewares)
+    - [Controllers](routing.md?id=controllers)
+- [Validation](routing.md?id=validation)
+    - [Validating Route Parameters](routing.md?id=validating-route-parameters)
+    - [Validating Request Data](routing.md?id=validating-request-data)
+    - [Custom Validation Rules](routing.md?id=custom-validation-rules)
 
 ## Basic Routing
 
@@ -231,22 +253,6 @@ Route::get('/user/:id', function (int $id) {
     $user = User::find($id);
 });
 ```
-
-## Regular Expression Routes
-
-Regular expression routes in Tonka allow you to create routes that can handle variable segments in the URL. This is particularly useful when you need to handle multiple similar routes without defining each one explicitly.
-
-you can define a regular expression route by enclosing it in double braces `({})`. Here's an example:
-
-```php
-Route::get('/{user.*}', function () {
-    // User auth
-});
-```
-
-This route will match `/user/:id` or `/users/:id/posts/:post`.
-
-!> Tonka router processes routes dynamically. This means that you can create flexible and adaptable routes that can handle variable segments in the URL without needing to define each one explicitly.
 
 ## Advance Routing
 
@@ -538,3 +544,108 @@ Route::controller(UserController::class)->group(function () {
 In this example, both routes will use the `UserController` class. The `/profile` route will invoke the `show` method for GET requests and the `update` method for POST requests.
 
 This approach helps to keep your route definitions clean and organized by grouping routes that share the same controller.
+
+## Validation
+
+Tonka provides a robust validation system that allows you to validate incoming request data. You can use the `where` method to apply validation rules to your route parameters. Here's an example of how to use validation in your routes:
+
+### Validating Route Parameters
+
+You can apply validation rules directly to your route parameters using the `where` method:
+
+```php
+Route::get('/user/:id', function (int $id) {
+    return "User ID $id";
+})->where('id', 'required|number|min:1');
+```
+
+In this example, the `id` parameter must be a required number. If the validation fails, a 404 HTTP response will be returned.
+
+### Validating Request Data
+
+To validate request data, you can use the `validate` method within your route callback or controller method. Here's an example:
+
+```php
+use Clicalmani\Foundation\Http\Requests\Request;
+
+Route::post('/user', function (Request $request) {
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email',
+        'password' => 'required|string|min:8|confirmed:1',
+    ]);
+
+    // The incoming request is valid...
+    // You may proceed with your logic here...
+});
+```
+
+In this example, the `validate` method is used to apply validation rules to the incoming request data. If the validation fails, a 422 HTTP response will be returned with the validation errors.
+
+### Custom Validation Rules
+
+You can create custom validation rules by extending the `Clicalmani\Validation\Validator` class. Here's an example of a custom validation rule:
+
+```php
+<?php
+
+namespace App\Validators;
+
+use Clicalmani\Validation\Validator;
+
+class PhoneNumberValidator extends Validator
+{
+    /**
+     * Validator argument
+     * 
+     * @var string
+     */
+    protected string $argument = 'phone';
+
+    /**
+     * Validator options
+     * 
+     * @return array
+     */
+    public function options() : array
+    {
+        return [
+            'pattern' => [
+                'required' => true,
+                'type' => 'string'
+            ]
+        ];
+    }
+
+    /**
+     * Validate the attribute.
+     *
+     * @param mixed &$value
+     * @param array $options
+     * @return bool
+     */
+    public function validate(&$value, array $options): bool
+    {
+        // Custom validation logic for phone numbers
+        return preg_match('/^' . $this->options['pattern'] . '$/', $value);
+    }
+
+    /**
+     * Get the validation error message.
+     *
+     * @return string
+     */
+    public function message(): string
+    {
+        return sprintf("The %s field must be a valid phone number.", $this->parameter);
+    }
+}
+```
+
+You can then use the custom validation rule in your validation logic:
+
+```php
+Route::post('/user', function (Request $request) {
+    // ...
+})->where('phone', 'required|phone|pattern:[0-9]{8}');
+```

@@ -1,3 +1,7 @@
+- [Introduction](structure.md?id=introduction)
+- [The Root Directory](structure.md?id=the-root-directory)
+- [The App Directory](structure.md?id=the-app-directory)
+
 ## Introduction
 
 The default Tonka application structure is intended to provide a great starting point for both large and small applications. But you are free to organize your application however you like. Tonka imposes almost no restrictions on where any given class is located - as long as Composer can autoload the class.

@@ -1,3 +1,11 @@
+- [Introduction](middleware.md?id=Introduction)
+- [Defining Middleware](middleware.md?id=defining-middleware)
+- [Middleware and Responses](middleware.md?id=middleware-and-responses)
+- [Registering Middleware](middleware.md?id=registering-middleware)
+    - [Global Middleware](middleware.md?id=global-middleware)
+    - [Assigning Middleware to Routes](middleware.md?id=assigning-middleware-to-routes)
+    - [Excluding Middleware](middleware.md?id=excluding-middleware)
+
 ## Introduction
 
 Middleware provide a convenient mechanism for inspecting and filtering HTTP requests entering your application. For example, Tonka includes a middleware that verifies the user of your application is authenticated. If the user is not authenticated, the middleware will redirect the user to your application's login screen. However, if the user is authenticated, the middleware will allow the request to proceed further into the application.

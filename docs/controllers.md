@@ -1,6 +1,46 @@
+- [Introduction](controllers.md?id=introduction)
+- [Writing Controllers](controllers.md?id=writing-controllers)
+    - [Basic Controller](controllers.md?id=basic-controller)
+    - [Single Action Controllers](controllers.md?id=single-action-controllers)
+    - [Controller Middleware](controllers.md?id=controller-middleware)
+        - [Assigning Middleware in Routes](controllers.md?id=assigning-middleware-in-routes)
+        - [Assigning Middleware in Controller Constructor](controllers.md?id=assigning-middleware-in-controller-constructor)
+    - [Resource Controllers](controllers.md?id=resource-controllers)
+        - [Customizing Missing Model Behavior](controllers.md?id=customizing-missing-model-behavior)
+        - [Soft Deleted Models](controllers.md?id=soft-deleted-models)
+        - [Enabling Soft Deletes](controllers.md?id=enabling-soft-deletes)
+        - [Querying Soft Deleted Models](controllers.md?id=querying-soft-deleted-models)
+        - [Restoring Soft Deleted Models](controllers.md?id=restoring-soft-deleted-models)
+        - [Permanently Deleting Models](controllers.md?id=permanently-deleting-models)
+        - [Specifying the Resource Model](controllers.md?id=specifying-the-resource-model)
+        - [Generating Form Requests](controllers.md?id=generating-form-requests)
+        - [Partial Resource Routes](controllers.md?id=partial-resource-routes)
+            - [Using `only`](controllers.md?id=using-only)
+            - [Using `except`](controllers.md?id=using-except)
+        - [API Resource Routes](controllers.md?id=api-resource-routes)
+        - [Nested Resources](controllers.md?id=nested-resources)
+            - [Scoping Nested Resources](controllers.md?id=scoping-nested-resources)
+            - [Shallow Nesting](controllers.md?id=shallow-nesting)
+        - [Naming Resource Routes](controllers.md?id=naming-resource-routes)
+        - [Localizing Resource URIs](controllers.md?id=localizing-resource-uris)
+        - [Supplementing Resource Controllers](controllers.md?id=supplementing-resource-controllers)
+        - [Singleton Resource Controllers](controllers.md?id=singleton-resource-controllers)
+            - [Nested Singleton Resources](controllers.md?id=nested-singleton-resources)
+            - [Creatable Singleton Resources](controllers.md?id=creatable-singleton-resources)
+            - [API Singleton Resources](controllers.md?id=api-singleton-resources)
+- [Dependency Injection and Controllers](controllers.md?id=dependency-injection-and-ontrollers)
+    - [Constructor Injection](controllers.md?id=constructor-injection)
+    - [Method Injection](controllers.md?id=method-injection)
+- [Adding Validation Attribute](controllers.md?id=adding-validation-attribute)
+- [Testing Controllers](controllers.md?id=testing-controllers)
+    - [Creating Tests for Controllers](controllers.md?id=creating-tests-for-controllers)
+    - [Writing Tests](controllers.md?id=writing-tests)
+    - [Running Tests](controllers.md?id=running-tests)
+    - [Using Sequences](controllers.md?id=using-sequences)
+
 ## Introduction
 
-Instead of defining all of your request handling logic as closures in your route files, you may wish to organize this behavior using "**controller**" classes. Controllers can group related request handling logic into a single class. For example, a UserController class might handle all incoming requests related to users, including showing, creating, updating, and deleting users. By default, controllers are stored in the `app/Http/Controllers` directory.
+Instead of defining all of your request handling logic as closures in your route files, you may wish to organize this behavior using "**controller**" classes. Controllers can group related request handling logic into a single class. For example, a `UserController` class might handle all incoming requests related to users, including `showing`, `creating`, `updating`, and `deleting` users.
 
 ## Writing Controllers
 
@@ -311,14 +351,14 @@ This single route declaration creates multiple routes to handle a variety of act
 - `GET /users` - index
 - `GET /users/create` - create
 - `POST /users` - store
-- `GET /users/{user}` - show
-- `GET /users/{user}/edit` - edit
-- `PUT/PATCH /users/{user}` - update
-- `DELETE /users/{user}` - destroy
+- `GET /users/:user` - show
+- `GET /users/:user/edit` - edit
+- `PUT/PATCH /users/:user` - update
+- `DELETE /users/:user` - destroy
 
 Using resource controllers and routes can help you quickly set up CRUD operations for your models in a standardized way.
 
-### Customizing Missing Model Behavior
+#### Customizing Missing Model Behavior
 
 When handling routes that involve models, you may want to customize the behavior when a model is not found. By default, Tonka will return a 404 HTTP response if an implicit model binding fails. However, you can customize this behavior by calling the `missing()` method on the route or by defining a `resolveRouteBinding` method on your model.
 
@@ -393,11 +433,11 @@ This approach allows you to define a global behavior for all models when they ar
 
 By customizing the missing model behavior, you can provide more informative responses and handle missing models in a way that suits your application's needs.
 
-### Soft Deleted Models
+#### Soft Deleted Models
 
 When working with models that are soft deleted, you may want to customize the behavior to include soft deleted models in your queries or handle them differently. Tonka provides a convenient way to work with soft deleted models using the `SoftDelete` trait.
 
-#### Enabling Soft Deletes
+##### Enabling Soft Deletes
 
 To enable soft deletes for a model, use the `SoftDelete` trait in your model and add a `deleted_at` column to your table:
 
@@ -428,7 +468,7 @@ Next, add the `deleted_at` column to your table by implementing the `alter` meth
 use Clicalmani\Database\Factory\Entity;
 use Clicalmani\Database\Factory\AlterOption;
 
-#[AlterOption]
+#[AlterOption] // Notice here AlterOption attribute!
 class UserEntity extends Entity
 {
     public function alter(AlterOption $table) : string
@@ -447,7 +487,7 @@ php tonka migrate:entity User
 
 This command will execute the migration and add the `deleted_at` column to the `users` table, enabling soft deletes for the `User` model.
 
-#### Querying Soft Deleted Models
+##### Querying Soft Deleted Models
 
 When querying a model that uses soft deletes, the `deleted_at` column will be automatically checked to exclude soft deleted models. To include soft deleted models in your query, use the `withTrashed` method:
 
@@ -461,7 +501,7 @@ To only retrieve soft deleted models, use the `onlyTrashed` method:
 $trashedUsers = User::onlyTrashed()->get();
 ```
 
-#### Restoring Soft Deleted Models
+##### Restoring Soft Deleted Models
 
 To restore a soft deleted model, use the `restore` method:
 
@@ -470,7 +510,7 @@ $user = User::withTrashed()->fetch()
             ->each(fn(User $user) => $user->restore());
 ```
 
-#### Permanently Deleting Models
+##### Permanently Deleting Models
 
 To permanently delete a soft deleted model, use the `forceDelete` method:
 
@@ -481,7 +521,7 @@ $user->forceDelete();
 
 By using the `SoftDelete` trait, you can easily manage soft deleted models and customize their behavior in your application.
 
-### Specifying the Resource Model
+##### Specifying the Resource Model
 
 If you are using route model binding and would like the resource controller's methods to type-hint a model instance, you may use the `--model` option when generating the controller:
 
@@ -514,16 +554,17 @@ class UserController extends Controller
      */
     public function index()
     {
-        // Your code
+        // Implement the resource listing here
     }
 
     /**
      * Create the specified resource in storage.
      *
+     * @param \Clicalmani\Foundation\Http\Requests\Request $request
      * @param \App\Models\User $user
      * @return \Clicalmani\Foundation\Resources\View
      */
-    public function create(User $user) : View
+    public function create(Request $request, User $user) : View
     {
         // Implement the resource create here
 
@@ -533,22 +574,24 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      *
+     * @param \Clicalmani\Foundation\Http\Requests\Request $request
      * @param \App\Models\User $user
      * @return \Clicalmani\Foundation\Resources\View
      */
-    public function store(User $user)
+    public function store(Request $request, User $user)
     {
-        // Your code
+        // Implement the resource storage here
     }
 
     /**
      * Show the specified resource.
      *
+     * @param \Clicalmani\Foundation\Http\Requests\Request $request
      * @param \App\Models\User $user
      * @param int $id
      * @return \Clicalmani\Foundation\Resources\View
      */
-    public function show(User $user, int $id) : View
+    public function show(Request $request, User $user, int $id) : View
     {
         // Implement the resource view here
 
@@ -558,11 +601,12 @@ class UserController extends Controller
     /**
      * Edit the specified resource.
      *
+     * @param \Clicalmani\Foundation\Http\Requests\Request $request
      * @param \App\Models\User $user
      * @param int $id
      * @return \Clicalmani\Foundation\Resources\View
      */
-    public function edit(User $user, int $id) : View
+    public function edit(Request $request, User $user, int $id) : View
     {
         // Implement the resource edit here
 
@@ -572,11 +616,12 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      *
+     * @param \Clicalmani\Foundation\Http\Requests\Request $request
      * @param \App\Models\User $user
      * @param  int $id
      * @return \Clicalmani\Foundation\Resources\View
      */
-    public function update(User $user, int $id)
+    public function update(Request $request, User $user, int $id)
     {
         // Implement the resource update here
     }
@@ -584,18 +629,19 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      *
+     * @param \Clicalmani\Foundation\Http\Requests\Request $request
      * @param \App\Models\User $user
      * @param int $id 
      * @return \Clicalmani\Foundation\Resources\View
      */
-    public function destroy(User $user, int $id)
+    public function destroy(Request $request, User $user, int $id)
     {
         // Implement the resource destroy here
     }
 }
 ```
 
-In this example, the `show`, `edit`, `update`, and `destroy` methods will automatically receive the `User` model instance based on the route parameter.
+In this example, the `show`, `edit`, `store`, `update`, and `destroy` methods will automatically receive the `User` model instance based on the route parameter.
 
 To define resource routes with model binding, you can use the `Route::resource` method as usual:
 
@@ -607,7 +653,7 @@ Route::resource('users', UserController::class);
 
 With this setup, the `UserController` methods will automatically receive the `User` model instance, making it easier to work with the model in your controller actions.
 
-### Generating Form Requests
+##### Generating Form Requests
 
 You may provide the `--requests` option when generating a resource controller to instruct Console to generate form request classes for the controller's storage and update methods:
 
@@ -698,11 +744,11 @@ class UserController extends Controller
 
 Using the `--requests` option helps to streamline the creation of form request classes and ensures that your controller methods are clean and maintainable.
 
-### Partial Resource Routes
+##### Partial Resource Routes
 
 If you don't need to define all of the resource routes, you can use the `only` or `except` methods to specify which routes should be included or excluded:
 
-#### Using `only`
+###### Using `only`
 
 ```php
 use App\Http\Controllers\UserController;
@@ -714,7 +760,7 @@ Route::resource('users', UserController::class)->only([
 
 This will create routes for only the `index` and `show` methods.
 
-#### Using `except`
+###### Using `except`
 
 ```php
 use App\Http\Controllers\UserController;
@@ -728,7 +774,7 @@ This will create routes for all methods except `create` and `edit`.
 
 Using partial resource routes allows you to have more control over which routes are generated for your resource controllers, ensuring that only the necessary routes are included in your application.
 
-### API Resource Routes
+##### API Resource Routes
 
 When building APIs, you may want to define resource routes that return JSON responses instead of views. Tonka provides a convenient way to define API resource routes using the `apiResource` method.
 
@@ -820,13 +866,13 @@ This single route declaration creates multiple routes to handle a variety of act
 
 - `GET /users` - index
 - `POST /users` - store
-- `GET /users/{user}` - show
-- `PUT/PATCH /users/{user}` - update
-- `DELETE /users/{user}` - destroy
+- `GET /users/:user` - show
+- `PUT/PATCH /users/:user` - update
+- `DELETE /users/:user` - destroy
 
 Using API resource controllers and routes can help you quickly set up CRUD operations for your models in a standardized way, returning JSON responses suitable for APIs.
 
-### Nested Resources
+##### Nested Resources
 
 Sometimes you may need to define routes to a nested resource. For example, a photo resource may be nested within a user resource. To define such routes, you can use the `Route::resource` method within a group of routes that define the parent resource:
 
@@ -839,13 +885,13 @@ Route::resource('users.photos', PhotoController::class);
 
 This will create nested routes for the `PhotoController` within the context of a user:
 
-- `GET /users/{user}/photos` - index
-- `GET /users/{user}/photos/create` - create
-- `POST /users/{user}/photos` - store
-- `GET /users/{user}/photos/{photo}` - show
-- `GET /users/{user}/photos/{photo}/edit` - edit
-- `PUT/PATCH /users/{user}/photos/{photo}` - update
-- `DELETE /users/{user}/photos/{photo}` - destroy
+- `GET /users/:user/photos` - index
+- `GET /users/:user/photos/create` - create
+- `POST /users/:user/photos` - store
+- `GET /users/:user/photos/:photo` - show
+- `GET /users/:user/photos/:photo/edit` - edit
+- `PUT/PATCH /users/:user/photos/:photo` - update
+- `DELETE /users/:user/photos/:photo` - destroy
 
 In your `PhotoController`, you can access the parent user model through route parameters:
 
@@ -959,7 +1005,7 @@ class PhotoController extends Controller
 
 Using nested resources helps to organize your routes and controllers when dealing with related models, providing a clear structure for handling nested data.
 
-### Scoping Nested Resources
+###### Scoping Nested Resources
 
 When working with nested resources, you may want to scope the nested resource routes to ensure that they are only accessible within the context of their parent resource. This can be achieved by using the `scoped` method when defining the nested resource routes.
 
@@ -1029,7 +1075,7 @@ class PhotoController extends Controller
 
 By scoping nested resources, you can ensure that the nested resource routes are properly constrained to their parent resource, providing a more intuitive and secure routing structure for your application.
 
-### Shallow Nesting
+###### Shallow Nesting
 
 When working with deeply nested resources, it can be beneficial to use shallow nesting to avoid overly complex route definitions. Shallow nesting allows you to define routes for nested resources without including the parent resource's identifier in every route.
 
@@ -1044,13 +1090,13 @@ Route::resource('users.photos', PhotoController::class)->shallow();
 
 This will create the following routes:
 
-- `GET /users/{user}/photos` - index
-- `GET /users/{user}/photos/create` - create
-- `POST /users/{user}/photos` - store
-- `GET /photos/{photo}` - show
-- `GET /photos/{photo}/edit` - edit
-- `PUT/PATCH /photos/{photo}` - update
-- `DELETE /photos/{photo}` - destroy
+- `GET /users/:user/photos` - index
+- `GET /users/:user/photos/create` - create
+- `POST /users/:user/photos` - store
+- `GET /photos/:photo` - show
+- `GET /photos/:photo/edit` - edit
+- `PUT/PATCH /photos/:photo` - update
+- `DELETE /photos/:photo` - destroy
 
 In your `PhotoController`, you can access the parent user model through route parameters for the `index`, `create`, and `store` methods, while the other methods will only require the photo identifier:
 
@@ -1105,7 +1151,7 @@ class PhotoController extends Controller
 
 Using shallow nesting helps to simplify your route definitions and makes your routes easier to manage, especially when dealing with deeply nested resources.
 
-### Naming Resource Routes
+##### Naming Resource Routes
 
 When defining resource routes, you may want to customize the names of the routes. Tonka allows you to specify custom names for your resource routes using the `names` method.
 
@@ -1146,7 +1192,7 @@ Route::resource('users.photos', PhotoController::class)->names([
 
 Using custom names for your resource routes helps to make your route definitions more readable and allows you to easily reference routes throughout your application.
 
-### Localizing Resource URIs
+##### Localizing Resource URIs
 
 If your application supports multiple languages, you may want to localize the URIs of your resource routes. Tonka allows you to easily localize resource URIs by defining localized route groups.
 
@@ -1183,7 +1229,7 @@ $url = route('users.index', app()->getLocale());
 
 By localizing resource URIs, you can provide a better user experience for your application's international audience, ensuring that your routes are accessible in multiple languages.
 
-### Supplementing Resource Controllers
+##### Supplementing Resource Controllers
 
 In addition to the standard methods provided by resource controllers, you may sometimes need to add custom methods to handle specific actions that are not covered by the default CRUD operations. You can easily add custom methods to your resource controllers and define routes for these methods.
 
@@ -1223,7 +1269,7 @@ This route will map the `POST /users/:user/activate` request to the `activate` m
 
 By supplementing resource controllers with custom methods, you can handle additional actions that are specific to your application's requirements, providing a flexible and extensible way to manage your resources.
 
-### Singleton Resource Controllers
+##### Singleton Resource Controllers
 
 In some cases, you may have a resource that should only have a single instance, such as a settings page. For such resources, you can define singleton resource controllers.
 
@@ -1285,7 +1331,7 @@ This single route declaration creates routes to handle the actions on the `Setti
 
 Using singleton resource controllers and routes can help you manage resources that should only have a single instance in a standardized way.
 
-### Nested Singleton Resources
+###### Nested Singleton Resources
 
 Singleton resources may also be nested within a standard resource. For example, you might have a settings resource that is unique to each user. To define nested singleton resource routes, you can use the `Route::singleton` method within a group of routes that define the parent resource:
 
@@ -1299,9 +1345,9 @@ Route::singleton('users.settings', UserSettingsController::class);
 
 This will create the following routes for the `UserSettingsController` within the context of a user:
 
-- `GET /users/{user}/settings` - show
-- `GET /users/{user}/settings/edit` - edit
-- `PUT/PATCH /users/{user}/settings` - update
+- `GET /users/:user/settings` - show
+- `GET /users/:user/settings/edit` - edit
+- `PUT/PATCH /users/:user/settings` - update
 
 In your `UserSettingsController`, you can access the parent user model through route parameters:
 
@@ -1339,7 +1385,7 @@ class UserSettingsController extends Controller
 
 Using nested singleton resources helps to organize your routes and controllers when dealing with unique resources within the context of a parent resource, providing a clear structure for handling nested data.
 
-### Creatable Singleton Resources
+###### Creatable Singleton Resources
 
 In some cases, you may have a singleton resource that needs to be created before it can be shown, edited, or updated. To handle creatable singleton resources, you can define routes for creating and storing the singleton resource.
 
@@ -1409,14 +1455,14 @@ This will create the following routes for the `ProfileController`:
 
 Using creatable singleton resources allows you to handle the creation of singleton resources in a standardized way, ensuring that the resource is properly initialized before it can be managed.
 
-### API Singleton Resources
+###### API Singleton Resources
 
 When building APIs, you may have singleton resources that should only have a single instance, such as a settings page. For such resources, you can define API singleton resource controllers.
 
 To create an API singleton resource controller, you can use the `make:controller` console command with the `--api` and `--singleton` options:
 
 ```bash
-php tonka make:controller SettingsController --api --singleton
+php tonka make:controller SettingsController --singleton --api
 ```
 
 This command will generate a controller file at `app/Http/Controllers/SettingsController.php` containing methods for handling the typical CRUD operations: `show`, `update`.
@@ -1581,3 +1627,289 @@ class UserController extends Controller
 ```
 
 Using method injection allows you to inject dependencies only where they are needed, making your controller methods more flexible and easier to test.
+
+## Adding Validation Attribute
+
+To add validation attribute to a controller, you can use the `Clicalmani\Validation\AsValidator` class provided by Tonka ORM. This class will check the request's attributes against the defined validation rules and throw a `ValidationException` if any of the rules are violated.
+
+Here is an example of how to add validation to a controller method:
+
+```php
+<?php
+
+namespace App\Http\Controllers;
+
+use Clicalmani\Foundation\Http\Requests\RequestController as Controller;
+use Clicalmani\Foundation\Http\Response;
+use Clicalmani\Validation\Exceptions\ValidationException;
+use Clicalmani\Validation\AsValidator;
+use App\Models\User;
+
+class UserController extends Controller
+{
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @return \Clicalmani\Psr\Response
+     */
+    #[AsValidator(
+        given_name: 'required|string|max:200',
+        family_name: 'required|string|max:200',
+        email: 'required|email|max:255'
+    )]
+    public function store()
+    {
+        $user = new User;
+        $user->fill(request()->all());
+
+        try {
+            $user->save();
+
+            return Response::success();
+        } catch (ValidationException $e) {
+            return Response::error($e->getMessage());
+        }
+    }
+}
+```
+
+In this example, the `store` method in the `UserController` class creates a new `User` instance, fills it with data from the request, and validates the model's attributes. If the validation passes, the user is saved to the database. If the validation fails, a `ValidationException` is thrown, and an error response is returned.
+
+!> For further information about validators, read the [Validation](orm.md?id=validating-model-instances) documentation.
+
+### Testing Controllers
+
+Tonka provides a simple and intuitive way to test your controllers. You can use the built-in testing tools to simulate HTTP requests and assert the responses. This allows you to ensure that your controllers are handling requests correctly and returning the expected responses.
+
+#### Creating Tests for Controllers
+
+To create tests for your controllers, you can use the `make:test` console command to generate a test class. For example, let's create a test class for the `UserController`:
+
+```sh
+php tonka make:test UserController
+```
+
+After running the command, a test class will be created in the `test` directory:
+
+```php
+<?php
+
+namespace Test\Controllers;
+
+use Clicalmani\Foundation\Test\Controllers\TestController;
+use App\Http\Controllers\UserController;
+
+class UserControllerTest extends ControllerTest
+{
+    /**
+     * Controller class
+     *
+     * @var string Class name 
+     */
+    protected $controller = UserController::class;
+    	
+    /**
+     * Seed index method
+     * 
+     * @return array 
+     */
+    public function index() : array
+    {
+        return [
+            // Action parameters
+        ];
+    }
+
+    /**
+     * Seed store method
+     * 
+     * @return array 
+     */
+    public function store() : array
+    {
+        return [
+            // Action parameters
+        ];
+    }
+
+    /**
+     * Seed create method
+     * 
+     * @return array 
+     */
+    public function create() : array
+    {
+        return [
+            // Action parameters
+        ];
+    }
+
+    /**
+     * Seed update method
+     * 
+     * @return array 
+     */
+    public function update() : array
+    {
+        return [
+            // Action parameters
+        ];
+    }
+
+    /**
+     * Seed destroy method
+     * 
+     * @return array 
+     */
+    public function destroy() : array
+    {
+        return [
+            // Action parameters
+        ];
+    }
+
+    /**
+     * Test method
+     * 
+     * @return void 
+     */
+    public static function test() : void
+    {
+        // Test code
+    }
+}
+```
+
+#### Writing Tests
+
+Now that we have a test class, we need to add `HasTest` trait to UserController to make sure that the controller and its test class are interconnected:
+
+```php
+<?php
+
+namespace App\Http\Controllers;
+
+use Clicalmani\Foundation\Http\Requests\RequestController as Controller;
+use Clicalmani\Foundation\Traits\HasTest;
+
+class UserController extends Controller
+{
+    use HasTest;
+
+    // ...
+}
+```
+
+Finally, we can write a test in the `test` method of UserControllerTest class:
+
+```php
+<?php
+
+namespace Test\Controllers;
+
+use Clicalmani\Foundation\Test\Controllers\TestController;
+use App\Http\Controllers\UserController;
+
+class UserControllerTest extends ControllerTest
+{
+    /**
+     * Seed update method
+     * 
+     * @return array 
+     */
+    public function update() : array
+    {
+        return [
+            'id' => 1,
+            'email' => faker()->unique()->safeEmail
+        ];
+    }
+
+    /**
+     * Test method
+     * 
+     * @return void 
+     */
+    public static function test() : void
+    {
+        UserController::test('update')
+            ->count(1)
+            ->make();
+    }
+}
+```
+
+In the generated test class, we wrote tests to verify the `update` method's behavior. An HTTP request will be made to update the user email address.
+
+#### Running Tests
+
+To run your tests, you can use the `test` console command provided by Tonka. This command will execute all the tests in your application and display the results.
+
+```sh
+php tonka test
+```
+
+You can also run a specific test class by providing the class name as an argument:
+
+```sh
+php tonka test --controller=UserController
+```
+
+#### Using Sequences
+
+When testing controllers, you may need to perform multiple actions at a time. Tonka provides a convenient way to define and execute sequences of actions using the `Sequence` class.
+
+For example, let's define a sequence of actions to test the `UserController`:
+
+```php
+<?php
+
+namespace Test\Controllers;
+
+use Clicalmani\Foundation\Test\Controllers\TestController;
+use Clicalmani\Database\Factory\Sequence;
+use App\Http\Controllers\UserController;
+
+class UserControllerTest extends ControllerTest
+{
+    /**
+     * Seed store method
+     * 
+     * @return array 
+     */
+    public function store() : array
+    {
+        return [
+            'given_name' => null,
+            'family_name' => null,
+            'email' => null
+        ];
+    }
+
+    /**
+     * Test method
+     * 
+     * @return void 
+     */
+    public static function test() : void
+    {
+        UserController::test('store')
+            ->count(3)
+            ->defaultUsers()
+            ->make();
+    }
+
+    public function defaultUsers()
+    {
+        return $this->state(function() {
+            return [
+                'given_name' => new Sequence(faker()->name(), faker()->name(), faker()->name()),
+                'family_name' => new Sequence(faker()->name(), faker()->name(), faker()->name()),
+                'email' => new Sequence(faker()->unique()->safeEmail, faker()->unique()->safeEmail, faker()->unique()->safeEmail)
+            ];
+        });
+    }
+}
+```
+
+In this example, we define 3 sequences of users to test the `store` methods of the `UserController`. The `Sequence` class allows us to store one user at a time.

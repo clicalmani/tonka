@@ -1,3 +1,8 @@
+- [Introduction](deployment.md?id=Introduction)
+- [Server Requirement](deployment.md?id=server-requirement)
+- [Directory Permissions](deployment.md?id=directory-permissions)
+- [Optimization](deployment.md?id=optimization)
+
 ## Introduction
 
 Deploying a Tonka application is straightforward and hassle-free. One of the key reasons for this simplicity is that Tonka does not use any internal caching mechanisms. This means you can deploy your application without worrying about cache invalidation or related issues, ensuring a smooth and efficient deployment process.
@@ -16,7 +21,7 @@ Tonka Framework has minimal requirements. You just need to ensure that the serve
 
 ## Directory Permissions
 
-Tonka will need to write to the storage directory, so ensure that the web server process owner has permission to write to this directory.
+Tonka will need to write to the `storage` directory, so ensure that the web server process owner has permission to write to this directory.
 
 ## Optimization
 
