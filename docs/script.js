@@ -6,7 +6,7 @@ window.$docsify = {
     coverpage: true,
     onlyCover: true,
     name: "Tonka Framework - Documentation", // Must configure when publishing
-    nameLink: "/README.md", // Configurable when publishing
+    nameLink: "https://github.com/clicalmani/tonka", // Configurable when publishing
     hideSidebar: false, // Configurable when publishing
     subMaxLevel: 2, // Configurable when publishing
     basePath: "/tonka/", // Configurable when publishing
