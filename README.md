@@ -1,6 +1,8 @@
-# pdms-v4
+# TONKA, A TRUE PHP FRAMEWORK
 
-https://ddi-dev.com/blog/case/how-we-developed-an-online-course-platform/
-https://github.com/givanz/VvvebJs?tab=readme-ov-file
-https://editor.codecogs.com/docs/3-Tiny_MCE_v6.php
-https://editor.codecogs.com/
+> Lightweight, Fast Coding and Secure!
+
+Tonka is a PHP Framework based on the MVC model (Model View Controller), fast, lightweight and full of features to make the development experience more exciting and brighter.
+
+## Documentation
+[See documentation](https://clicalmani.github.io/tonka)
