@@ -4,6 +4,7 @@
 - [Registering Middleware](middleware.md?id=registering-middleware)
     - [Global Middleware](middleware.md?id=global-middleware)
     - [Assigning Middleware to Routes](middleware.md?id=assigning-middleware-to-routes)
+    - [Middleware Route File](middleware.md?id=middleware-route-file)
     - [Excluding Middleware](middleware.md?id=excluding-middleware)
 
 ## Introduction
@@ -14,7 +15,7 @@ Additional middleware can be written to perform a variety of tasks besides authe
 
 ## Defining Middleware
 
-To create a new middleware, use the make:middleware console command:
+To create a new middleware, use the `make:middleware` console command:
 
 ```bash
 php tonka make:middleware CheckAge
@@ -44,7 +45,7 @@ class CheckAge extends Middleware
     public function handle(Request $request, Response $response, callable $next) : int|false
     {
         if ($request->age <= 18) {
-            return $request->redirect()->route('home');
+            return redirect()->route('home');
         }
 
         return $next($request);
@@ -60,7 +61,7 @@ Route::get('admin/profile', function () {
 })->middleware(\App\Http\Middlewares\CheckAge::class);
 ```
 
-Alternatively, you can assign middleware to a group of routes or globally within your `app/Http/Kernel.php` file.
+Alternatively, you can assign middleware to a group of routes or globally within your `app/Http/Kernel.php` file. To do so you must register the middleware as a [global middleware](middleware.md?id=global-middleware).
 
 ## Middleware and Responses
 
@@ -151,7 +152,7 @@ If you would like to assign middleware to specific routes, you may invoke the mi
 ```php
 Route::get('admin/profile', function () {
     // Only executed if the age is greater than 18...
-})->middleware(\App\Http\Middlewares\CheckAge::class);
+})->middleware('check.age');
 ```
 
 You can also assign multiple middleware to the route by passing an array of middleware:
@@ -159,10 +160,48 @@ You can also assign multiple middleware to the route by passing an array of midd
 ```php
 Route::get('admin/profile', function () {
     // Only executed if the age is greater than 18 and the request is logged...
-})->middleware([\App\Http\Middlewares\CheckAge::class, \App\Http\Middlewares\LogRequest::class]);
+})->middleware(['check.age', 'log.request']);
 ```
 
 This will ensure that the `CheckAge` and `LogRequest` middleware are executed in the specified order for the route.
+
+### Middleware Route File
+
+To keep your route definitions clean and organized, you can define middleware in a separate route file. For example, you can create a `routes/auth.php` file and define your routes with `auth` middleware there:
+
+```php
+// routes/web.php
+
+Route::middleware('auth');
+```
+
+```php
+// routes/auth.php
+
+Route::get('admin/profile', function () {
+    // Show profile
+});
+
+Route::get('admin/settings', function () {
+    // Show settings
+});
+```
+
+The `routes/auth.php` needs to be initialized in the boot method of the middleware:
+
+```php
+/**
+     * Bootstrap
+     * 
+    * @return void
+    */
+public function boot() : void
+{
+    $this->include('auth');
+}
+```
+
+This approach helps in maintaining a clean and manageable route definition structure.
 
 ### Excluding Middleware
 
