@@ -354,7 +354,7 @@ Here is an example of how to use the `filter` method:
 
 namespace App\Http\Controllers;
 
-use Clicalmani\Foundation\Http\Response\Response;
+use Clicalmani\Foundation\Http\Response;
 use App\Models\User;
 
 class UserController extends Controller
@@ -384,7 +384,7 @@ Here is an exemple with all the arguments set:
 
 namespace App\Http\Controllers;
 
-use Clicalmani\Foundation\Http\Response\Response;
+use Clicalmani\Foundation\Http\Response;
 use App\Models\User;
 
 class UserController extends Controller
@@ -422,7 +422,7 @@ Here is an example of how to use the `swap` method:
 
 namespace App\Http\Controllers;
 
-use Clicalmani\Foundation\Http\Response\Response;
+use Clicalmani\Foundation\Http\Response;
 use App\Models\User;
 
 class UserController extends Controller
@@ -2446,7 +2446,7 @@ Here is an example:
 <?php
 namespace App\Http\Controllers;
 
-use Clicalmani\Foundation\Http\Requests\RequestController as Controller;
+use Clicalmani\Foundation\Http\RequestController as Controller;
 use Clicalmani\Foundation\Validation\AsValidator;
 
 class AttachmentController extends Controller
@@ -2478,7 +2478,7 @@ Here is an example:
 <?php
 namespace App\Http\Controllers;
 
-use Clicalmani\Foundation\Http\Requests\RequestController as Controller;
+use Clicalmani\Foundation\Http\RequestController as Controller;
 use Clicalmani\Foundation\Validation\AsValidator;
 
 class UserController extends Controller
@@ -2510,7 +2510,7 @@ Here is an example:
 <?php
 namespace App\Http\Controllers;
 
-use Clicalmani\Foundation\Http\Requests\RequestController as Controller;
+use Clicalmani\Foundation\Http\RequestController as Controller;
 use Clicalmani\Foundation\Validation\AsValidator;
 
 class AttachmentController extends Controller

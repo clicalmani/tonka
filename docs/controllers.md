@@ -61,8 +61,8 @@ Here is an example of a basic controller class:
 
 namespace App\Http\Controllers;
 
-use Clicalmani\Foundation\Http\Requests\Request;
-use Clicalmani\Foundation\Http\Requests\RequestController as Controller;
+use Clicalmani\Foundation\Http\Request;
+use Clicalmani\Foundation\Http\RequestController as Controller;
 
 class UserController extends Controller
 {
@@ -139,15 +139,15 @@ If you have a controller that only handles a single action, you may place that s
 
 namespace App\Http\Controllers;
 
-use Clicalmani\Foundation\Http\Requests\Request;
-use Clicalmani\Foundation\Http\Requests\RequestController as Controller;
+use Clicalmani\Foundation\Http\Request;
+use Clicalmani\Foundation\Http\RequestController as Controller;
 
 class ShowProfileController extends Controller
 {
     /**
      * Handle the incoming request.
      *
-     * @param  \Clicalmani\Foundation\Http\Requests\Request  $request
+     * @param  \Clicalmani\Foundation\Http\Request  $request
      * @param  int  $id
      * @return \Clicalmani\Foundation\Http\Response
      */
@@ -188,7 +188,7 @@ use App\Http\Middlewares\PreventRouteTampering;
 
 Route::get('/users', [UserController::class, 'index'])->middleware('auth');
 Route::get('/users/:id', [UserController::class, 'show'])->middleware('auth');
-Route::get('/users/:id/?:hash', [UserController::class, 'show'])->middleware(PreventRouteTempering::class);
+Route::get('/users/:id/?:hash', [UserController::class, 'show'])->middleware(PreventRouteTampering::class);
 ```
 
 #### Assigning Middleware in Controller Constructor
@@ -200,8 +200,8 @@ Alternatively, you can assign middleware within your controller's constructor. T
 
 namespace App\Http\Controllers;
 
-use Clicalmani\Foundation\Http\Requests\Request;
-use Clicalmani\Foundation\Http\Requests\RequestController as Controller;
+use Clicalmani\Foundation\Http\Request;
+use Clicalmani\Foundation\Http\RequestController as Controller;
 use Clicalmani\Foundation\Traits\HasMiddleware;
 
 class UserController extends Controller
@@ -242,8 +242,8 @@ Here is an example of a resource controller:
 
 namespace App\Http\Controllers;
 
-use Clicalmani\Foundation\Http\Requests\Request;
-use Clicalmani\Foundation\Http\Requests\RequestController as Controller;
+use Clicalmani\Foundation\Http\Request;
+use Clicalmani\Foundation\Http\RequestController as Controller;
 user App\Models\User;
 
 class UserController extends Controller
@@ -263,7 +263,7 @@ class UserController extends Controller
     /**
      * Create the specified resource.
      *
-     * @param  \Clicalmani\Foundation\Http\Requests\Request  $request
+     * @param  \Clicalmani\Foundation\Http\Request  $request
      * @return \Clicalmani\Foundation\Resources\View
      */
     public function create(Request $request) : View
@@ -276,7 +276,7 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Clicalmani\Foundation\Http\Requests\Request  $request
+     * @param  \Clicalmani\Foundation\Http\Request  $request
      * @return \Clicalmani\Foundation\Resources\View
      */
     public function store(Request $request)
@@ -287,7 +287,7 @@ class UserController extends Controller
     /**
      * Show the specified resource.
      *
-     * @param  \Clicalmani\Foundation\Http\Requests\Request  $request
+     * @param  \Clicalmani\Foundation\Http\Request  $request
      * @param int $id
      * @return \Clicalmani\Foundation\Resources\View
      */
@@ -301,7 +301,7 @@ class UserController extends Controller
     /**
      * Edit the specified resource.
      *
-     * @param  \Clicalmani\Foundation\Http\Requests\Request  $request
+     * @param  \Clicalmani\Foundation\Http\Request  $request
      * @param int $id
      * @return \Clicalmani\Foundation\Resources\View
      */
@@ -315,7 +315,7 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Clicalmani\Foundation\Http\Requests\Request  $request
+     * @param  \Clicalmani\Foundation\Http\Request  $request
      * @param  int $id
      * @return \Clicalmani\Foundation\Resources\View
      */
@@ -327,7 +327,7 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \Clicalmani\Foundation\Http\Requests\Request  $request
+     * @param  \Clicalmani\Foundation\Http\Request  $request
      * @param int $id 
      * @return \Clicalmani\Foundation\Resources\View
      */
@@ -541,8 +541,8 @@ For example, let's update the `UserController` to use route model binding for th
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Clicalmani\Foundation\Http\Requests\Request;
-use Clicalmani\Foundation\Http\Requests\RequestController as Controller;
+use Clicalmani\Foundation\Http\Request;
+use Clicalmani\Foundation\Http\RequestController as Controller;
 use \Clicalmani\Foundation\Resources\View;
 
 class UserController extends Controller
@@ -560,7 +560,7 @@ class UserController extends Controller
     /**
      * Create the specified resource in storage.
      *
-     * @param \Clicalmani\Foundation\Http\Requests\Request $request
+     * @param \Clicalmani\Foundation\Http\Request $request
      * @param \App\Models\User $user
      * @return \Clicalmani\Foundation\Resources\View
      */
@@ -574,7 +574,7 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Clicalmani\Foundation\Http\Requests\Request $request
+     * @param \Clicalmani\Foundation\Http\Request $request
      * @param \App\Models\User $user
      * @return \Clicalmani\Foundation\Resources\View
      */
@@ -586,7 +586,7 @@ class UserController extends Controller
     /**
      * Show the specified resource.
      *
-     * @param \Clicalmani\Foundation\Http\Requests\Request $request
+     * @param \Clicalmani\Foundation\Http\Request $request
      * @param \App\Models\User $user
      * @param int $id
      * @return \Clicalmani\Foundation\Resources\View
@@ -601,7 +601,7 @@ class UserController extends Controller
     /**
      * Edit the specified resource.
      *
-     * @param \Clicalmani\Foundation\Http\Requests\Request $request
+     * @param \Clicalmani\Foundation\Http\Request $request
      * @param \App\Models\User $user
      * @param int $id
      * @return \Clicalmani\Foundation\Resources\View
@@ -616,7 +616,7 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param \Clicalmani\Foundation\Http\Requests\Request $request
+     * @param \Clicalmani\Foundation\Http\Request $request
      * @param \App\Models\User $user
      * @param  int $id
      * @return \Clicalmani\Foundation\Resources\View
@@ -629,7 +629,7 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param \Clicalmani\Foundation\Http\Requests\Request $request
+     * @param \Clicalmani\Foundation\Http\Request $request
      * @param \App\Models\User $user
      * @param int $id 
      * @return \Clicalmani\Foundation\Resources\View
@@ -670,7 +670,7 @@ Here is an example of the generated form request classes:
 
 namespace App\Http\Requests;
 
-use Clicalmani\Foundation\Http\Requests\Request;
+use Clicalmani\Foundation\Http\Request;
 
 class StoreUserRequest extends Request
 {
@@ -696,7 +696,7 @@ class StoreUserRequest extends Request
 
 namespace App\Http\Requests;
 
-use Clicalmani\Foundation\Http\Requests\Request;
+use Clicalmani\Foundation\Http\Request;
 
 class UpdateUserRequest extends Request
 {
@@ -726,7 +726,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
-use Clicalmani\Foundation\Http\Requests\RequestController as Controller;
+use Clicalmani\Foundation\Http\RequestController as Controller;
 
 class UserController extends Controller
 {
@@ -792,9 +792,9 @@ Here is an example of an API resource controller class:
 <?php 
 namespace App\Http\Controllers;
 
-use Clicalmani\Foundation\Http\Requests\RequestController as Controller;
-use Clicalmani\Foundation\Http\Requests\Request;
-use Clicalmani\Foundation\Http\Response\Response;
+use Clicalmani\Foundation\Http\RequestController as Controller;
+use Clicalmani\Foundation\Http\Request;
+use Clicalmani\Foundation\Http\Response;
 
 class UserController extends Controller
 {
@@ -811,7 +811,7 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Clicalmani\Foundation\Http\Requests\Request  $request
+     * @param  \Clicalmani\Foundation\Http\Request  $request
      * @return \Clicalmani\Foundation\Http\Response\JsonResponse
      */
     public function store(Request $request)
@@ -822,7 +822,7 @@ class UserController extends Controller
     /**
      * Show the specified resource.
      *
-     * @param  \Clicalmani\Foundation\Http\Requests\Request  $request
+     * @param  \Clicalmani\Foundation\Http\Request  $request
      * @return \Clicalmani\Foundation\Http\Response\JsonResponse
      */
     public function show(Request $request)
@@ -833,7 +833,7 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Clicalmani\Foundation\Http\Requests\Request  $request
+     * @param  \Clicalmani\Foundation\Http\Request  $request
      * @return \Clicalmani\Foundation\Http\Response\JsonResponse
      */
     public function update(Request $request)
@@ -844,7 +844,7 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \Clicalmani\Foundation\Http\Requests\Request  $request
+     * @param  \Clicalmani\Foundation\Http\Request  $request
      * @return \Clicalmani\Foundation\Http\Response\JsonResponse
      */
     public function destroy(Request $request)
@@ -899,8 +899,8 @@ In your `PhotoController`, you can access the parent user model through route pa
 <?php 
 namespace App\Http\Controllers;
 
-use Clicalmani\Foundation\Http\Requests\RequestController as Controller;
-use Clicalmani\Foundation\Http\Requests\Request;
+use Clicalmani\Foundation\Http\RequestController as Controller;
+use Clicalmani\Foundation\Http\Request;
 use \Clicalmani\Foundation\Resources\View;
 use App\Models\User;
 use App\Models\Photo;
@@ -920,7 +920,7 @@ class PhotoController extends Controller
     /**
      * Create the specified resource in storage.
      *
-     * @param \Clicalmani\Foundation\Http\Requests\Request $request
+     * @param \Clicalmani\Foundation\Http\Request $request
      * @return \Clicalmani\Foundation\Resources\View
      */
     public function create(Request $request) : View
@@ -933,7 +933,7 @@ class PhotoController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Clicalmani\Foundation\Http\Requests\Request $request
+     * @param \Clicalmani\Foundation\Http\Request $request
      * @return \Clicalmani\Foundation\Resources\View
      */
     public function store(Request $request)
@@ -1031,8 +1031,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Photo;
-use Clicalmani\Foundation\Http\Requests\Request;
-use Clicalmani\Foundation\Http\Requests\RequestController as Controller;
+use Clicalmani\Foundation\Http\Request;
+use Clicalmani\Foundation\Http\RequestController as Controller;
 
 class PhotoController extends Controller
 {
@@ -1107,8 +1107,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Photo;
-use Clicalmani\Foundation\Http\Requests\Request;
-use Clicalmani\Foundation\Http\Requests\RequestController as Controller;
+use Clicalmani\Foundation\Http\Request;
+use Clicalmani\Foundation\Http\RequestController as Controller;
 
 class PhotoController extends Controller
 {
@@ -1241,8 +1241,8 @@ For example, let's add a custom method to the `UserController` to handle user ac
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Clicalmani\Foundation\Http\Requests\Request;
-use Clicalmani\Foundation\Http\Requests\RequestController as Controller;
+use Clicalmani\Foundation\Http\Request;
+use Clicalmani\Foundation\Http\RequestController as Controller;
 
 class UserController extends Controller
 {
@@ -1289,8 +1289,8 @@ Here is an example of a singleton resource controller class:
 namespace App\Http\Controllers;
 
 use App\Models\Settings;
-use Clicalmani\Foundation\Http\Requests\Request;
-use Clicalmani\Foundation\Http\Requests\RequestController as Controller;
+use Clicalmani\Foundation\Http\Request;
+use Clicalmani\Foundation\Http\RequestController as Controller;
 
 class SettingsController extends Controller
 {
@@ -1358,8 +1358,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\UserSettings;
-use Clicalmani\Foundation\Http\Requests\Request;
-use Clicalmani\Foundation\Http\Requests\RequestController as Controller;
+use Clicalmani\Foundation\Http\Request;
+use Clicalmani\Foundation\Http\RequestController as Controller;
 
 class UserSettingsController extends Controller
 {
@@ -1397,8 +1397,8 @@ For example, let's create a `ProfileController` for managing a user's profile, w
 namespace App\Http\Controllers;
 
 use App\Models\Profile;
-use Clicalmani\Foundation\Http\Requests\Request;
-use Clicalmani\Foundation\Http\Requests\RequestController as Controller;
+use Clicalmani\Foundation\Http\Request;
+use Clicalmani\Foundation\Http\RequestController as Controller;
 
 class ProfileController extends Controller
 {
@@ -1475,8 +1475,8 @@ Here is an example of an API singleton resource controller class:
 namespace App\Http\Controllers;
 
 use App\Models\Settings;
-use Clicalmani\Foundation\Http\Requests\Request;
-use Clicalmani\Foundation\Http\Requests\RequestController as Controller;
+use Clicalmani\Foundation\Http\Request;
+use Clicalmani\Foundation\Http\RequestController as Controller;
 
 class SettingsController extends Controller
 {
@@ -1525,8 +1525,8 @@ For example, let's inject a repository into a controller:
 namespace App\Http\Controllers;
 
 use App\Repositories\UserRepository;
-use Clicalmani\Foundation\Http\Requests\Request;
-use Clicalmani\Foundation\Http\Requests\RequestController as Controller;
+use Clicalmani\Foundation\Http\Request;
+use Clicalmani\Foundation\Http\RequestController as Controller;
 
 class UserController extends Controller
 {
@@ -1563,8 +1563,8 @@ For example, let's inject a request instance into a controller method:
 namespace App\Http\Controllers;
 
 use App\Repositories\UserRepository;
-use Clicalmani\Foundation\Http\Requests\Request;
-use Clicalmani\Foundation\Http\Requests\RequestController as Controller;
+use Clicalmani\Foundation\Http\Request;
+use Clicalmani\Foundation\Http\RequestController as Controller;
 
 class UserController extends Controller
 {
@@ -1603,14 +1603,14 @@ use App\Http\Controllers\UserController;
 Route::put('/user/:id', [UserController::class, 'update']);
 ```
 
-You may still type-hint the `Clicalmani\Foundation\Http\Requests\Request` and access your `id` parameter by defining your controller method as follows:
+You may still type-hint the `Clicalmani\Foundation\Http\Request` and access your `id` parameter by defining your controller method as follows:
 
 ```php
 <?php
  
 namespace App\Http\Controllers;
  
-use Clicalmani\Foundation\Http\Requests\Request;
+use Clicalmani\Foundation\Http\Request;
  
 class UserController extends Controller
 {
@@ -1639,7 +1639,7 @@ Here is an example of how to add validation to a controller method:
 
 namespace App\Http\Controllers;
 
-use Clicalmani\Foundation\Http\Requests\RequestController as Controller;
+use Clicalmani\Foundation\Http\RequestController as Controller;
 use Clicalmani\Foundation\Http\Response;
 use Clicalmani\Validation\Exceptions\ValidationException;
 use Clicalmani\Validation\AsValidator;
@@ -1789,7 +1789,7 @@ Now that we have a test class, we need to add `HasTest` trait to UserController 
 
 namespace App\Http\Controllers;
 
-use Clicalmani\Foundation\Http\Requests\RequestController as Controller;
+use Clicalmani\Foundation\Http\RequestController as Controller;
 use Clicalmani\Foundation\Traits\HasTest;
 
 class UserController extends Controller

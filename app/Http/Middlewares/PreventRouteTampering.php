@@ -2,8 +2,8 @@
 namespace App\Http\Middlewares;
 
 use Clicalmani\Foundation\Http\Middlewares\Middleware;
-use Clicalmani\Foundation\Http\Requests\Request;
-use Clicalmani\Foundation\Http\Response\Response;
+use Clicalmani\Foundation\Http\Request;
+use Clicalmani\Foundation\Http\Response;
 
 class PreventRouteTampering extends Middleware 
 {

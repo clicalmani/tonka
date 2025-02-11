@@ -29,8 +29,8 @@ This command will place a new `CheckAge` class within your `app/Http/Middlewares
 namespace App\Http\Middlewares;
 
 use Clicalmani\Foundation\Http\Middlewares\Middleware;
-use Clicalmani\Foundation\Http\Requests\Request;
-use Clicalmani\Foundation\Http\Response\Response;
+use Clicalmani\Foundation\Http\Request;
+use Clicalmani\Foundation\Http\Response;
 
 class CheckAge extends Middleware
 {
@@ -73,8 +73,8 @@ Of course, a middleware can perform tasks before or after passing the request de
 namespace App\Http\Middlewares;
 
 use Clicalmani\Foundation\Http\Middlewares\Middleware;
-use Clicalmani\Foundation\Http\Requests\Request;
-use Clicalmani\Foundation\Http\Response\Response;
+use Clicalmani\Foundation\Http\Request;
+use Clicalmani\Foundation\Http\Response;
 
 class LogRequest extends Middleware
 {

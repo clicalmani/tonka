@@ -26,6 +26,6 @@ return [
     */
 
     'builders' => [
-        \Clicalmani\Routing\Factory\RegExBuilder::class,
+        // ...
     ]
 ];

@@ -78,15 +78,15 @@ As your `DataController` is an invokable controller, the request will be send to
 ```php
 namespace App\Http\Controllers;
 
-use Clicalmani\Foundation\Http\Requests\RequestController as Controller;
-use Clicalmani\Foundation\Http\Requests\Request;
+use Clicalmani\Foundation\Http\RequestController as Controller;
+use Clicalmani\Foundation\Http\Request;
 
 class DataController extends Controller
 {
     /**
      * Handle the incoming request.
      *
-     * @param  \Clicalmani\Foundation\Http\Requests\Request  $request
+     * @param  \Clicalmani\Foundation\Http\Request  $request
      * @return \Clicalmani\Foundation\Resources\View
      */
     public function __invoke(Request $request) : View
@@ -98,12 +98,12 @@ class DataController extends Controller
 }
 ```
 
-In this exemple we type-hint the `Clicalmani\Foundation\Http\Requests\Request` class on the `__invoke` method to make it possible to receive the request object. Tonka [Service Container]() will automatically inject the request object to the metod.
+In this exemple we type-hint the `Clicalmani\Foundation\Http\Request` class on the `__invoke` method to make it possible to receive the request object. Tonka [Service Container]() will automatically inject the request object to the metod.
 
-You may also type-hint the `Clicalmani\Foundation\Http\Requests\Request` class on a route closure. The service container will automatically inject the incoming request into the closure when it is executed:
+You may also type-hint the `Clicalmani\Foundation\Http\Request` class on a route closure. The service container will automatically inject the incoming request into the closure when it is executed:
 
 ```php
-use Clicalmani\Foundation\Http\Requests\Request;
+use Clicalmani\Foundation\Http\Request;
  
 Route::get('/', function (Request $request) {
     // ...
@@ -123,7 +123,7 @@ You can define your controller method to accept the route parameter:
 ```php
 namespace App\Http\Controllers;
 
-use Clicalmani\Foundation\Http\Requests\Request;
+use Clicalmani\Foundation\Http\Request;
 use Clicalmani\Foundation\Resources\View;
 
 class UserController extends Controller
@@ -131,7 +131,7 @@ class UserController extends Controller
     /**
      * Show the profile for a given user.
      *
-     * @param  \Clicalmani\Foundation\Http\Requests\Request  $request
+     * @param  \Clicalmani\Foundation\Http\Request  $request
      * @param  int  $id
      * @return \Clicalmani\Foundation\Resources\View
      */
@@ -159,7 +159,7 @@ Here is an example of how to use these methods in a controller:
 ```php
 namespace App\Http\Controllers;
 
-use Clicalmani\Foundation\Http\Requests\Request;
+use Clicalmani\Foundation\Http\Request;
 use Clicalmani\Foundation\Resources\View;
 
 class ExampleController extends Controller
@@ -167,7 +167,7 @@ class ExampleController extends Controller
     /**
      * Handle the incoming request.
      *
-     * @param  \Clicalmani\Foundation\Http\Requests\Request  $request
+     * @param  \Clicalmani\Foundation\Http\Request  $request
      * @return \Clicalmani\Foundation\Resources\View
      */
     public function handle(Request $request) : View
@@ -192,7 +192,7 @@ The `route` method called on the request object return the current route the use
 ```php
 namespace App\Http\Controllers;
 
-use Clicalmani\Foundation\Http\Requests\Request;
+use Clicalmani\Foundation\Http\Request;
 use Clicalmani\Foundation\Resources\View;
 
 class PathController extends Controller
@@ -200,7 +200,7 @@ class PathController extends Controller
     /**
      * Handle the incoming request.
      *
-     * @param  \Clicalmani\Foundation\Http\Requests\Request  $request
+     * @param  \Clicalmani\Foundation\Http\Request  $request
      * @return \Clicalmani\Foundation\Resources\View
      */
     public function checkPath(Request $request) : View
@@ -231,7 +231,7 @@ Here is an example of how to use these methods in a controller:
 ```php
 namespace App\Http\Controllers;
 
-use Clicalmani\Foundation\Http\Requests\Request;
+use Clicalmani\Foundation\Http\Request;
 use Clicalmani\Foundation\Resources\View;
 
 class UrlController extends Controller
@@ -239,7 +239,7 @@ class UrlController extends Controller
     /**
      * Handle the incoming request.
      *
-     * @param  \Clicalmani\Foundation\Http\Requests\Request  $request
+     * @param  \Clicalmani\Foundation\Http\Request  $request
      * @return \Clicalmani\Foundation\Resources\View
      */
     public function showUrl(Request $request) : View
@@ -276,7 +276,7 @@ You may retrieve the "host" of the incoming request via the `host`, `httpHost`, 
 ```php
 namespace App\Http\Controllers;
 
-use Clicalmani\Foundation\Http\Requests\Request;
+use Clicalmani\Foundation\Http\Request;
 use Clicalmani\Foundation\Resources\View;
 
 class HostController extends Controller
@@ -284,7 +284,7 @@ class HostController extends Controller
     /**
      * Handle the incoming request.
      *
-     * @param  \Clicalmani\Foundation\Http\Requests\Request  $request
+     * @param  \Clicalmani\Foundation\Http\Request  $request
      * @return \Clicalmani\Foundation\Resources\View
      */
     public function showHost(Request $request) : View
@@ -311,7 +311,7 @@ Here is an example of how to use this method in a controller:
 ```php
 namespace App\Http\Controllers;
 
-use Clicalmani\Foundation\Http\Requests\Request;
+use Clicalmani\Foundation\Http\Request;
 use Clicalmani\Foundation\Resources\View;
 
 class MethodController extends Controller
@@ -319,7 +319,7 @@ class MethodController extends Controller
     /**
      * Handle the incoming request.
      *
-     * @param  \Clicalmani\Foundation\Http\Requests\Request  $request
+     * @param  \Clicalmani\Foundation\Http\Request  $request
      * @return \Clicalmani\Foundation\Resources\View
      */
     public function showMethod(Request $request) : View
@@ -343,7 +343,7 @@ You may retrieve a request header from the `Request` instance using the `header`
 ```php
 namespace App\Http\Controllers;
 
-use Clicalmani\Foundation\Http\Requests\Request;
+use Clicalmani\Foundation\Http\Request;
 use Clicalmani\Foundation\Resources\View;
 
 class HeaderController extends Controller
@@ -351,7 +351,7 @@ class HeaderController extends Controller
     /**
      * Handle the incoming request.
      *
-     * @param  \Clicalmani\Foundation\Http\Requests\Request  $request
+     * @param  \Clicalmani\Foundation\Http\Request  $request
      * @return \Clicalmani\Foundation\Resources\View
      */
     public function showHeader(Request $request) : View
@@ -372,7 +372,7 @@ For convenience, the `bearerToken` method may be used to retrieve a bearer token
 ```php
 namespace App\Http\Controllers;
 
-use Clicalmani\Foundation\Http\Requests\Request;
+use Clicalmani\Foundation\Http\Request;
 use Clicalmani\Foundation\Resources\View;
 
 class TokenController extends Controller
@@ -380,7 +380,7 @@ class TokenController extends Controller
     /**
      * Handle the incoming request.
      *
-     * @param  \Clicalmani\Foundation\Http\Requests\Request  $request
+     * @param  \Clicalmani\Foundation\Http\Request  $request
      * @return \Clicalmani\Foundation\Resources\View
      */
     public function showToken(Request $request) : View
@@ -405,7 +405,7 @@ Here is an example of how to use the `ip` method in a controller:
 ```php
 namespace App\Http\Controllers;
 
-use Clicalmani\Foundation\Http\Requests\Request;
+use Clicalmani\Foundation\Http\Request;
 use Clicalmani\Foundation\Resources\View;
 
 class IpController extends Controller
@@ -413,7 +413,7 @@ class IpController extends Controller
     /**
      * Handle the incoming request.
      *
-     * @param  \Clicalmani\Foundation\Http\Requests\Request  $request
+     * @param  \Clicalmani\Foundation\Http\Request  $request
      * @return \Clicalmani\Foundation\Resources\View
      */
     public function showIp(Request $request) : View
@@ -436,7 +436,7 @@ Tonka provides several methods for inspecting the incoming request's requested c
 ```php
 namespace App\Http\Controllers;
 
-use Clicalmani\Foundation\Http\Requests\Request;
+use Clicalmani\Foundation\Http\Request;
 use Clicalmani\Foundation\Resources\View;
 
 class ContentTypeController extends Controller
@@ -444,7 +444,7 @@ class ContentTypeController extends Controller
     /**
      * Handle the incoming request.
      *
-     * @param  \Clicalmani\Foundation\Http\Requests\Request  $request
+     * @param  \Clicalmani\Foundation\Http\Request  $request
      * @return \Clicalmani\Foundation\Resources\View
      */
     public function showContentTypes(Request $request) : View
@@ -666,7 +666,7 @@ Here is an example of how to set trusted proxies in the `AppServiceProvider` cla
 <?php
 namespace App\Providers;
 
-use Clicalmani\Foundation\Http\Requests\Request;
+use Clicalmani\Foundation\Http\Request;
 use Clicalmani\Foundation\Providers\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -695,7 +695,7 @@ You can also configure which headers should be trusted by the application. This 
 Here is an example of how to configure trusted headers:
 
 ```php
-use Clicalmani\Foundation\Http\Requests\Request;
+use Clicalmani\Foundation\Http\Request;
 
 Request::setTrustedHeaderNames([
     Request::HEADER_FORWARDED => 'X-Forwarded-For',
@@ -715,7 +715,7 @@ Here is an example of middleware that verify trusted proxies and headers:
 ```php
 namespace App\Http\Middleware;
 
-use Clicalmani\Foundation\Http\Requests\Request;
+use Clicalmani\Foundation\Http\Request;
 use Closure;
 
 class TrustProxies
@@ -754,7 +754,7 @@ Here is an example of how to set trusted hosts in your application:
 <?php
 namespace App\Providers;
 
-use Clicalmani\Foundation\Http\Requests\Request;
+use Clicalmani\Foundation\Http\Request;
 use Clicalmani\Foundation\Providers\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -783,7 +783,7 @@ Here is an example of middleware that verify trusted hosts:
 ```php
 namespace App\Http\Middleware;
 
-use Clicalmani\Foundation\Http\Requests\Request;
+use Clicalmani\Foundation\Http\Request;
 use Closure;
 
 class TrustHosts
