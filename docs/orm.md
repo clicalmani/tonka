@@ -2709,7 +2709,7 @@ class Kernel
 
 ### Using the Custom Validator
 
-To use the custom validator in your model entity, you can pass the validator rule to `Validate` on the entity property.
+To use the custom validator in your model entity, you can pass the validator rule to `Validate` class on the entity property.
 
 Here is an example of how to use the custom validator in a model entity:
 
