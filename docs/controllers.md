@@ -188,7 +188,7 @@ use App\Http\Middlewares\PreventRouteTampering;
 
 Route::get('/users', [UserController::class, 'index'])->middleware('auth');
 Route::get('/users/:id', [UserController::class, 'show'])->middleware('auth');
-Route::get('/users/:id/?:hash', [UserController::class, 'show'])->middleware(PreventRouteTampering::class);
+Route::get('/users/:id/?:hash', [UserController::class, 'show'])->middleware(PreventRouteTempering::class);
 ```
 
 #### Assigning Middleware in Controller Constructor
@@ -1782,7 +1782,7 @@ class UserControllerTest extends ControllerTest
 
 #### Writing Tests
 
-Now that we have a test class, we need to add `HasTest` trait to UserController to make sure that the controller and its test class are interconnected:
+Now that we have a test class, we need to add `HasTest` trait to the `UserController` class to make sure that the controller and its test class are interconnected:
 
 ```php
 <?php
@@ -1839,7 +1839,7 @@ class UserControllerTest extends ControllerTest
 }
 ```
 
-In the generated test class, we wrote tests to verify the `update` method's behavior. An HTTP request will be made to update the user email address.
+In the generated test class, we wrote tests to verify the `update` method's behavior. An HTTP request will be made to update the user's email address.
 
 #### Running Tests
 

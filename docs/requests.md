@@ -18,6 +18,7 @@
     - [Retrieving JSON Input](requests.md?id=retrieving-json-input)
     - [Retrieving Input from a Nested Array](requests.md?id=retrieving-input-from-a-nested-array)
     - [Checking for Input Presence](requests.md?id=checking-for-input-presence)
+- [Validating Requests](requests.md?id=validating-requests)
 - [Files](requests.md?id=files)
     - [Retrieving Uploaded Files](requests.md?id=retrieving-uploaded-files)
     - [Retrieving a Single File](requests.md?id=retrieving-a-single-file)
@@ -569,6 +570,147 @@ if ($request->has(['name', 'email'])) {
     // Logic if both 'name' and 'email' are present
 }
 ```
+
+## Validating Requests
+
+To ensure that incoming requests contain valid data, you can use the `validate` method provided by the `Request` class. This method allows you to define validation rules for the request data.
+
+Here is an example of how to validate a request in a controller:
+
+```php
+namespace App\Http\Controllers;
+
+use Clicalmani\Foundation\Http\Request;
+use Clicalmani\Foundation\Resources\View;
+
+class ValidationController extends Controller
+{
+    /**
+     * Handle the incoming request.
+     *
+     * @param  \Clicalmani\Foundation\Http\Request  $request
+     * @return \Clicalmani\Foundation\Resources\View
+     */
+    public function validateRequest(Request $request) : View
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'age' => 'nullable|integer|min:18',
+        ]);
+
+        // Logic to handle the validated data
+
+        return new View('validation.view');
+    }
+}
+```
+
+In this example, the `validateRequest` method defines validation rules for the `name`, `email`, and `age` fields. If the validation fails, a `ValidationException` will be throw with an error message.
+
+You can also customize the error messages by implementing the `message` method of your [custom validator](orm.md?id=creating-a-custom-validator):
+
+```php
+<?php
+
+namespace App\Validators;
+
+use Clicalmani\Validation\Validator;
+
+class CustomValidator extends Validator
+{
+    /**
+     * Validator argument
+     * 
+     * @var string
+     */
+    protected string $argument = 'custom';
+
+    /**
+     * Get the validation error message.
+     *
+     * @return string
+     */
+    public function message(): string
+    {
+        return sprintf("The %s field must be a valid custom name.", $this->parameter);
+    }
+}
+```
+
+This allows you to provide custom error messages for each validation rule.
+
+For more complex validation logic, you can create a custom request class by extending the `Clicalmani\Foundation\Http\Request` class. This approach allows you to encapsulate the validation logic in a dedicated class.
+
+Here is an example of a custom request class:
+
+```php
+namespace App\Http\Requests;
+
+use Clicalmani\Foundation\Http\Request;
+
+class StoreUserRequest extends Request
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
+    public function authorize() : bool
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return void
+     */
+    public function signatures() : void
+    {
+        $this->merge([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'age' => 'nullable|integer|min:18',
+        ]);
+    }
+}
+```
+
+You can then use this custom request class in your controller:
+
+```php
+namespace App\Http\Controllers;
+
+use App\Http\Requests\StoreUserRequest;
+use Clicalmani\Foundation\Resources\View;
+
+class UserController extends Controller
+{
+    /**
+     * Store a new user.
+     *
+     * @param  \App\Http\Requests\StoreUserRequest  $request
+     * @return \Clicalmani\Foundation\Resources\View
+     */
+    public function store(StoreUserRequest $request) : View
+    {
+        return new View('user.store');
+    }
+}
+```
+
+In this example, the `store` method uses the `StoreUserRequest` class to validate the incoming request data. The validated data is then available for further processing.
+
+You can create a custom request class by running the `make:request` command in the console. Here is an example:
+
+```sh
+php tonka make:request StoreUserRequest
+```
+
+After running this command the `StoreUserRequest.php` file will be available in the `app/Http/Requests` directory.
+
+!> Once a custom request class is used in a controller method, the Tonka service container automatically invoke the `validate` method after automatically injecting the class.
 
 ## Files
 
