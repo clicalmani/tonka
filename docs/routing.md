@@ -29,7 +29,7 @@ To write the most basic Tonka route, you can use the `Route::get` method to defi
 
 ```php
 Route::get('/basic', function() {
-    return 'This is a basic route!';
+    return response()->send('This is a basic route!');
 });
 ```
 
@@ -70,7 +70,7 @@ For example, to define a route that responds to a `POST` request, you can use:
 
 ```php
 Route::post('/example', function() { 
-    return 'This is a POST route!'; 
+    return response()->send('This is a POST route!'); 
 });
 ```
 
@@ -117,7 +117,7 @@ In Tonka route parameters are dynamic and allows you to create variable paramete
 
 ```php
 Route::get('/:entity/:id', function (string $entity, int $id) {
-    return "Entity: $entity, ID: $id";
+    return response()->send("Entity: $entity, ID: $id");
 });
 ```
 
@@ -127,7 +127,7 @@ Tonka route parameters are specified by placing two dots `(:)` before the parame
 
 ```php
 Route::get('/user/:user_id', function(int $user_id) {
-    return 'User ID: ' . $user_id;
+    return response()->send('User ID: ' . $user_id);
 });
 ```
 
@@ -139,7 +139,7 @@ Sometimes you will need to capture segments of the URI within your route. For ex
 
 ```php
 Route::get('/user/:id', function (int $id) {
-    return "User ID: $id";
+    return response()->send("User ID: $id");
 });
 ```
 
@@ -156,7 +156,7 @@ Route parameters with same root are treated the same for the same HTTP verb. The
 ```php
 <?php
 Route::get('/users/:user_id', function(int $user_id) {
-    return 'User ID: ' . $user_id;
+    return response()->send('User ID: ' . $user_id);
 });
 ```
 
@@ -185,7 +185,7 @@ Occasionally you may need to specify a route parameter that may not always be pr
 
 ```php
 Route::get('/user/?:name', function (?string $name = null) {
-    return $name;
+    return response()->send($name);
 });
 ```
 
@@ -197,7 +197,7 @@ You can also apply validation constraints to your route parameters to ensure the
 
 ```php
 Route::get('/:entity/:id', function (string $entity, int $id) {
-    return "Entity: $entity, ID: $id";
+    return response()->send("Entity: $entity, ID: $id");
 })->where('entity', 'required|string')->where('id', 'required|number');
 ```
 
@@ -207,23 +207,23 @@ Tonka provides several built-in validators, including `email` validator, `id` va
 
 ```php
 Route::get('/user/:id', function (int $id) {
-    return "User ID $id";
+    return response()->send("User ID $id");
 })->where('id', 'required|number');
 
 Route::get('/user/:id', function (int $id) {
-    return "User ID $id";
+    return response()->send("User ID $id");
 })->where('id', 'required|id|model:user');
 
 Route::get('/user/:email', function (string $email) {
-    return "User Email $email";
+    return response()->send("User Email $email");
 })->where('email', 'required|email');
 
 Route::get('/post/:category', function (string $category) {
-    return "Post category $category";
+    return response()->send("Post category $category");
 })->where('category', 'required|enum|list:football,handball,bascketball');
 
 Route::get('/post/:date', function (string $date) {
-    return "Post Date $date";
+    return response()->send("Post Date $date");
 })->where('date', 'required|datetime|format:Y-m-d');
 ```
 
@@ -237,7 +237,7 @@ To prevent route tempering, you can use route constraints and middleware to ensu
 use App\Http\Middlewares\PreventRouteTampering;
 
 Route::get('/user/:id/:hash', function (int $id) {
-    return "User ID $id";
+    return response()->send("User ID $id");
 })->where('id', 'required|id|model:user')->middleware(PreventRouteTampering::class);
 ```
 
@@ -422,10 +422,10 @@ Route::middleware('auth')->group(function () {
 
 Route::get('/current-route', function () {
     if (Route::current()->named('dashboard')) {
-        return 'This is the dashboard route';
+        return response()->send('This is the dashboard route');
     }
 
-    return 'This is not the dashboard route';
+    return response()->send('This is not the dashboard route');
 });
 ```
 
@@ -578,7 +578,7 @@ You can apply validation rules directly to your route parameters using the `wher
 
 ```php
 Route::get('/user/:id', function (int $id) {
-    return "User ID $id";
+    return response()->send("User ID $id");
 })->where('id', 'required|number|min:1');
 ```
 

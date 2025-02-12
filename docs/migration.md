@@ -64,7 +64,8 @@ use Clicalmani\Foundation\Routing\Route;
 use Clicalmani\Foundation\Support\Facades\Tonka;
 
 Route::get('/migrate', function() {
-    return Tonka::migrateFresh( time() );
+    $success = Tonka::migrateFresh( time() );
+    return response()->send($success);
 });
 ```
 
