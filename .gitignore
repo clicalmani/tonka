@@ -2,10 +2,6 @@
 composer.lock
 package-lock.json
 /vendor
+/docs
 .env
-public/uploads
-public/downloads
-storage/uploads/*
-storage/uploads/profile/*
-storage/downloads/*
 storage/framework
