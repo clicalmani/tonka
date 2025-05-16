@@ -48,7 +48,6 @@ class RouteServiceProvider extends ServiceProvider
         /**
          * Global patterns
          */
-        
-        // ...
+        // Route::pattern('id', '[0-9]+');
     }
 }

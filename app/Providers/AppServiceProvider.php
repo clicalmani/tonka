@@ -1,7 +1,6 @@
 <?php
 namespace App\Providers;
 
-use Carbon\Carbon;
 use Clicalmani\Foundation\Providers\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
