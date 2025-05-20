@@ -64,6 +64,7 @@ return [
     */
 
     'url' => env('APP_URL', 'http://localhost'),
+    'asset_url' => env('ASSET_URL'),
 
     /*
     |--------------------------------------------------------------------------
@@ -132,7 +133,6 @@ return [
         /*
          * Tonka Framework Service Providers...
          */
-        Clicalmani\Foundation\Providers\EnvServiceProvider::class,
         Clicalmani\Foundation\Auth\AuthServiceProvider::class,
         Clicalmani\Foundation\Providers\HelpersServiceProvider::class,
         Clicalmani\Foundation\Auth\EncryptionServiceProvider::class,
