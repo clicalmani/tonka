@@ -12,8 +12,7 @@
         "clicalmani/psr7": "^1.0",
         "clicalmani/routing": ">=1.0",
         "clicalmani/validation": "^2.0",
-        "clicalmani/xpower": ">=1.2.1",
-        "symfony/console": "^6.3"
+        "clicalmani/xpower": ">=1.2.1"
     },
     "autoload": {
         "psr-4": {
