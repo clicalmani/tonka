@@ -32,6 +32,8 @@ class Authenticator extends Middleware
      */
     public function boot() : void
     {
-        $this->include('auth');
+        /**
+         * TODO
+         */
     }
 }

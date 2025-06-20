@@ -29,13 +29,13 @@ return [
     | choice installed on your machine before you begin development.
     |
     */
-    
+
     'connections' => [
 
         'sqlite' => [
             'driver' => 'sqlite',
             'url' => env('DATABASE_URL'),
-            'database' => env('DB_DATABASE', ''),
+            'database' => env('DB_DATABASE', database_path('database.sqlite')),
             'prefix' => '',
             'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
         ],
@@ -44,9 +44,9 @@ return [
             'driver'    => 'mysql',
             'host'      => env('DB_HOST', '127.0.0.1'),
             'port'      => env('DB_PORT', '3306'),
-            'database'  => env('DB_NAME', ''),
-            'username'  => env('DB_USER', ''),
-            'password'  => env('DB_PASSWORD', ''),
+            'database'      => env('DB_NAME', ''),
+            'username'      => env('DB_USER', ''),
+            'password'      => env('DB_PASSWORD', ''),
             'charset'   => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_520_ci',
             'prefix'    => env('DB_TABLE_PREFIX', ''),
@@ -62,6 +62,8 @@ return [
             'username' => env('DB_USERNAME', 'forge'),
             'password' => env('DB_PASSWORD', ''),
             'charset' => 'utf8',
+            'collation' => 'default',
+            'engine' => null,
             'prefix' => '',
             'prefix_indexes' => true,
             'search_path' => 'public',
@@ -77,6 +79,8 @@ return [
             'username' => env('DB_USERNAME', 'forge'),
             'password' => env('DB_PASSWORD', ''),
             'charset' => 'utf8',
+            'collation' => 'SQL_Latin1_General_CP1_CI_AS',
+            'engine' => null,
             'prefix' => '',
             'prefix_indexes' => true,
             // 'encrypt' => env('DB_ENCRYPT', 'yes'),

@@ -10,7 +10,7 @@ class User extends Elegant
      *
      * @var string $table Table name
      */
-    protected $table = "user";
+    protected $table = "users";
 
     /**
      * Model entity
@@ -25,7 +25,7 @@ class User extends Elegant
      *
      * @var string|array $primary_keys Table primary key.
      */
-    protected $primaryKey = "user_id";
+    protected $primaryKey = "id";
 
     /**
      * Constructor 

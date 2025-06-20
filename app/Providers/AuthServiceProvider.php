@@ -3,13 +3,13 @@ namespace App\Providers;
 
 use Clicalmani\Database\DB;
 use Clicalmani\Foundation\Auth\Authenticate;
-use Clicalmani\Foundation\Http\Request;
+use Clicalmani\Foundation\Http\Requests\RequestInterface;
 
 class AuthServiceProvider extends Authenticate
 {
 	protected string $userModel = \App\Models\User::class;
 
-	public function getConnectedUserID(?Request $request) : mixed
+	public function getConnectedUserID(?RequestInterface $request) : mixed
 	{
 		if ($payload = verify_token($request->bearerToken())) {
 			return (int) json_decode($payload->jti);

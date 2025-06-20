@@ -18,7 +18,7 @@ class UserEntity extends Entity
         nullable: false,
         autoIncrement: true
     ), PrimaryKey]
-    public Integer $user_id;
+    public Integer $id;
 
     #[Property(
         length: 191,

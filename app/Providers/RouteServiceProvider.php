@@ -2,7 +2,7 @@
 namespace App\Providers;
 
 use Clicalmani\Foundation\Providers\RouteServiceProvider as ServiceProvider;
-use Clicalmani\Foundation\Routing\Route;
+use Clicalmani\Foundation\Support\Facades\Route;
 
 class RouteServiceProvider extends ServiceProvider
 {

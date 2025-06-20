@@ -2,8 +2,8 @@
 namespace App\Http\Middlewares;
 
 use Clicalmani\Foundation\Http\Middlewares\JWTAuth;
-use Clicalmani\Foundation\Http\Request;
-use Clicalmani\Foundation\Http\Response;
+use Clicalmani\Foundation\Http\Requests\RequestInterface;
+use Clicalmani\Foundation\Http\ResponseInterface;
 
 class Tokenizer extends JWTAuth 
 {
@@ -29,6 +29,8 @@ class Tokenizer extends JWTAuth
      */
     public function boot() : void
     {
-        $this->container->inject(fn() => routes_path('/auth.php'));
+        /**
+         * TODO
+         */
     }
 }

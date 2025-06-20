@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'allowed_origin' => @ $_SERVER['HTTP_ORIGIN'] ?? '*',
+    'allowed_origin' => '*',
 
     'allowed_methods' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
 
