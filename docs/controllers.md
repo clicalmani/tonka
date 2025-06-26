@@ -61,8 +61,8 @@ Here is an example of a basic controller class:
 
 namespace App\Http\Controllers;
 
-use Clicalmani\Foundation\Http\Request;
-use Clicalmani\Foundation\Http\RequestController as Controller;
+use Clicalmani\Foundation\Http\RequestInterface as Request;
+use use Clicalmani\Foundation\Acme\Controller;
 
 class UserController extends Controller
 {
@@ -139,15 +139,15 @@ If you have a controller that only handles a single action, you may place that s
 
 namespace App\Http\Controllers;
 
-use Clicalmani\Foundation\Http\Request;
-use Clicalmani\Foundation\Http\RequestController as Controller;
+use Clicalmani\Foundation\Http\RequestInterface as Request;
+use use Clicalmani\Foundation\Acme\Controller;
 
 class ShowProfileController extends Controller
 {
     /**
      * Handle the incoming request.
      *
-     * @param  \Clicalmani\Foundation\Http\Request  $request
+     * @param  \Clicalmani\Foundation\Http\RequestInterface  $request
      * @param  int  $id
      * @return \Clicalmani\Foundation\Http\Response
      */
@@ -200,8 +200,8 @@ Alternatively, you can assign middleware within your controller's constructor. T
 
 namespace App\Http\Controllers;
 
-use Clicalmani\Foundation\Http\Request;
-use Clicalmani\Foundation\Http\RequestController as Controller;
+use Clicalmani\Foundation\Http\RequestInterface as Request;
+use use Clicalmani\Foundation\Acme\Controller;
 use Clicalmani\Foundation\Traits\HasMiddleware;
 
 class UserController extends Controller
@@ -225,7 +225,7 @@ Using middleware in your controllers helps to keep your route files clean and al
 
 ### Resource Controllers
 
-Tonka provides an easy way to define resourceful routes to a controller. Resource controllers allow you to quickly create a controller that handles all CRUD operations for a given model.
+**Tonka** provides an easy way to define resourceful routes to a controller. Resource controllers allow you to quickly create a controller that handles all CRUD operations for a given model.
 
 To create a resource controller, you can use the `make:controller` console command with the `--resource` option:
 
@@ -242,8 +242,8 @@ Here is an example of a resource controller:
 
 namespace App\Http\Controllers;
 
-use Clicalmani\Foundation\Http\Request;
-use Clicalmani\Foundation\Http\RequestController as Controller;
+use Clicalmani\Foundation\Http\RequestInterface as Request;
+use use Clicalmani\Foundation\Acme\Controller;
 user App\Models\User;
 
 class UserController extends Controller
@@ -251,9 +251,9 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Clicalmani\Foundation\Resources\View
+     * @return \Clicalmani\Foundation\Resources\ViewInterface
      */
-    public function index() : View
+    public function index() : ViewInterface
     {
         // Implement the resource listing code
 
@@ -263,10 +263,10 @@ class UserController extends Controller
     /**
      * Create the specified resource.
      *
-     * @param  \Clicalmani\Foundation\Http\Request  $request
-     * @return \Clicalmani\Foundation\Resources\View
+     * @param  \Clicalmani\Foundation\Http\RequestInterface  $request
+     * @return \Clicalmani\Foundation\Resources\ViewInterface
      */
-    public function create(Request $request) : View
+    public function create(Request $request) : ViewInterface
     {
         // Implement the resource creation code
 
@@ -276,8 +276,8 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Clicalmani\Foundation\Http\Request  $request
-     * @return \Clicalmani\Foundation\Resources\View
+     * @param  \Clicalmani\Foundation\Http\RequestInterface  $request
+     * @return \Clicalmani\Foundation\Resources\ViewInterface
      */
     public function store(Request $request)
     {
@@ -287,11 +287,11 @@ class UserController extends Controller
     /**
      * Show the specified resource.
      *
-     * @param  \Clicalmani\Foundation\Http\Request  $request
+     * @param  \Clicalmani\Foundation\Http\RequestInterface  $request
      * @param int $id
-     * @return \Clicalmani\Foundation\Resources\View
+     * @return \Clicalmani\Foundation\Resources\ViewInterface
      */
-    public function show(Request $request, int $id) : View
+    public function show(Request $request, int $id) : ViewInterface
     {
         // Implement the resource view code
 
@@ -301,11 +301,11 @@ class UserController extends Controller
     /**
      * Edit the specified resource.
      *
-     * @param  \Clicalmani\Foundation\Http\Request  $request
+     * @param  \Clicalmani\Foundation\Http\RequestInterface  $request
      * @param int $id
-     * @return \Clicalmani\Foundation\Resources\View
+     * @return \Clicalmani\Foundation\Resources\ViewInterface
      */
-    public function edit(Request $request, int $id) : View
+    public function edit(Request $request, int $id) : ViewInterface
     {
         // Implement the resource edit code
 
@@ -315,9 +315,9 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Clicalmani\Foundation\Http\Request  $request
+     * @param  \Clicalmani\Foundation\Http\RequestInterface  $request
      * @param  int $id
-     * @return \Clicalmani\Foundation\Resources\View
+     * @return \Clicalmani\Foundation\Resources\ViewInterface
      */
     public function update(Request $request, int $id)
     {
@@ -327,9 +327,9 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \Clicalmani\Foundation\Http\Request  $request
+     * @param  \Clicalmani\Foundation\Http\RequestInterface  $request
      * @param int $id 
-     * @return \Clicalmani\Foundation\Resources\View
+     * @return \Clicalmani\Foundation\Resources\ViewInterface
      */
     public function destroy(Request $request, int $id)
     {
@@ -360,7 +360,7 @@ Using resource controllers and routes can help you quickly set up CRUD operation
 
 #### Customizing Missing Model Behavior
 
-When handling routes that involve models, you may want to customize the behavior when a model is not found. By default, Tonka will return a 404 HTTP response if an implicit model binding fails. However, you can customize this behavior by calling the `missing()` method on the route or by defining a `resolveRouteBinding` method on your model.
+When handling routes that involve models, you may want to customize the behavior when a model is not found. By default, **Tonka** will return a 404 HTTP response if an implicit model binding fails. However, you can customize this behavior by calling the `missing()` method on the route or by defining a `resolveRouteBinding` method on your model.
 
 For exemple, let's customize the behavior for the `User` model by calling the `missing` method:
 
@@ -380,10 +380,10 @@ We can also do the same by defining the `resolveRouteBinding` method:
 
 namespace App\Models;
 
-use Clicalmani\Database\Factory\Models\Model;
+use Clicalmani\Database\Factory\Models\Elegant;
 use Clicalmani\Foundation\Exceptions\ModelNotFoundException;
 
-class User extends Model
+class User extends Elegant
 {
     /**
      * Retrieve the model for a bound value.
@@ -435,7 +435,7 @@ By customizing the missing model behavior, you can provide more informative resp
 
 #### Soft Deleted Models
 
-When working with models that are soft deleted, you may want to customize the behavior to include soft deleted models in your queries or handle them differently. Tonka provides a convenient way to work with soft deleted models using the `SoftDelete` trait.
+When working with models that are soft deleted, you may want to customize the behavior to include soft deleted models in your queries or handle them differently. **Tonka** provides a convenient way to work with soft deleted models using the `SoftDelete` trait.
 
 ##### Enabling Soft Deletes
 
@@ -449,7 +449,7 @@ namespace App\Models;
 use Clicalmani\Foundation\Database\Eloquent\Model;
 use Clicalmani\Database\Traits\SoftDelete;
 
-class User extends Model
+class User extends Elegant
 {
     use SoftDelete;
 
@@ -541,16 +541,16 @@ For example, let's update the `UserController` to use route model binding for th
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Clicalmani\Foundation\Http\Request;
-use Clicalmani\Foundation\Http\RequestController as Controller;
-use \Clicalmani\Foundation\Resources\View;
+use Clicalmani\Foundation\Http\RequestInterface as Request;
+use use Clicalmani\Foundation\Acme\Controller;
+use \Clicalmani\Foundation\Resources\ViewInterface;
 
 class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Clicalmani\Foundation\Resources\View
+     * @return \Clicalmani\Foundation\Resources\ViewInterface
      */
     public function index()
     {
@@ -562,9 +562,9 @@ class UserController extends Controller
      *
      * @param \Clicalmani\Foundation\Http\Request $request
      * @param \App\Models\User $user
-     * @return \Clicalmani\Foundation\Resources\View
+     * @return \Clicalmani\Foundation\Resources\ViewInterface
      */
-    public function create(Request $request, User $user) : View
+    public function create(Request $request, User $user) : ViewInterface
     {
         // Implement the resource create here
 
@@ -576,7 +576,7 @@ class UserController extends Controller
      *
      * @param \Clicalmani\Foundation\Http\Request $request
      * @param \App\Models\User $user
-     * @return \Clicalmani\Foundation\Resources\View
+     * @return \Clicalmani\Foundation\Resources\ViewInterface
      */
     public function store(Request $request, User $user)
     {
@@ -589,9 +589,9 @@ class UserController extends Controller
      * @param \Clicalmani\Foundation\Http\Request $request
      * @param \App\Models\User $user
      * @param int $id
-     * @return \Clicalmani\Foundation\Resources\View
+     * @return \Clicalmani\Foundation\Resources\ViewInterface
      */
-    public function show(Request $request, User $user, int $id) : View
+    public function show(Request $request, User $user, int $id) : ViewInterface
     {
         // Implement the resource view here
 
@@ -604,9 +604,9 @@ class UserController extends Controller
      * @param \Clicalmani\Foundation\Http\Request $request
      * @param \App\Models\User $user
      * @param int $id
-     * @return \Clicalmani\Foundation\Resources\View
+     * @return \Clicalmani\Foundation\Resources\ViewInterface
      */
-    public function edit(Request $request, User $user, int $id) : View
+    public function edit(Request $request, User $user, int $id) : ViewInterface
     {
         // Implement the resource edit here
 
@@ -619,7 +619,7 @@ class UserController extends Controller
      * @param \Clicalmani\Foundation\Http\Request $request
      * @param \App\Models\User $user
      * @param  int $id
-     * @return \Clicalmani\Foundation\Resources\View
+     * @return \Clicalmani\Foundation\Resources\ViewInterface
      */
     public function update(Request $request, User $user, int $id)
     {
@@ -632,7 +632,7 @@ class UserController extends Controller
      * @param \Clicalmani\Foundation\Http\Request $request
      * @param \App\Models\User $user
      * @param int $id 
-     * @return \Clicalmani\Foundation\Resources\View
+     * @return \Clicalmani\Foundation\Resources\ViewInterface
      */
     public function destroy(Request $request, User $user, int $id)
     {
@@ -670,7 +670,7 @@ Here is an example of the generated form request classes:
 
 namespace App\Http\Requests;
 
-use Clicalmani\Foundation\Http\Request;
+use Clicalmani\Foundation\Http\RequestInterface as Request;
 
 class StoreUserRequest extends Request
 {
@@ -696,7 +696,7 @@ class StoreUserRequest extends Request
 
 namespace App\Http\Requests;
 
-use Clicalmani\Foundation\Http\Request;
+use Clicalmani\Foundation\Http\RequestInterface as Request;
 
 class UpdateUserRequest extends Request
 {
@@ -726,7 +726,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
-use Clicalmani\Foundation\Http\RequestController as Controller;
+use use Clicalmani\Foundation\Acme\Controller;
 
 class UserController extends Controller
 {
@@ -776,7 +776,7 @@ Using partial resource routes allows you to have more control over which routes 
 
 ##### API Resource Routes
 
-When building APIs, you may want to define resource routes that return JSON responses instead of views. Tonka provides a convenient way to define API resource routes using the `apiResource` method.
+When building APIs, you may want to define resource routes that return JSON responses instead of views. **Tonka** provides a convenient way to define API resource routes using the `apiResource` method.
 
 To create an API resource controller, you can use the `make:controller` console command with the `--api` option:
 
@@ -792,8 +792,8 @@ Here is an example of an API resource controller class:
 <?php 
 namespace App\Http\Controllers;
 
-use Clicalmani\Foundation\Http\RequestController as Controller;
-use Clicalmani\Foundation\Http\Request;
+use use Clicalmani\Foundation\Acme\Controller;
+use Clicalmani\Foundation\Http\RequestInterface as Request;
 use Clicalmani\Foundation\Http\Response;
 
 class UserController extends Controller
@@ -801,7 +801,7 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Clicalmani\Foundation\Http\Response\JsonResponse
+     * @return \Clicalmani\Foundation\Http\Response\JsonResponseInterface
      */
     public function index()
     {
@@ -811,8 +811,8 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Clicalmani\Foundation\Http\Request  $request
-     * @return \Clicalmani\Foundation\Http\Response\JsonResponse
+     * @param  \Clicalmani\Foundation\Http\RequestInterface  $request
+     * @return \Clicalmani\Foundation\Http\Response\JsonResponseInterface
      */
     public function store(Request $request)
     {
@@ -822,8 +822,8 @@ class UserController extends Controller
     /**
      * Show the specified resource.
      *
-     * @param  \Clicalmani\Foundation\Http\Request  $request
-     * @return \Clicalmani\Foundation\Http\Response\JsonResponse
+     * @param  \Clicalmani\Foundation\Http\RequestInterface  $request
+     * @return \Clicalmani\Foundation\Http\Response\JsonResponseInterface
      */
     public function show(Request $request)
     {
@@ -833,8 +833,8 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Clicalmani\Foundation\Http\Request  $request
-     * @return \Clicalmani\Foundation\Http\Response\JsonResponse
+     * @param  \Clicalmani\Foundation\Http\RequestInterface  $request
+     * @return \Clicalmani\Foundation\Http\Response\JsonResponseInterface
      */
     public function update(Request $request)
     {
@@ -844,8 +844,8 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \Clicalmani\Foundation\Http\Request  $request
-     * @return \Clicalmani\Foundation\Http\Response\JsonResponse
+     * @param  \Clicalmani\Foundation\Http\RequestInterface  $request
+     * @return \Clicalmani\Foundation\Http\Response\JsonResponseInterface
      */
     public function destroy(Request $request)
     {
@@ -899,9 +899,9 @@ In your `PhotoController`, you can access the parent user model through route pa
 <?php 
 namespace App\Http\Controllers;
 
-use Clicalmani\Foundation\Http\RequestController as Controller;
-use Clicalmani\Foundation\Http\Request;
-use \Clicalmani\Foundation\Resources\View;
+use use Clicalmani\Foundation\Acme\Controller;
+use Clicalmani\Foundation\Http\RequestInterface as Request;
+use \Clicalmani\Foundation\Resources\ViewInterface;
 use App\Models\User;
 use App\Models\Photo;
 
@@ -910,7 +910,7 @@ class PhotoController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Clicalmani\Foundation\Resources\View
+     * @return \Clicalmani\Foundation\Resources\ViewInterface
      */
     public function index()
     {
@@ -921,9 +921,9 @@ class PhotoController extends Controller
      * Create the specified resource in storage.
      *
      * @param \Clicalmani\Foundation\Http\Request $request
-     * @return \Clicalmani\Foundation\Resources\View
+     * @return \Clicalmani\Foundation\Resources\ViewInterface
      */
-    public function create(Request $request) : View
+    public function create(Request $request) : ViewInterface
     {
         // Implement the resource create here
 
@@ -934,7 +934,7 @@ class PhotoController extends Controller
      * Store a newly created resource in storage.
      *
      * @param \Clicalmani\Foundation\Http\Request $request
-     * @return \Clicalmani\Foundation\Resources\View
+     * @return \Clicalmani\Foundation\Resources\ViewInterface
      */
     public function store(Request $request)
     {
@@ -948,9 +948,9 @@ class PhotoController extends Controller
      * @param \App\Models\Photo $photo
      * @param int $user_id
      * @param int $photo_id
-     * @return \Clicalmani\Foundation\Resources\View
+     * @return \Clicalmani\Foundation\Resources\ViewInterface
      */
-    public function show(User $user, Photo $photo, int $user_id, int $photo_id) : View
+    public function show(User $user, Photo $photo, int $user_id, int $photo_id) : ViewInterface
     {
         // Implement the resource view here
 
@@ -964,9 +964,9 @@ class PhotoController extends Controller
      * @param \App\Models\Photo $photo
      * @param int $user_id
      * @param int $photo_id
-     * @return \Clicalmani\Foundation\Resources\View
+     * @return \Clicalmani\Foundation\Resources\ViewInterface
      */
-    public function edit(User $user, Photo $photo, int $user_id, int $photo_id) : View
+    public function edit(User $user, Photo $photo, int $user_id, int $photo_id) : ViewInterface
     {
         // Implement the resource edit here
 
@@ -980,7 +980,7 @@ class PhotoController extends Controller
      * @param \App\Models\Photo $photo
      * @param  int $user_id
      * @param int $photo_id
-     * @return \Clicalmani\Foundation\Resources\View
+     * @return \Clicalmani\Foundation\Resources\ViewInterface
      */
     public function update(User $user, Photo $photo, int $user_id, int $photo_id)
     {
@@ -994,7 +994,7 @@ class PhotoController extends Controller
      * @param \App\Models\Photo $photo
      * @param int $user_id 
      * @param int $photo_id
-     * @return \Clicalmani\Foundation\Resources\View
+     * @return \Clicalmani\Foundation\Resources\ViewInterface
      */
     public function destroy(User $user, Photo $photo, int $user_id, int $photo_id)
     {
@@ -1031,8 +1031,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Photo;
-use Clicalmani\Foundation\Http\Request;
-use Clicalmani\Foundation\Http\RequestController as Controller;
+use Clicalmani\Foundation\Http\RequestInterface as Request;
+use use Clicalmani\Foundation\Acme\Controller;
 
 class PhotoController extends Controller
 {
@@ -1107,8 +1107,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Photo;
-use Clicalmani\Foundation\Http\Request;
-use Clicalmani\Foundation\Http\RequestController as Controller;
+use Clicalmani\Foundation\Http\RequestInterface as Request;
+use use Clicalmani\Foundation\Acme\Controller;
 
 class PhotoController extends Controller
 {
@@ -1153,7 +1153,7 @@ Using shallow nesting helps to simplify your route definitions and makes your ro
 
 ##### Naming Resource Routes
 
-When defining resource routes, you may want to customize the names of the routes. Tonka allows you to specify custom names for your resource routes using the `names` method.
+When defining resource routes, you may want to customize the names of the routes. **Tonka** allows you to specify custom names for your resource routes using the `names` method.
 
 For example, let's define resource routes for the `UserController` with custom names:
 
@@ -1194,7 +1194,7 @@ Using custom names for your resource routes helps to make your route definitions
 
 ##### Localizing Resource URIs
 
-If your application supports multiple languages, you may want to localize the URIs of your resource routes. Tonka allows you to easily localize resource URIs by defining localized route groups.
+If your application supports multiple languages, you may want to localize the URIs of your resource routes. **Tonka** allows you to easily localize resource URIs by defining localized route groups.
 
 For example, let's define localized resource routes for the `UserController`:
 
@@ -1241,8 +1241,8 @@ For example, let's add a custom method to the `UserController` to handle user ac
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Clicalmani\Foundation\Http\Request;
-use Clicalmani\Foundation\Http\RequestController as Controller;
+use Clicalmani\Foundation\Http\RequestInterface as Request;
+use use Clicalmani\Foundation\Acme\Controller;
 
 class UserController extends Controller
 {
@@ -1289,8 +1289,8 @@ Here is an example of a singleton resource controller class:
 namespace App\Http\Controllers;
 
 use App\Models\Settings;
-use Clicalmani\Foundation\Http\Request;
-use Clicalmani\Foundation\Http\RequestController as Controller;
+use Clicalmani\Foundation\Http\RequestInterface as Request;
+use use Clicalmani\Foundation\Acme\Controller;
 
 class SettingsController extends Controller
 {
@@ -1358,8 +1358,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\UserSettings;
-use Clicalmani\Foundation\Http\Request;
-use Clicalmani\Foundation\Http\RequestController as Controller;
+use Clicalmani\Foundation\Http\RequestInterface as Request;
+use use Clicalmani\Foundation\Acme\Controller;
 
 class UserSettingsController extends Controller
 {
@@ -1397,8 +1397,8 @@ For example, let's create a `ProfileController` for managing a user's profile, w
 namespace App\Http\Controllers;
 
 use App\Models\Profile;
-use Clicalmani\Foundation\Http\Request;
-use Clicalmani\Foundation\Http\RequestController as Controller;
+use Clicalmani\Foundation\Http\RequestInterface as Request;
+use use Clicalmani\Foundation\Acme\Controller;
 
 class ProfileController extends Controller
 {
@@ -1475,8 +1475,8 @@ Here is an example of an API singleton resource controller class:
 namespace App\Http\Controllers;
 
 use App\Models\Settings;
-use Clicalmani\Foundation\Http\Request;
-use Clicalmani\Foundation\Http\RequestController as Controller;
+use Clicalmani\Foundation\Http\RequestInterface as Request;
+use use Clicalmani\Foundation\Acme\Controller;
 
 class SettingsController extends Controller
 {
@@ -1515,7 +1515,7 @@ Using API singleton resource controllers and routes can help you manage resource
 
 ### Constructor Injection
 
-Tonka allows you to take advantage of dependency injection in your controllers. You can type-hint dependencies in your controller's constructor, and they will be automatically resolved and injected by the service container.
+**Tonka** allows you to take advantage of dependency injection in your controllers. You can type-hint dependencies in your controller's constructor, and they will be automatically resolved and injected by the service container.
 
 For example, let's inject a repository into a controller:
 
@@ -1525,8 +1525,8 @@ For example, let's inject a repository into a controller:
 namespace App\Http\Controllers;
 
 use App\Repositories\UserRepository;
-use Clicalmani\Foundation\Http\Request;
-use Clicalmani\Foundation\Http\RequestController as Controller;
+use Clicalmani\Foundation\Http\RequestInterface as Request;
+use use Clicalmani\Foundation\Acme\Controller;
 
 class UserController extends Controller
 {
@@ -1553,7 +1553,7 @@ Using constructor injection helps to decouple your controllers from specific imp
 
 ### Method Injection
 
-In addition to constructor injection, Tonka also supports method injection. You can type-hint dependencies in your controller methods, and they will be automatically resolved and injected by the service container.
+In addition to constructor injection, **Tonka** also supports method injection. You can type-hint dependencies in your controller methods, and they will be automatically resolved and injected by the service container.
 
 For example, let's inject a request instance into a controller method:
 
@@ -1563,8 +1563,8 @@ For example, let's inject a request instance into a controller method:
 namespace App\Http\Controllers;
 
 use App\Repositories\UserRepository;
-use Clicalmani\Foundation\Http\Request;
-use Clicalmani\Foundation\Http\RequestController as Controller;
+use Clicalmani\Foundation\Http\RequestInterface as Request;
+use use Clicalmani\Foundation\Acme\Controller;
 
 class UserController extends Controller
 {
@@ -1610,7 +1610,7 @@ You may still type-hint the `Clicalmani\Foundation\Http\Request` and access your
  
 namespace App\Http\Controllers;
  
-use Clicalmani\Foundation\Http\Request;
+use Clicalmani\Foundation\Http\RequestInterface as Request;
  
 class UserController extends Controller
 {
@@ -1630,7 +1630,7 @@ Using method injection allows you to inject dependencies only where they are nee
 
 ## Adding Validation Attribute
 
-To add validation attribute to a controller, you can use the `Clicalmani\Validation\AsValidator` class provided by Tonka ORM. This class will check the request's attributes against the defined validation rules and throw a `ValidationException` if any of the rules are violated.
+To add validation attribute to a controller, you can use the `Clicalmani\Validation\AsValidator` class provided by **Elegant ORM**. This class will check the request's attributes against the defined validation rules and throw a `ValidationException` if any of the rules are violated.
 
 Here is an example of how to add validation to a controller method:
 
@@ -1639,7 +1639,7 @@ Here is an example of how to add validation to a controller method:
 
 namespace App\Http\Controllers;
 
-use Clicalmani\Foundation\Http\RequestController as Controller;
+use use Clicalmani\Foundation\Acme\Controller;
 use Clicalmani\Foundation\Http\Response;
 use Clicalmani\Validation\Exceptions\ValidationException;
 use Clicalmani\Validation\AsValidator;
@@ -1679,7 +1679,7 @@ In this example, the `store` method in the `UserController` class creates a new 
 
 ### Testing Controllers
 
-Tonka provides a simple and intuitive way to test your controllers. You can use the built-in testing tools to simulate HTTP requests and assert the responses. This allows you to ensure that your controllers are handling requests correctly and returning the expected responses.
+**Tonka** provides a simple and intuitive way to test your controllers. You can use the built-in testing tools to simulate HTTP requests and assert the responses. This allows you to ensure that your controllers are handling requests correctly and returning the expected responses.
 
 #### Creating Tests for Controllers
 
@@ -1789,7 +1789,7 @@ Now that we have a test class, we need to add `HasTest` trait to the `UserContro
 
 namespace App\Http\Controllers;
 
-use Clicalmani\Foundation\Http\RequestController as Controller;
+use use Clicalmani\Foundation\Acme\Controller;
 use Clicalmani\Foundation\Traits\HasTest;
 
 class UserController extends Controller
@@ -1843,7 +1843,7 @@ In the generated test class, we wrote tests to verify the `update` method's beha
 
 #### Running Tests
 
-To run your tests, you can use the `test` console command provided by Tonka. This command will execute all the tests in your application and display the results.
+To run your tests, you can use the `test` console command provided by **Tonka**. This command will execute all the tests in your application and display the results.
 
 ```sh
 php tonka test
@@ -1857,7 +1857,7 @@ php tonka test --controller=UserController
 
 #### Using Sequences
 
-When testing controllers, you may need to perform multiple actions at a time. Tonka provides a convenient way to define and execute sequences of actions using the `Sequence` class.
+When testing controllers, you may need to perform multiple actions at a time. **Tonka** provides a convenient way to define and execute sequences of actions using the `Sequence` class.
 
 For example, let's define a sequence of actions to test the `UserController`:
 

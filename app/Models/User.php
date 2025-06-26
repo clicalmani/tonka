@@ -1,7 +1,7 @@
 <?php 
 namespace App\Models;
 
-use Clicalmani\Database\Factory\Models\Elegant;
+use Clicalmani\Foundation\Acme\Model as Elegant;
 
 class User extends Elegant
 {

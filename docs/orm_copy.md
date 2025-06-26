@@ -1322,8 +1322,6 @@ namespace Database\Entities;
 use Clicalmani\Database\DataTypes\Integer;
 use Clicalmani\Database\DataTypes\VarChar;
 use Clicalmani\Database\Factory\Entity;
-use Clicalmani\Database\Factory\PrimaryKey;
-use Clicalmani\Database\Factory\Property;
 
 class UserEntity extends Entity
 {
@@ -1351,15 +1349,14 @@ use Clicalmani\Database\DataTypes\Integer;
 use Clicalmani\Database\DataTypes\Text;
 use Clicalmani\Database\Factory\Entity;
 use Clicalmani\Database\Factory\Index;
-use Clicalmani\Database\Factory\PrimaryKey;
-use Clicalmani\Database\Factory\Property;
-use Clicalmani\Database\Factory\Index;
 
 #[Index(
-    name: 'fk_profiles_users1_idx',
+    name: 'fk_profile_user1_idx',
     key: 'user_id',
-    constraint: 'fk_profiles_users1',
-    references: \App\Models\User::class
+    constraint: 'fk_profile_user1',
+    references: \App\Models\User::class,
+    onUpdate: Index::ON_UPDATE_CASCADE,
+    onDelete: Index::ON_DELETE_CASCADE
 )]
 class ProfileEntity extends Entity
 {
@@ -1383,6 +1380,20 @@ class ProfileEntity extends Entity
     )]
     public Integer $user_id;
 }
+```
+
+```sql
+CREATE TABLE users (
+    id INT PRIMARY KEY,
+    name VARCHAR(255)
+);
+
+CREATE TABLE profiles (
+    id INT PRIMARY KEY,
+    user_id INT,
+    bio TEXT,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
 ```
 
 This schema ensures that each profile is linked to a specific user, enforcing the one-to-one relationship at the database level.
@@ -1435,81 +1446,19 @@ class Post extends Elegant
 
 To implement this relationship in your database, you would typically have a foreign key in the `Comment` table that references the `Post` table:
 
-```php
-<?php
-namespace Database\Entities;
+```sql
+CREATE TABLE posts (
+    id INT PRIMARY KEY,
+    title VARCHAR(255),
+    content TEXT
+);
 
-use Clicalmani\Database\DataTypes\Integer;
-use Clicalmani\Database\DataTypes\VarChar;
-use Clicalmani\Database\DataTypes\Text;
-use Clicalmani\Database\Factory\Entity;
-use Clicalmani\Database\Factory\PrimaryKey;
-use Clicalmani\Database\Factory\Property;
-
-class PostEntity extends Entity
-{
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: true,
-        autoIncrement: true
-    ), PrimaryKey]
-    public Integer $id;
-
-    #[Property(
-        length: 255,
-        nullable: false
-    )]
-    public VarChar $title;
-
-    #[Property(
-        length: 255,
-        nullable: false
-    )]
-    public Text $content;
-}
-```
-```php
-<?php
-namespace Database\Entities;
-
-use Clicalmani\Database\DataTypes\Integer;
-use Clicalmani\Database\DataTypes\VarChar;
-use Clicalmani\Database\DataTypes\Text;
-use Clicalmani\Database\Factory\Entity;
-use Clicalmani\Database\Factory\PrimaryKey;
-use Clicalmani\Database\Factory\Property;
-use Clicalmani\Database\Factory\Index;
-
-#[Index(
-    name: 'fk_comments_posts1_idx',
-    key: 'post_id',
-    constraint: 'fk_comments_posts1',
-    references: \App\Models\Post::class
-)]
-class CommentEntity extends Entity
-{
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: true,
-        autoIncrement: true
-    ), PrimaryKey]
-    public Integer $id;
-
-    #[Property(
-        length: 255,
-        nullable: false
-    )]
-    public Text $content;
-
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false
-    )]
-    public Integer $post_id;
-}
+CREATE TABLE comments (
+    id INT PRIMARY KEY,
+    post_id INT,
+    content TEXT,
+    FOREIGN KEY (post_id) REFERENCES posts(id)
+);
 ```
 
 This schema ensures that each comment is linked to a specific post, enforcing the one-to-many relationship at the database level.
@@ -1578,97 +1527,24 @@ class Role extends Elegant
 
 To implement this relationship in your database, you would typically have a pivot table that references both the `User` and `Role` tables:
 
-```php
-<?php
-namespace Database\Entities;
+```sql
+CREATE TABLE users (
+    id INT PRIMARY KEY,
+    name VARCHAR(255)
+);
 
-use Clicalmani\Database\DataTypes\Integer;
-use Clicalmani\Database\DataTypes\VarChar;
-use Clicalmani\Database\Factory\Entity;
-use Clicalmani\Database\Factory\PrimaryKey;
-use Clicalmani\Database\Factory\Property;
+CREATE TABLE roles (
+    id INT PRIMARY KEY,
+    name VARCHAR(255)
+);
 
-class UserEntity extends Entity
-{
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false,
-        autoIncrement: true
-    ), PrimaryKey]
-    public Integer $id;
-
-    #[Property(
-        length: 255,
-        nullable: false
-    )]
-    public VarChar $name;
-}
-```
-```php
-<?php
-namespace Database\Entities;
-
-use Clicalmani\Database\DataTypes\Integer;
-use Clicalmani\Database\DataTypes\VarChar;
-use Clicalmani\Database\Factory\Entity;
-use Clicalmani\Database\Factory\PrimaryKey;
-use Clicalmani\Database\Factory\Property;
-
-class RoleEntity extends Entity
-{
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false,
-        autoIncrement: true
-    ), PrimaryKey]
-    public Integer $id;
-
-    #[Property(
-        length: 255,
-        nullable: false
-    )]
-    public VarChar $name;
-}
-```
-```php
-<?php
-namespace Database\Entities;
-
-use Clicalmani\Database\DataTypes\Integer;
-use Clicalmani\Database\Factory\Entity;
-use Clicalmani\Database\Factory\PrimaryKey;
-use Clicalmani\Database\Factory\Property;
-use Clicalmani\Database\Factory\Index;
-
-#[PrmaryKey(['user_id', 'role_id']), Index(
-    name: 'fk_role_user_users1_idx',
-    key: 'user_id',
-    constraint: 'fk_role_user_users1',
-    references: \App\Models\User::class
-), Index(
-    name: 'fk_role_user_roles1_idx',
-    key: 'role_id',
-    constraint: 'fk_role_user_roles1',
-    references: \App\Models\Role::class
-)]
-class RoleUserEntity extends Entity
-{
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false
-    )]
-    public Integer $user_id;
-
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false
-    )]
-    public Integer $role_id;
-}
+CREATE TABLE role_user (
+    user_id INT,
+    role_id INT,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (role_id) REFERENCES roles(id),
+    PRIMARY KEY (user_id, role_id)
+);
 ```
 
 This schema ensures that each user can be linked to multiple roles and each role can be linked to multiple users, enforcing the many-to-many relationship at the database level.
@@ -1719,111 +1595,25 @@ class Supplier extends Elegant
 
 To implement this relationship in your database, you would typically have foreign keys in the `User` and `Profile` tables that reference the `Supplier` and `User` tables, respectively:
 
-```php
-<?php
-namespace Database\Entities;
+```sql
+CREATE TABLE suppliers (
+    id INT PRIMARY KEY,
+    name VARCHAR(255)
+);
 
-use Clicalmani\Database\DataTypes\Integer;
-use Clicalmani\Database\DataTypes\VarChar;
-use Clicalmani\Database\Factory\Entity;
-use Clicalmani\Database\Factory\PrimaryKey;
-use Clicalmani\Database\Factory\Property;
+CREATE TABLE users (
+    id INT PRIMARY KEY,
+    supplier_id INT,
+    name VARCHAR(255),
+    FOREIGN KEY (supplier_id) REFERENCES suppliers(id)
+);
 
-class SupplierEntity extends Entity
-{
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false,
-        autoIncrement: true
-    ), PrimaryKey]
-    public Integer $id;
-
-    #[Property(
-        length: 255,
-        nullable: false
-    )]
-    public VarChar $name;
-}
-```
-```php
-<?php
-namespace Database\Entities;
-
-use Clicalmani\Database\DataTypes\Integer;
-use Clicalmani\Database\DataTypes\VarChar;
-use Clicalmani\Database\Factory\Entity;
-use Clicalmani\Database\Factory\PrimaryKey;
-use Clicalmani\Database\Factory\Property;
-use Clicalmani\Database\Factory\Index;
-
-#[Index(
-    name: 'fk_users_suppliers1_idx',
-    key: 'supplier_id',
-    constraint: 'fk_users_suppliers1',
-    references: \App\Models\Supplier::class
-)]
-class UserEntity extends Entity
-{
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false,
-        autoIncrement: true
-    ), PrimaryKey]
-    public Integer $id;
-
-    #[Property(
-        length: 255,
-        nullable: false
-    )]
-    public VarChar $name;
-
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: true
-    )]
-    public Integer $supplier_id;
-}
-```
-```php
-<?php
-namespace Database\Entities;
-
-use Clicalmani\Database\DataTypes\Integer;
-use Clicalmani\Database\DataTypes\Text;
-use Clicalmani\Database\Factory\Entity;
-use Clicalmani\Database\Factory\PrimaryKey;
-use Clicalmani\Database\Factory\Property;
-use Clicalmani\Database\Factory\Index;
-
-#[Index(
-    name: 'fk_profiles_users1_idx',
-    key: 'user_id',
-    constraint: 'fk_profiles_users1',
-    references: \App\Models\User::class
-)]
-class ProfileEntity extends Entity
-{
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false,
-        autoIncrement: true
-    ), PrimaryKey]
-    public Integer $id;
-
-    #[Property]
-    public Text $bio;
-
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false
-    )]
-    public Integer $user_id;
-}
+CREATE TABLE profiles (
+    id INT PRIMARY KEY,
+    user_id INT,
+    bio TEXT,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
 ```
 
 This schema ensures that each profile is linked to a specific user, and each user is linked to a specific supplier, enforcing the "has one through" relationship at the database level.
@@ -1863,121 +1653,26 @@ class User extends Elegant
 
 To implement this relationship in your database, you would typically have foreign keys in the `Role` and `Permission` tables that reference the `User` and `Role` tables, respectively:
 
-```php
-<?php
-namespace Database\Entities;
+```sql
+CREATE TABLE users (
+    id INT PRIMARY KEY,
+    name VARCHAR(255)
+);
 
-use Clicalmani\Database\DataTypes\Integer;
-use Clicalmani\Database\DataTypes\VarChar;
-use Clicalmani\Database\Factory\Entity;
-use Clicalmani\Database\Factory\PrimaryKey;
-use Clicalmani\Database\Factory\Property;
+CREATE TABLE roles (
+    id INT PRIMARY KEY,
+    user_id INT,
+    name VARCHAR(255),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
 
-class UserEntity extends Entity
-{
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false,
-        autoIncrement: true
-    ), PrimaryKey]
-    public Integer $id;
-
-    #[Property(
-        length: 255,
-        nullable: false
-    )]
-    public VarChar $name;
-}
-```
-```php
-<?php
-namespace Database\Entities;
-
-use Clicalmani\Database\DataTypes\Integer;
-use Clicalmani\Database\DataTypes\VarChar;
-use Clicalmani\Database\Factory\Entity;
-use Clicalmani\Database\Factory\PrimaryKey;
-use Clicalmani\Database\Factory\Property;
-use Clicalmani\Database\Factory\Index;
-
-#[Index(
-    name: 'fk_roles_users1_idx',
-    key: 'user_id',
-    constraint: 'fk_roles_users1',
-    references: \App\Models\User::class
-)]
-class RoleEntity extends Entity
-{
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false,
-        autoIncrement: true
-    ), PrimaryKey]
-    public Integer $id;
-
-    #[Property(
-        length: 255,
-        nullable: false
-    )]
-    public VarChar $name;
-
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false
-    )]
-    public Integer $user_id;
-}
-```
-```php
-<?php
-namespace Database\Entities;
-
-use Clicalmani\Database\DataTypes\Integer;
-use Clicalmani\Database\DataTypes\VarChar;
-use Clicalmani\Database\DataTypes\Text;
-use Clicalmani\Database\Factory\Entity;
-use Clicalmani\Database\Factory\PrimaryKey;
-use Clicalmani\Database\Factory\Property;
-use Clicalmani\Database\Factory\Index;
-
-#[Index(
-    name: 'fk_permissions_roles1_idx',
-    key: 'role_id',
-    constraint: 'fk_permissions_roles1',
-    references: \App\Models\Role::class
-)]
-class PermissionEntity extends Entity
-{
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false,
-        autoIncrement: true
-    ), PrimaryKey]
-    public Integer $id;
-
-    #[Property(
-        length: 255,
-        nullable: false
-    )]
-    public VarChar $title;
-
-    #[Property(
-        length: 255,
-        nullable: true
-    )]
-    public Text $content;
-
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false
-    )]
-    public Integer $role_id;
-}
+CREATE TABLE permissions (
+    id INT PRIMARY KEY,
+    role_id INT,
+    title VARCHAR(255),
+    content TEXT,
+    FOREIGN KEY (role_id) REFERENCES roles(id)
+);
 ```
 
 This schema ensures that each permission is linked to a specific role, and each role is linked to a specific user, enforcing the "has many through" relationship at the database level.
@@ -2051,103 +1746,25 @@ class Video extends Elegant
 
 To implement this relationship in your database, you would typically have a polymorphic association with a type and id column:
 
-```php
-<?php
-namespace Database\Entities;
+```sql
+CREATE TABLE posts (
+    id INT PRIMARY KEY,
+    title VARCHAR(255),
+    content TEXT
+);
 
-use Clicalmani\Database\DataTypes\Integer;
-use Clicalmani\Database\DataTypes\VarChar;
-use Clicalmani\Database\Factory\Entity;
-use Clicalmani\Database\Factory\PrimaryKey;
-use Clicalmani\Database\Factory\Property;
+CREATE TABLE videos (
+    id INT PRIMARY KEY,
+    title VARCHAR(255),
+    url VARCHAR(255)
+);
 
-class PostEntity extends Entity
-{
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false,
-        autoIncrement: true
-    ), PrimaryKey]
-    public Integer $id;
-
-    #[Property(
-        length: 255,
-        nullable: false
-    )]
-    public VarChar $title;
-}
-```
-```php
-<?php
-namespace Database\Entities;
-
-use Clicalmani\Database\DataTypes\Integer;
-use Clicalmani\Database\DataTypes\VarChar;
-use Clicalmani\Database\Factory\Entity;
-use Clicalmani\Database\Factory\PrimaryKey;
-use Clicalmani\Database\Factory\Property;
-
-class VideoEntity extends Entity
-{
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false,
-        autoIncrement: true
-    ), PrimaryKey]
-    public Integer $id;
-
-    #[Property(
-        length: 255,
-        nullable: false
-    )]
-    public VarChar $title;
-
-    #[Property(
-        length: 255
-    )]
-    public VarChar $url;
-}
-```
-```php
-<?php
-namespace Database\Entities;
-
-use Clicalmani\Database\DataTypes\Integer;
-use Clicalmani\Database\DataTypes\VarChar;
-use Clicalmani\Database\Factory\Entity;
-use Clicalmani\Database\Factory\PrimaryKey;
-use Clicalmani\Database\Factory\Property;
-
-class TagEntity extends Entity
-{
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false,
-        autoIncrement: true
-    ), PrimaryKey]
-    public Integer $id;
-
-    #[Property(
-        length: 255,
-        nullable: false
-    )]
-    public VarChar $name;
-
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false
-    )]
-    public Integer $taggable_id;
-
-    #[Property(
-        length: 255
-    )]
-    public VarChar $taggable_type;
-}
+CREATE TABLE tags (
+    id INT PRIMARY KEY,
+    name VARCHAR(255),
+    taggable_id INT,
+    taggable_type VARCHAR(255)
+);
 ```
 
 This schema ensures that each tag can be linked to either a post or a video, enforcing the one-to-one polymorphic relationship at the database level.
@@ -2228,105 +1845,25 @@ In this example, the `Comment` model can belong to either a `Post` or a `Video`.
 
 To implement this relationship in your database, you would typically have a polymorphic association with a type and id column:
 
-```php
-<?php
-namespace Database\Entities;
+```sql
+CREATE TABLE posts (
+    id INT PRIMARY KEY,
+    title VARCHAR(255),
+    content TEXT
+);
 
-use Clicalmani\Database\DataTypes\Integer;
-use Clicalmani\Database\DataTypes\VarChar;
-use Clicalmani\Database\DataTypes\Text;
-use Clicalmani\Database\Factory\Entity;
-use Clicalmani\Database\Factory\PrimaryKey;
-use Clicalmani\Database\Factory\Property;
+CREATE TABLE videos (
+    id INT PRIMARY KEY,
+    title VARCHAR(255),
+    url VARCHAR(255)
+);
 
-class PostEntity extends Entity
-{
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false,
-        autoIncrement: true
-    ), PrimaryKey]
-    public Integer $id;
-
-    #[Property(
-        length: 255,
-        nullable: false
-    )]
-    public VarChar $title;
-
-    #[Property]
-    public Text $content;
-}
-```
-```php
-<?php
-namespace Database\Entities;
-
-use Clicalmani\Database\DataTypes\Integer;
-use Clicalmani\Database\DataTypes\VarChar;
-use Clicalmani\Database\Factory\Entity;
-use Clicalmani\Database\Factory\PrimaryKey;
-use Clicalmani\Database\Factory\Property;
-
-class VideoEntity extends Entity
-{
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false,
-        autoIncrement: true
-    ), PrimaryKey]
-    public Integer $id;
-
-    #[Property(
-        length: 255,
-        nullable: false
-    )]
-    public VarChar $title;
-
-    #[Property(
-        length: 255
-    )]
-    public VarChar $url;
-}
-```
-```php
-<?php
-namespace Database\Entities;
-
-use Clicalmani\Database\DataTypes\Integer;
-use Clicalmani\Database\DataTypes\Text;
-use Clicalmani\Database\DataTypes\VarChar;
-use Clicalmani\Database\Factory\Entity;
-use Clicalmani\Database\Factory\PrimaryKey;
-use Clicalmani\Database\Factory\Property;
-
-class CommentEntity extends Entity
-{
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false,
-        autoIncrement: true
-    ), PrimaryKey]
-    public Integer $id;
-
-    #[Property]
-    public Text $content;
-
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false
-    )]
-    public Integer $commentable_id;
-
-    #[Property(
-        length: 255
-    )]
-    public VarChar $commentable_type;
-}
+CREATE TABLE comments (
+    id INT PRIMARY KEY,
+    content TEXT,
+    commentable_id INT,
+    commentable_type VARCHAR(255)
+);
 ```
 
 This schema ensures that each comment can be linked to either a post or a video, enforcing the one-to-many polymorphic relationship at the database level.
@@ -2408,132 +1945,31 @@ class Video extends Elegant
 
 To implement this relationship in your database, you would typically have a polymorphic association with a type and id column, along with a pivot table:
 
-```php
-<?php
-namespace Database\Entities;
+```sql
+CREATE TABLE posts (
+    id INT PRIMARY KEY,
+    title VARCHAR(255),
+    content TEXT
+);
 
-use Clicalmani\Database\DataTypes\Integer;
-use Clicalmani\Database\DataTypes\VarChar;
-use Clicalmani\Database\DataTypes\Text;
-use Clicalmani\Database\Factory\Entity;
-use Clicalmani\Database\Factory\PrimaryKey;
-use Clicalmani\Database\Factory\Property;
+CREATE TABLE videos (
+    id INT PRIMARY KEY,
+    title VARCHAR(255),
+    url VARCHAR(255)
+);
 
-class PostEntity extends Entity
-{
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false,
-        autoIncrement: true
-    ), PrimaryKey]
-    public Integer $id;
+CREATE TABLE tags (
+    id INT PRIMARY KEY,
+    name VARCHAR(255)
+);
 
-    #[Property(
-        length: 255,
-        nullable: false
-    )]
-    public VarChar $title;
-
-    #[Property]
-    public Text $content;
-}
-```
-```php
-<?php
-namespace Database\Entities;
-
-use Clicalmani\Database\DataTypes\Integer;
-use Clicalmani\Database\DataTypes\VarChar;
-use Clicalmani\Database\Factory\Entity;
-use Clicalmani\Database\Factory\PrimaryKey;
-use Clicalmani\Database\Factory\Property;
-
-class VideoEntity extends Entity
-{
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false,
-        autoIncrement: true
-    ), PrimaryKey]
-    public Integer $id;
-
-    #[Property(
-        length: 255,
-        nullable: false
-    )]
-    public VarChar $title;
-
-    #[Property]
-    public VarChar $url;
-}
-```
-```php
-<?php
-namespace Database\Entities;
-
-use Clicalmani\Database\DataTypes\Integer;
-use Clicalmani\Database\DataTypes\VarChar;
-use Clicalmani\Database\Factory\Entity;
-use Clicalmani\Database\Factory\PrimaryKey;
-use Clicalmani\Database\Factory\Property;
-
-class TagEntity extends Entity
-{
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false,
-        autoIncrement: true
-    ), PrimaryKey]
-    public Integer $id;
-
-    #[Property(
-        length: 255,
-        nullable: false
-    )]
-    public VarChar $name;
-}
-```
-```php
-<?php
-namespace Database\Entities;
-
-use Clicalmani\Database\DataTypes\Integer;
-use Clicalmani\Database\DataTypes\VarChar;
-use Clicalmani\Database\Factory\Entity;
-use Clicalmani\Database\Factory\PrimaryKey;
-use Clicalmani\Database\Factory\Property;
-use Clicalmani\Database\Factory\Index;
-
-#[PrimaryKey(['tag_id', 'taggable_id', 'taggable_type']), Index(
-    name: 'fk_taggables_tags1_idx',
-    key: 'tag_id',
-    constraint: 'fk_taggables_tags1',
-    references: \App\Models\Tag::class
-)]
-class TaggableEntity extends Entity
-{
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false
-    )]
-    public Integer $tag_id;
-
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false
-    )]
-    public Integer $taggable_id;
-
-    #[Property(
-        length: 255
-    )]
-    public VarChar $taggable_type;
-}
+CREATE TABLE taggables (
+    tag_id INT,
+    taggable_id INT,
+    taggable_type VARCHAR(255),
+    FOREIGN KEY (tag_id) REFERENCES tags(id),
+    PRIMARY KEY (tag_id, taggable_id, taggable_type)
+);
 ```
 
 This schema ensures that each tag can be linked to either a post or a video, enforcing the many-to-many polymorphic relationship at the database level.
@@ -2627,127 +2063,30 @@ In this example, the `Like` model can belong to a `Post`, `Comment`, or `Photo`.
 
 To implement this relationship in your database, you would typically have a polymorphic association with a type and id column:
 
-```php
-<?php
-namespace Database\Entities;
+```sql
+CREATE TABLE posts (
+    id INT PRIMARY KEY,
+    title VARCHAR(255),
+    content TEXT
+);
 
-use Clicalmani\Database\DataTypes\Integer;
-use Clicalmani\Database\DataTypes\VarChar;
-use Clicalmani\Database\DataTypes\Text;
-use Clicalmani\Database\Factory\Entity;
-use Clicalmani\Database\Factory\PrimaryKey;
-use Clicalmani\Database\Factory\Property;
+CREATE TABLE comments (
+    id INT PRIMARY KEY,
+    content TEXT,
+    post_id INT,
+    FOREIGN KEY (post_id) REFERENCES posts(id)
+);
 
-class PostEntity extends Entity
-{
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false,
-        autoIncrement: true
-    ), PrimaryKey]
-    public Integer $id;
+CREATE TABLE photos (
+    id INT PRIMARY KEY,
+    url VARCHAR(255)
+);
 
-    #[Property(
-        length: 255,
-        nullable: false
-    )]
-    public VarChar $title;
-
-    #[Property]
-    public Text $content;
-}
-```
-```php
-<?php
-namespace Database\Entities;
-
-use Clicalmani\Database\DataTypes\Integer;
-use Clicalmani\Database\DataTypes\VarChar;
-use Clicalmani\Database\DataTypes\Text;
-use Clicalmani\Database\Factory\Entity;
-use Clicalmani\Database\Factory\PrimaryKey;
-use Clicalmani\Database\Factory\Property;
-use Clicalmani\Database\Factory\Index;
-
-#[Index(
-    name: 'fk_comments_posts1_idx',
-    key: 'post_id',
-    constraint: 'fk_comments_posts1',
-    references: \App\Models\Post::class
-)]
-class CommentEntity extends Entity
-{
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false,
-        autoIncrement: true
-    ), PrimaryKey]
-    public Integer $id;
-
-    #[Property]
-    public Text $content;
-
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false
-    )]
-    public Integer $post_id;
-}
-```
-```php
-<?php
-namespace Database\Entities;
-
-use Clicalmani\Database\DataTypes\Integer;
-use Clicalmani\Database\DataTypes\VarChar;
-use Clicalmani\Database\Factory\Entity;
-use Clicalmani\Database\Factory\PrimaryKey;
-use Clicalmani\Database\Factory\Property;
-
-class PhotoEntity extends Entity
-{
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false,
-        autoIncrement: true
-    ), PrimaryKey]
-    public Integer $id;
-
-    #[Property(
-        length: 255,
-        nullable: false
-    )]
-    public VarChar $url;
-}
-```
-```php
-<?php
-namespace Database\Entities;
-
-use Clicalmani\Database\DataTypes\Integer;
-use Clicalmani\Database\DataTypes\VarChar;
-use Clicalmani\Database\Factory\Entity;
-use Clicalmani\Database\Factory\Property;
-
-class LikeEntity extends Entity
-{
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false
-    )]
-    public Integer $likeable_id;
-
-    #[Property(
-        length: 255,
-        nullable: false
-    )]
-    public VarChar $likeable_type;
-}
+CREATE TABLE likes (
+    id INT PRIMARY KEY,
+    likeable_id INT,
+    likeable_type VARCHAR(255)
+);
 ```
 
 This schema ensures that each like can be linked to a post, comment, or photo, enforcing the custom polymorphic relationship at the database level.
@@ -2764,7 +2103,7 @@ Here is an example on how to get all comments from a post:
 
 ```php
 $comments = Post::where('id = ?', [1])
-                ->joinLeft(Comment::class)
+                ->joinLeft(Comment::class, 'post_id', 'id')
                 ->fetch(Comment::class);
 ```
 
@@ -2864,45 +2203,14 @@ $orders = $user->orders();
 
 Here is `users` and `orders` database scheman:
 
-```php
-<?php
-namespace Database\Entities;
+```sql
+CREATE TABLE users (
+    id INT PRIMARY KEY
+);
 
-use Clicalmani\Database\DataTypes\Integer;
-use Clicalmani\Database\Factory\Entity;
-use Clicalmani\Database\Factory\PrimaryKey;
-use Clicalmani\Database\Factory\Property;
-
-class UserEntity extends Entity
-{
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false,
-        autoIncrement: true
-    ), PrimaryKey]
-    public Integer $id;
-}
-```
-```php
-<?php
-namespace Database\Entities;
-
-use Clicalmani\Database\DataTypes\Integer;
-use Clicalmani\Database\Factory\Entity;
-use Clicalmani\Database\Factory\PrimaryKey;
-use Clicalmani\Database\Factory\Property;
-
-class OrderEntity extends Entity
-{
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false,
-        autoIncrement: true
-    ), PrimaryKey]
-    public Integer $id;
-}
+CREATE TABLE orders (
+    id INT PRIMARY KEY
+);
 ```
 
 In this example, the `u` alias is assigned to the `User` table, and the `o` alias is assigned to the `Order` table. This helps to avoid conflicts with the `id` column, which is the primary key in both tables.
@@ -2933,7 +2241,7 @@ class Order extends Elegant
 {
     protected $table = 'orders o';
 
-    protected $primaryKey = 'o.id';
+    protect $primaryKey = 'o.id';
 }
 ```
 
@@ -2941,7 +2249,7 @@ By using table aliases, you can ensure that your queries are clear and avoid con
 
 ## Model Attributes Validation
 
-**Elegant ORM** provides a robust [Validation](validation.md) system to ensure that your model attributes meet specific criteria before they are saved to the database. This helps maintain data integrity and prevents invalid data from being persisted.
+**Elegant ORM** provides a robust validation system to ensure that your model attributes meet specific criteria before they are saved to the database. This helps maintain data integrity and prevents invalid data from being persisted.
 
 ### Defining Validation Rules
 
@@ -2999,3 +2307,520 @@ class UserEntity extends Entity
 ```
 
 In this example, the `given_name` and `family_name` attributes are required, must be a string, and cannot exceed 191 characters. The `email` attribute is required, must be a valid email address, and must be unique in the `users` table. The `password` attribute is required, must be a password, and must be at least 8 characters long, needs a password confirm field and accept hashing.
+
+### Available Validators
+
+**Elegant ORM** provides a variety of built-in validators that you can use to define validation rules for your model entity attributes. These validators help ensure that your data meets specific criteria before it is saved to the database.
+
+Here is a list of available validators arguments and their usage:
+
+- `required`: Ensures that the attribute is present and not empty.
+- `sometimes`: Ensures that the attribute is sometimes present and not empty.
+- `nullable`: Ensures that the attribute may not be present and considered as `null`.
+- `string`: Ensures that the attribute is a string.
+- `string[]`: Ensures that the attribute is an array of strings.
+- `bool`: Ensures that the attribute is a boolean.
+- `int`: Ensures that the attribute is an integer.
+- `float`: Ensures that the attribute is a float.
+- `number`: Ensures that the attribute is a number.
+- `numeric`: Ensures that the attribute is numeric.
+- `numeric[]`: Ensures that the attribute is an array of numeric values.
+- `email`: Ensures that the attribute is a valid email.
+- `date`: Ensures that the attribute is a valid date.
+- `datetime`: Ensures that the attribute is a date-time.
+- `id`: Ensures that the attribute is a unique index.
+- `file`: Ensures that the file is uploaded.
+- `image`: Ensures that the uploaded file is an image.
+- `pdf`: Ensures that the uploaded file is a PDF.
+- `url`: Ensures that the attribute is a url.
+- `in`: Ensures that the attribute is one of the specified values.
+- `regex`: Ensures that the attribute matches the specified regular expression pattern.
+- `json`: Ensures that the attribute is json decodable.
+
+### `string` Validator
+
+The `string` validator argument ensures that the attribute value is a string. You can combine it with specific options to further customize the validation rule.
+
+Here is an example:
+
+```php
+#[Property(
+    length: 255,
+    nullable: false
+), Validate('required|string|min:8|max:255')]
+public VarChar $name;
+
+#[Property(
+    length: 10,
+    nullable: false
+), Validate('required|string|length:10')]
+public Char $code;
+```
+
+In this example, the `string` validator argument ensures that the `name` attribute is a string, required, and has a minimum length of 8 characters and a maximum length of 255 characters. The `code` attribute is also a string, required, and must have an exact length of 10 characters.
+
+### `string[]` Validator
+
+The `string[]` validator argument ensures that the attribute value is an array of strings. You can combine it with specific options to further customize the validation rule.
+
+Here is an example:
+
+```php
+#[Property(
+    nullable: false
+), Validate('required|string[]|min:1|max:5')]
+public array $tags;
+```
+
+In this example, the `tags` attribute is required, must be an array of strings, and each tag has a length between 1 and 5 characters.
+
+### The `bool` Validator
+
+The `bool` validator argument ensures that the attribute value is a boolean. This is useful when you need to validate that an attribute is either `true` or `false`.
+
+Here is an example:
+
+```php
+#[Property(
+    nullable: false
+), Validate('required|bool')]
+public bool $is_active;
+```
+
+In this example, the `is_active` attribute is required and must be a boolean value (0, 1, `0`, `1` or `''`).
+
+### `int` Validator
+
+The `int` validator argument ensures that the attribute value is an integer. You can combine it with specific options to further customize the validation rule.
+
+Here is an example:
+
+```php
+#[Property(
+    nullable: false
+), Validate('required|int|min:1|max:100')]
+public int $age;
+
+#[Property(
+    nullable: false
+), Validate('required|int|range:1-100')]
+public int $age;
+```
+
+In this example, the `age` attribute is required, must be an integer, and must be between 1 and 100.
+
+### `float` Validator
+
+The `float` validator argument ensures that the attribute value is a floating-point number. You can combine it with specific options to further customize the validation rule.
+
+Here is an example:
+
+```php
+#[Property(
+    nullable: false
+), Validate('required|float|min:0.1|max:99.9')]
+public float $price;
+
+#[Property(
+    nullable: false
+), Validate('required|float|range:0.1-99.9')]
+public float $price;
+```
+
+In this example, the `price` attribute is required, must be a floating-point number, and must be between 0.1 and 99.9.
+
+### `numeric` Validator
+
+The `numeric` validator argument ensures that the attribute value is numeric. You can combine it with specific options to further customize the validation rule.
+
+Here is an example:
+
+```php
+#[Property(
+    nullable: false
+), Validate('required|numeric|min:1|max:100')]
+public float $score;
+
+#[Property(
+    nullable: false
+), Validate('required|numeric|length:3')]
+public float $score;
+```
+
+In this example, the `score` attribute is required, must be numeric, and must be between 1 and 100.
+
+### `numeric[]` Validator
+
+The `numeric[]` validator argument ensures that the attribute value is an array of numeric values. You can combine it with specific options to further customize the validation rule.
+
+Here is an example:
+
+```php
+#[Property(
+    nullable: false
+), Validate('required|numeric[]|min:1|max:100')]
+public array $scores;
+```
+
+In this example, the `scores` attribute is required, must be an array of numeric values, and each score must be between 1 and 100.
+
+### `email` Validator
+
+The `email` validator argument ensures that the attribute value is a valid email address. This is useful when you need to validate that an attribute contains a properly formatted email address.
+
+Here is an example:
+
+```php
+#[Property(
+    length: 255,
+    nullable: false
+), Validate('required|email|max:255')]
+public VarChar $email;
+```
+
+In this example, the `email` attribute is required, must be a valid email address, and cannot exceed 255 characters in length.
+
+### `date` Validator
+
+The `date` validator argument ensures that the attribute value is a valid date. This is useful when you need to validate that an attribute contains a properly formatted date.
+
+Here is an example:
+
+```php
+#[Property(
+    nullable: false
+), Validate('required|date|format:Y-m-d')]
+public Date $birthdate;
+```
+
+In this example, the `birhtdate` attribute is required, must be a valid date, and must follow the `Y-m-d` format.
+
+!> The format option is compatible with PHP `date` function format.
+
+### `datetime` Validator
+
+The `datetime` validator argument ensures that the attribute value is a valid date-time. This is useful when you need to validate that an attribute contains a properly formatted date-time string.
+
+Here is an example:
+
+```php
+#[Property(
+    nullable: false
+), Validate('required|datetime|format:Y-m-d H:i:s')]
+public DateTime $created_at;
+```
+
+In this example, the `created_at` attribute is required, must be a valid date-time, and must follow the `Y-m-d H:i:s` format.
+
+### `id` Validator
+
+The `id` validator argument ensures that the attribute value is a unique index. This is useful when you need to validate that an attribute contains a unique identifier.
+
+Here is an example:
+
+```php
+#[Property(
+    nullable: false
+), Validate('required|id|model:user')]
+public Integer $user_id;
+```
+
+In this example, the `user_id` attribute is required and must be a unique identifier.
+
+### `file` Validator
+
+The `file` validator argument ensures that the attribute value is an uploaded file.
+
+Here is an example:
+
+```php
+<?php
+namespace App\Http\Controllers;
+
+use use Clicalmani\Foundation\Acme\Controller;
+use Clicalmani\Foundation\Validation\AsValidator;
+
+class AttachmentController extends Controller
+{
+    /**
+     * Store new document
+     *
+     * @return \Clicalmani\Foundation\Http\ResponseInterface
+     */
+    #[AsValidator(
+        document: 'required|file|max:10469376'
+    )]
+    public function store(Request $request) : ResponseInterface
+    {
+        // ...
+    }
+}
+```
+
+In this example, the `document` attribute is required and must be an uploaded file with a maximum size of 10M.
+
+### `image` Validator
+
+The `image` validator argument ensures that the attribute value is an uploaded image file.
+
+Here is an example:
+
+```php
+<?php
+namespace App\Http\Controllers;
+
+use use Clicalmani\Foundation\Acme\Controller;
+use Clicalmani\Foundation\Validation\AsValidator;
+
+class UserController extends Controller
+{
+    /**
+     * Store new document
+     *
+     * @return \Clicalmani\Foundation\Http\ResponseInterface
+     */
+    #[AsValidator(
+        profile_picture: 'required|image|max:2097152'
+    )]
+    public function store(Request $request) : ResponseInterface
+    {
+        // ...
+    }
+}
+```
+
+In this example, the `profile_picture` attribute is required and must be an uploaded image file with a maximum size of 2M.
+
+### `pdf` Validator
+
+The `pdf` validator argument ensures that the attribute value is an uploaded PDF file.
+
+Here is an example:
+
+```php
+<?php
+namespace App\Http\Controllers;
+
+use use Clicalmani\Foundation\Acme\Controller;
+use Clicalmani\Foundation\Validation\AsValidator;
+
+class AttachmentController extends Controller
+{
+    /**
+     * Store new document
+     *
+     * @return \Clicalmani\Foundation\Http\ResponseInterface
+     */
+    #[AsValidator(
+        document: 'required|pdf|max:2097152'
+    )]
+    public function store(Request $request) : ResponseInterface
+    {
+        // ...
+    }
+}
+```
+
+In this example, the `document` attribute is required and must be an uploaded PDF file.
+
+### `url` Validator
+
+The `url` validator argument ensures that the attribute value is a valid URL. This is useful when you need to validate that an attribute contains a properly formatted URL.
+
+Here is an example:
+
+```php
+#[Property(
+    length: 255,
+    nullable: false
+), Validate('required|url|max:255')]
+public VarChar $website;
+```
+
+In this example, the `website` attribute is required, must be a valid URL, and cannot exceed 255 characters in length.
+
+### `in` Validator
+
+The `in` validator argument ensures that the attribute value is one of the specified values. This is useful when you need to validate that an attribute contains a value from a predefined set.
+
+Here is an example:
+
+```php
+#[Property(
+    nullable: false
+), Validate('required|in:admin,user,guest')]
+public VarChar $role;
+```
+
+In this example, the `role` attribute is required and must be one of the values `admin`, `user`, or `guest`.
+
+### `regex` Validator
+
+The `regex` validator argument ensures that the attribute value matches the specified regular expression pattern. This is useful when you need to validate that an attribute contains a value that matches a specific pattern.
+
+Here is an example:
+
+```php
+#[Property(
+    length: 255,
+    nullable: false
+), Validate('required|regex:/^[a-zA-Z0-9_]+$/')]
+public VarChar $username;
+```
+
+In this example, the `username` attribute is required and must match the regular expression pattern, allowing only alphanumeric characters and underscores.
+
+### `json` Validator
+
+The `json` validator argument ensures that the attribute value is JSON decodable. This is useful when you need to validate that an attribute contains a properly formatted JSON string.
+
+Here is an example:
+
+```php
+#[Property(
+    nullable: false
+), Validate('required|json|decode:1')]
+public Json $settings;
+```
+
+In this example, the `settings` attribute is required and must be a valid JSON string, the `decode` option is used to decode the json string before storing it.
+
+### Validating Model Instances
+
+When validators are used on a model entity, the instance will be automatically validated before saving to the database. This ensures that the data meets the defined criteria and helps maintain data integrity.
+
+When you create a new instance of the model and attempt to save it, the validation rules will be automatically applied:
+
+```php
+use Clicalmani\Validation\Exceptions\ValidationException;
+
+$user = new User;
+$user->name = 'John Doe';
+$user->email = 'john.doe@example.com';
+$user->password = password('secret');
+
+try {
+    $user->save();
+} catch (ValidationException $e) {
+    // Handle the validation exception, e.g., return an error response
+    echo 'Validation error: ' . $e->getMessage();
+}
+```
+
+In this example, the `save` method will automatically validate the model's attributes against the defined validation rules. If any of the rules are violated, a `ValidationException` will be thrown, and you can handle the exception accordingly.
+
+## Creating a Custom Validator
+
+**Elegant ORM** allows you to create custom validators to handle specific validation logic that may not be covered by the built-in validators. This can be useful when you need to enforce custom validation rules for your model attributes, routes or controllers.
+
+### Defining a Custom Validator
+
+To define a custom validator, you can create a new class that extends the `Clicalmani\Validation\Validator` class and implements the `validate` method. This method should contain the custom validation logic.
+
+Here is an example of how to create a custom validator:
+
+```php
+<?php
+
+namespace App\Validators;
+
+use Clicalmani\Validation\Validator;
+
+class PhoneNumberValidator extends Validator
+{
+    /**
+     * Validator argument
+     * 
+     * @var string
+     */
+    protected string $argument = 'phone';
+
+    /**
+     * Validator options
+     * 
+     * @return array
+     */
+    public function options() : array
+    {
+        return [
+            'pattern' => [
+                'required' => true,
+                'type' => 'string'
+            ]
+        ];
+    }
+
+    /**
+     * Validate the attribute.
+     *
+     * @param mixed &$value
+     * @param array $options
+     * @return bool
+     */
+    public function validate(&$value, array $options): bool
+    {
+        // Custom validation logic for phone numbers
+        return preg_match('/^' . $this->options['pattern'] . '$/', $value);
+    }
+
+    /**
+     * Get the validation error message.
+     *
+     * @return string
+     */
+    public function message(): string
+    {
+        return sprintf("The %s field must be a valid phone number.", $this->parameter);
+    }
+}
+```
+
+In this example, the `PhoneNumberValidator` class extends the `Validator` class and implements the `validate` method to check if the value matches a specific phone number pattern. The `message` method returns a custom error message if the validation fails.
+
+### Register the Custom Validator
+
+To register the custom validator, you need to add it to the `validators` list in `app\Http\Kernel.php` file. This ensures that the custom validator is available for use when validating model attributes.
+
+Here is an example of how to register the custom validator in a model entity:
+
+```php
+<?php
+
+namespace App\Http;
+
+use App\Validators\PhoneNumberValidator;
+
+class Kernel
+{
+    protected $validator = [
+        PhoneNumberValidator::class,
+    ];
+}
+```
+
+### Using the Custom Validator
+
+To use the custom validator in your model entity, you can pass the validator rule to `Validate` class on the entity property.
+
+Here is an example of how to use the custom validator in a model entity:
+
+```php
+<?php
+
+namespace Database\Entites;
+
+use Clicalmani\Database\Factory\Entity;
+use Clicalmani\Database\Factory\Property;
+use Clicalmani\Database\Factory\Validate;
+
+class UserEntity extends Entity
+{
+    #[Property(
+        length: 8,
+        nullable: false
+    ), Validate('required|phone|pattern:[0-9]{8}')]
+    public Char $phone;
+}
+```
+
+!> Notice that the custom validator can be used to validate routes, requests or controllers.

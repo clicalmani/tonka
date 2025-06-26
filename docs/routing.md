@@ -21,11 +21,10 @@
 - [Validation](routing.md?id=validation)
     - [Validating Route Parameters](routing.md?id=validating-route-parameters)
     - [Validating Request Data](routing.md?id=validating-request-data)
-    - [Custom Validation Rules](routing.md?id=custom-validation-rules)
 
 ## Basic Routing
 
-To write the most basic Tonka route, you can use the `Route::get` method to define a route that responds to a GET request. Here's an example:
+To write the most basic **Tonka** route, you can use the `Route::get` method to define a route that responds to a `GET` request. Here's an example:
 
 ```php
 Route::get('/basic', function() {
@@ -37,11 +36,11 @@ Route::get('/basic', function() {
 
 ### Web Routes
 
-All Tonka routes are defined in your route files, which are located in the `routes` directory. These files are automatically loaded by Tonka using the configuration specified in your application's `bootstrap/app.php` file and the `App\Providers\RouteServiceProvider` file. The `routes/web.php` file defines routes that are for your web interface. These routes provides features like session state and CSRF protection.
+All **Tonka** routes are defined in your route files, which are located in the `routes` directory. These files are automatically loaded by **Tonka** using the configuration specified in your application's `bootstrap/app.php` file and the `App\Providers\RouteServiceProvider` file. The `routes/web.php` file defines routes that are for your web interface. These routes provides features like session state and **CSRF** protection.
 
 ### API Routes
 
-Tonka by default provides the `api.php` file to store API routes, but you can also create other route files. Each route file must be linked to a [global middleware](). The default API middleware is the `App\Http\Middlewares\Authenticate` class. The API default middleware is registered globally as `api` and automatically called on each API request.
+**Tonka** by default provides the `api.php` file to store API routes, but you can also create other route files. Each route file must be linked to a [global middleware](middleware.md?id=middleware-route-file). The default API middleware is the `App\Http\Middlewares\Authenticate` class. The API default middleware is registered globally as `api` and automatically called on each API request.
 
 The routes in `routes/api.php` are stateless and are assigned to the `api` middleware group. Additionally, the `/api` URI prefix is automatically applied to these routes, so you do not need to manually apply it to every route in the file. You may change the prefix by defining it in `App\Providers\RouteServiceProvider` file:
 
@@ -64,7 +63,7 @@ class RouteServiceProvider extends ServiceProvider
 
 ## Available Router Methods
 
-Tonka PHP Framework's routing system allows you to define routes that respond to all HTTP verbs using methods such as `Route::get`, `Route::post`, `Route::put`, `Route::patch`, `Route::delete`, and `Route::options`. Each method corresponds to an HTTP verb and takes a URI and a closure or controller action as parameters. 
+**Tonka** PHP Framework's routing system allows you to define routes that respond to all HTTP verbs using methods such as `Route::get`, `Route::post`, `Route::put`, `Route::patch`, `Route::delete`, and `Route::options`. Each method corresponds to an HTTP verb and takes a URI and a closure or controller action as parameters. 
 
 For example, to define a route that responds to a `POST` request, you can use:
 
@@ -86,7 +85,7 @@ Route::match(['get', 'post'], '/', function () {
 
 ## Dependency Injection
 
-You may type-hint any dependencies required by your route in the route callback signature, and Tonka will automatically resolve them from the [service container](). Here's an example:
+You may type-hint any dependencies required by your route in the route callback signature, and **Tonka** will automatically resolve them from the [service container](container.md). Here's an example:
 
 ```php
 <?php
@@ -102,7 +101,7 @@ In this example, the `User` dependency is automatically resolved and injected in
 
 ## CSRF Protection
 
-Remember, any HTML forms pointing to `POST`, `PUT`, `PATCH`, or `DELETE` routes that are defined in the `web` routes file should include a CSRF token field. Otherwise, the request will be rejected. You can read more about CSRF protection in the [CSRF documentation]():
+Remember, any HTML forms pointing to `POST`, `PUT`, `PATCH`, or `DELETE` routes that are defined in the `web` routes file should include a **CSRF** token field. Otherwise, the request will be rejected. You can read more about CSRF protection in the [CSRF documentation](https://en.wikipedia.org/wiki/Cross-site_request_forgery):
 
 ```php
 <form method="POST" action="/profile">
@@ -113,7 +112,7 @@ Remember, any HTML forms pointing to `POST`, `PUT`, `PATCH`, or `DELETE` routes 
 
 ## Route Parameters
 
-In Tonka route parameters are dynamic and allows you to create variable parameter in your route URI. This is useful when you need to capture a segment of the URI that can vary. You can define a dynamic route parameter by placing a double dots `(:)` before the parameter name. Here's an example:
+In **Tonka** route parameters are dynamic and allows you to create variable parameter in your route URI. This is useful when you need to capture a segment of the URI that can vary. You can define a dynamic route parameter by placing a double dots `(:)` before the parameter name. Here's an example:
 
 ```php
 Route::get('/:entity/:id', function (string $entity, int $id) {
@@ -123,7 +122,7 @@ Route::get('/:entity/:id', function (string $entity, int $id) {
 
 In this example, the `:entity` and `:id` parameters are dynamic and can match any value. When the route is accessed, the actual values will be passed to the route callback.
 
-Tonka route parameters are specified by placing two dots `(:)` before the parameter name. A parameter name can only contain ASCII characters without spaces. You can use hyphens `(-)` and underscores `(_)` to concatenate multiple words:
+**Tonka** route parameters are specified by placing two dots `(:)` before the parameter name. A parameter name can only contain ASCII characters without spaces. You can use hyphens `(-)` and underscores `(_)` to concatenate multiple words:
 
 ```php
 Route::get('/user/:user_id', function(int $user_id) {
@@ -131,7 +130,7 @@ Route::get('/user/:user_id', function(int $user_id) {
 });
 ```
 
-!> By default, the parameter identifier in Tonka is `(:)`. However, you may change it and use any other character by specifying it in `App\Providers\RouteServiceProvider`. This allows you to customize the route parameter syntax according to your preferences.
+!> By default, the parameter identifier in **Tonka** is `(:)`. However, you may change it and use any other character by specifying it in `App\Providers\RouteServiceProvider`. This allows you to customize the route parameter syntax according to your preferences.
 
 ### Required Parameters
 
@@ -151,7 +150,7 @@ Route::get('/posts/:post/comments/:comment', function (int $postId, int $comment
 });
 ```
 
-Route parameters with same root are treated the same for the same HTTP verb. The only difference between them is the values they hold. This allows Tonka to provide you with dynamic routes within your application:
+Route parameters with same root are treated the same for the same HTTP verb. The only difference between them is the values they hold. This allows **Tonka** to provide you with dynamic routes within your application:
 
 ```php
 <?php
@@ -175,9 +174,9 @@ Route::get('/users/:post_id', function (int $postId) {
 
 So in your environment, both the two routes `/users/:user_id` and `/users/post_id` in the exemples above will be treated as the same and resolting in route conflict, meaning you will receive a duplicate route warning.
 
-Don't panic relax! :blush: Tonka is highly based on validation, route parameters, entity attributes, and request parameters are subjects to validation. We will cover validation in the [Validation]() section.
+Don't panic relax! :blush: **Tonka** is highly based on validation, route parameters, entity attributes, and request parameters are subjects to validation. We will cover validation in the [Validation](validation.md) section.
 
-To resolve the dilemma in the exemples above we need to use validators on the specified parameters to differenciate them.
+To resolve the dilemma in the exemples above we need to use validations rules on the specified parameters to differenciate them.
 
 ### Optional Parameters
 
@@ -198,50 +197,28 @@ You can also apply validation constraints to your route parameters to ensure the
 ```php
 Route::get('/:entity/:id', function (string $entity, int $id) {
     return response()->send("Entity: $entity, ID: $id");
-})->where('entity', 'required|string')->where('id', 'required|number');
+})
+->where('entity', 'required|entity')
+->where('id', 'required|id');
 ```
 
-This ensures that the `entity` parameter is a required string and the `id` parameter is a required number.
-
-Tonka provides several built-in validators, including `email` validator, `id` validator, `number` validator, `datetime` validator, `enum` validator... These validators can be used anywhere in your application where validation is needed to enhance the reliability and security of your application. You can create your own custom validation and use it on your route or anywhere in your code. We will cover [validation](routing.md?id=validation) later.
-
-```php
-Route::get('/user/:id', function (int $id) {
-    return response()->send("User ID $id");
-})->where('id', 'required|number');
-
-Route::get('/user/:id', function (int $id) {
-    return response()->send("User ID $id");
-})->where('id', 'required|id|model:user');
-
-Route::get('/user/:email', function (string $email) {
-    return response()->send("User Email $email");
-})->where('email', 'required|email');
-
-Route::get('/post/:category', function (string $category) {
-    return response()->send("Post category $category");
-})->where('category', 'required|enum|list:football,handball,bascketball');
-
-Route::get('/post/:date', function (string $date) {
-    return response()->send("Post Date $date");
-})->where('date', 'required|datetime|format:Y-m-d');
-```
-
-If the incoming request does not match the validation constraints, a 404 HTTP response will be returned.
+This ensures that the `entity` parameter is a required entity validation rule and the `id` parameter is a required id validation rule.
 
 ### Prevent Route Tempering
 
-To prevent route tempering, you can use route constraints and middleware to ensure that the incoming requests match the expected patterns and criteria. Here is an example of how to prevent route tempering:
+To prevent route tempering, you can use route constraints and [middleware](middleware.md) to ensure that the incoming requests match the expected patterns and criteria. Here is an example of how to prevent route tempering:
 
 ```php
 use App\Http\Middlewares\PreventRouteTampering;
 
 Route::get('/user/:id/:hash', function (int $id) {
     return response()->send("User ID $id");
-})->where('id', 'required|id|model:user')->middleware(PreventRouteTampering::class);
+})
+->where('id', 'required|id|model:user')
+->middleware(PreventRouteTampering::class);
 ```
 
-This line applies the `PreventRouteTmpering` middleware to the route. The middleware will verify the `hash` parameter before the route's callback function, allowing it to perform checks and validations to prevent route tampering. The `hash` parameter can be generated by `create_parameters_hash` helper function. Here is an example:
+This line applies the `PreventRouteTampering` middleware to the route. The middleware will verify the `hash` parameter before the route's callback function, allowing it to perform checks and validations to prevent route tampering. The `hash` parameter can be generated by `create_parameters_hash` helper function. Here is an example:
 
 ```php
 Route::get('/users/:id', function(int $id) {
@@ -256,7 +233,7 @@ Route::get('/users/:id', function(int $id) {
 If you would like a route parameter to always be constrained by a given validation, you may use the `validate` method. You should define these validations in the `register` method of your application's `App\Providers\RouteServiceProvider` class:
 
 ```php
-use Clicalmani\Foundation\Routing\Route;
+use Clicalmani\Foundation\Support\Facades\Route;
  
 /**
  * Bootstrap any application services.
@@ -279,7 +256,7 @@ Route::get('/user/:id', function (int $id) {
 
 ## Advance Routing
 
-Tonka allows you to create your own route processor if you have some particular routes in your application that you want to handle in a specific way. To create a custom route processor, you need to define a class that implements the `Clicalmani\Routing\BuilderInterface` and extends the `Clicalmani\Routing\Builder` class. After then you add it into the list of route builders in `config/routing.php` file.
+**Tonka** allows you to create your own route processor if you have some particular routes in your application that you want to handle in a specific way. To create a custom route processor, you need to define a class that implements the `BuilderInterface` and extends the `Builder` class. After then you add it into the list of route builders in `config/routing.php` file.
 
 Here's an example of a custom route processor:
 
@@ -352,7 +329,7 @@ class CustomRouteProcessor extends Builder implements BuilderInterface
     {
         return $this->locate(
             $this->matches( 
-                \Clicalmani\Foundation\Routing\Route::getClientVerb()
+                \Clicalmani\Foundation\Support\Facades\Route::getClientVerb()
             ) 
         );
     }
@@ -379,7 +356,7 @@ Next, register the custom route processor in your `config/routing`:
 ]
 ```
 
-With this setup, the custom route processor will handle the `/custom` route and apply any custom logic defined in the `process` method. This allows you to extend the routing capabilities of Tonka to suit your application's specific needs.
+With this setup, the custom route processor will handle the `/custom` route and apply any custom logic defined in the `process` method. This allows you to extend the routing capabilities of **Tonka** to suit your application's specific needs.
 
 ## Named Routes
 
@@ -412,7 +389,8 @@ Named routes are particularly useful when you need to generate URLs or redirects
 If you would like to determine if the current request was routed to a given named route, you may use the `named` method on a Route instance. For example, you may check the current route name from a route middleware:
 
 ```php
-use Clicalmani\Routing\Route;
+use Clicalmani\Foundation\Support\Facades\Route;
+use Clicalmani\Foundation\Support\Facades\Response;
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
@@ -422,20 +400,20 @@ Route::middleware('auth')->group(function () {
 
 Route::get('/current-route', function () {
     if (Route::current()->named('dashboard')) {
-        return response()->send('This is the dashboard route');
+        return Response::send('This is the dashboard route');
     }
 
-    return response()->send('This is not the dashboard route');
+    return Response::send('This is not the dashboard route');
 });
 ```
 
-In this example, the `Route::current()->named('dashboard')` method is used to check if the current route is named `dashboard`. If it is, a specific message is returned. This can be useful for applying logic based on the current route within your application.
+In this example, the route `named` method is used to check if the current route is named `dashboard`. If it is, a specific message is returned. This can be useful for applying logic based on the current route within your application.
 
 you may also check named route in your custom middleware:
 
 ```php
 use Clicalmani\Foundation\Http\Middlewares\Middleware;
-use Clicalmani\Foundation\Http\Request;
+use Clicalmani\Foundation\Http\RequestInterface as Request;
 use Clicalmani\Foundation\Http\Response;
 
 class CustomMiddleware extends Middleware 
@@ -461,11 +439,11 @@ class CustomMiddleware extends Middleware
 
 ## Route Groups
 
-Route groups allow you to share route attributes, such as middleware, across a large number of routes without needing to define those attributes on each individual route.
+Route groups allow you to share route attributes, such as `middleware`, across a large number of routes without needing to define those attributes on each individual route.
 
-Nested groups attempt to intelligently "merge" attributes with their parent group. Middleware and where conditions are merged while names and prefixes are appended. Namespace delimiters and slashes in URI prefixes are automatically added where appropriate.
+Nested groups attempt to intelligently "merge" attributes with their parent group. Middleware and `where` conditions are merged while `names` and `prefixes` are appended. Namespace delimiters and slashes in URI prefixes are automatically added where appropriate.
 
-Here's an example of defining a route group with shared middleware:
+Here's an example of defining a route group with shared `middleware`:
 
 ```php
 Route::group(['prefix' => 'admin'], function() {
@@ -564,39 +542,37 @@ Route::controller(UserController::class)->group(function () {
 });
 ```
 
-In this example, both routes will use the `UserController` class. The `/profile` route will invoke the `show` method for GET requests and the `update` method for POST requests.
+In this example, both routes will use the `UserController` class. The `/profile` route will invoke the `show` method for `GET` requests and the `update` method for `POST` requests.
 
 This approach helps to keep your route definitions clean and organized by grouping routes that share the same controller.
 
 ## Validation
 
-Tonka provides a robust validation system that allows you to validate incoming request data. You can use the `where` method to apply validation rules to your route parameters. Here's an example of how to use validation in your routes:
-
-### Validating Route Parameters
-
-You can apply validation rules directly to your route parameters using the `where` method:
+**Tonka** provides a robust [Validation](validation.md) system that allows you to validate incoming request data. You can use the `where` method to apply validation rules to your route parameters. Here's an example of how to use validation in your routes:
 
 ```php
-Route::get('/user/:id', function (int $id) {
-    return response()->send("User ID $id");
-})->where('id', 'required|number|min:1');
+Route::get('/product/:id', function (int $id) {
+    return response()->send("Product ID: $id");
+})->where('id', 'required|integer|min:1');
 ```
 
-In this example, the `id` parameter must be a required number. If the validation fails, a 404 HTTP response will be returned.
+In this example, the `id` parameter is required, must be an integer, and must be at least `1`. If the parameter is missing or does not meet the criteria, the route will not match and a 404 response will be returned.
+
+Besides the `where` method, you can use other [validation helpers](validation.md?id=available-methods) to further constrain your route parameters.
 
 ### Validating Request Data
 
 To validate request data, you can use the `validate` method within your route callback or controller method. Here's an example:
 
 ```php
-use Clicalmani\Foundation\Http\Request;
+use Clicalmani\Foundation\Http\RequestInterface as Request;
 
 Route::post('/user', function (Request $request) {
-    $validated = $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|unique:users,email',
-        'password' => 'required|string|min:8|confirmed:1',
-    ]);
+    $validated = $request->validate(
+        name: 'required|string|max:255',
+        email: 'required|email|unique:users,email',
+        password: 'required|string|min:8|confirmed:1',
+    );
 
     // The incoming request is valid...
     // You may proceed with your logic here...
@@ -604,71 +580,3 @@ Route::post('/user', function (Request $request) {
 ```
 
 In this example, the `validate` method is used to apply validation rules to the incoming request data. If the validation fails, a 422 HTTP response will be returned with the validation errors.
-
-### Custom Validation Rules
-
-You can create custom validation rules by extending the `Clicalmani\Validation\Validator` class. Here's an example of a custom validation rule:
-
-```php
-<?php
-
-namespace App\Validators;
-
-use Clicalmani\Validation\Validator;
-
-class PhoneNumberValidator extends Validator
-{
-    /**
-     * Validator argument
-     * 
-     * @var string
-     */
-    protected string $argument = 'phone';
-
-    /**
-     * Validator options
-     * 
-     * @return array
-     */
-    public function options() : array
-    {
-        return [
-            'pattern' => [
-                'required' => true,
-                'type' => 'string'
-            ]
-        ];
-    }
-
-    /**
-     * Validate the attribute.
-     *
-     * @param mixed &$value
-     * @param array $options
-     * @return bool
-     */
-    public function validate(&$value, array $options): bool
-    {
-        // Custom validation logic for phone numbers
-        return preg_match('/^' . $this->options['pattern'] . '$/', $value);
-    }
-
-    /**
-     * Get the validation error message.
-     *
-     * @return string
-     */
-    public function message(): string
-    {
-        return sprintf("The %s field must be a valid phone number.", $this->parameter);
-    }
-}
-```
-
-You can then use the custom validation rule in your validation logic:
-
-```php
-Route::post('/user', function (Request $request) {
-    // ...
-})->where('phone', 'required|phone|pattern:[0-9]{8}');
-```

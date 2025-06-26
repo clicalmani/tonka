@@ -23,9 +23,9 @@
 
 ## Introduction
 
-Views in Tonka are designed to be modular and reusable, allowing developers to create dynamic and interactive user interfaces with ease. This section will guide you through the basics of creating and using views in the Tonka framework, including how to define view templates, bind data to views, and handle user interactions.
+Views in **Tonka** are designed to be modular and reusable, allowing developers to create dynamic and interactive user interfaces with ease. This section will guide you through the basics of creating and using views in the **Tonka** framework, including how to define view templates, bind data to views, and handle user interactions.
 
-When using Tonka, view templates are usually written using the Twig templating language. A simple view might look something like this:
+When using **Tonka**, view templates are usually written using the Twig templating language. A simple view might look something like this:
 
 ```twig
 {% extends "base.html.twig" %}
@@ -42,7 +42,7 @@ Since this view is stored at `resources/views/greeting.html.twig`, we may return
 
 ```php
 Route::get('/greeting', function () {
-    return view('greeting', ['title' => 'Hello, World!', 'message' => 'Welcome to Tonka!']);
+    return view('greeting', ['title' => 'Hello, World!', 'message' => 'Welcome to **Tonka**!']);
 });
 ```
 
@@ -50,7 +50,7 @@ Route::get('/greeting', function () {
 
 ## Creating and Rendering Views
 
-To create a view in Tonka, you need to define a template file using the Twig templating language. Once you have your template, you can render it in your application by returning it from a route or controller.
+To create a view in **Tonka**, you need to define a template file using the Twig templating language. Once you have your template, you can render it in your application by returning it from a route or controller.
 
 ### Defining a View Template
 
@@ -71,7 +71,7 @@ To render the view, you can use the global `view` helper function in a route or 
 
 ```php
 Route::get('/welcome', function () {
-    return view('welcome', ['title' => 'Welcome to Tonka', 'message' => 'This is your first view!']);
+    return view('welcome', ['title' => 'Welcome to **Tonka**', 'message' => 'This is your first view!']);
 });
 ```
 
@@ -99,11 +99,11 @@ In your `profile.html.twig` template, you can access the `user` variable like th
 {% endblock %}
 ```
 
-By following these steps, you can create and render views in Tonka, making your application more dynamic and interactive.
+By following these steps, you can create and render views in **Tonka**, making your application more dynamic and interactive.
 
 ## Nested View Directories
 
-Tonka allows you to organize your view templates into nested directories, making it easier to manage complex applications with many views. For example, you might have a directory structure like this:
+**Tonka** allows you to organize your view templates into nested directories, making it easier to manage complex applications with many views. For example, you might have a directory structure like this:
 
 ```
 resources/views/
@@ -145,7 +145,7 @@ By organizing your views into nested directories, you can keep your project stru
 
 ## Sharing Data With All Views
 
-In some cases, you might want to share data with all views in your application. Tonka provides a convenient way to achieve this using view composers. View composers allow you to bind data to views globally, so you don't have to pass the same data to every view manually.
+In some cases, you might want to share data with all views in your application. **Tonka** provides a convenient way to achieve this using view composers. View composers allow you to bind data to views globally, so you don't have to pass the same data to every view manually.
 
 ### Sharing Data Using the View Facade
 
@@ -322,7 +322,7 @@ By attaching a composer to multiple views, you can efficiently share data with s
 
 ## View Creators
 
-In addition to view composers, Tonka also supports view creators. View creators are similar to composers, but they are executed immediately when the view is instantiated. This allows you to perform any necessary setup or initialization before the view is rendered.
+In addition to view composers, **Tonka** also supports view creators. View creators are similar to composers, but they are executed immediately when the view is instantiated. This allows you to perform any necessary setup or initialization before the view is rendered.
 
 ### Defining a View Creator
 

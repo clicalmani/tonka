@@ -126,11 +126,11 @@ $isDebugMode = Config::boolean('app.debug');
 
 In both examples, the value of `APP_DEBUG` will be retrieved from the `.env` file, and you can use the `$isDebugMode` variable to conditionally execute code based on whether debug mode is enabled or not.
 
-By properly managing the `APP_DEBUG` environment variable, you can control the level of error reporting and debugging information displayed by your Tonka application, ensuring a smoother development and debugging process.
+By properly managing the `APP_DEBUG` environment variable, you can control the level of error reporting and debugging information displayed by your **Tonka** application, ensuring a smoother development and debugging process.
 
 ## Maintenance Mode
 
-Tonka provides maintenance mode through a route service. A route service is a class that extends the [Clicalmani\Foundation\Providers\RouteService](https://github.com/clicalmani/foundation/providers/routeservice) base class and implements the `redirect` method. This method is responsible for handling the redirection of requests when the application is in maintenance mode.
+Tonka provides maintenance mode through a route service. A route service is a class that extends the `RouteService` base class and implements the `redirect` method. This method is responsible for handling the redirection of requests when the application is in maintenance mode.
 
 Here is an example of a route service class for maintenance mode:
 
@@ -146,9 +146,9 @@ class MaintenenceRedirect extends RouteService
     /**
      * Constructor
      * 
-     * @param \Clicalmani\Routing\Route $route
+     * @param protected \Clicalmani\Routing\Route|false $route
      */
-    public function __construct(protected $route)
+    public function __construct(protected \Clicalmani\Routing\Route|false $route)
     {
         parent::__construct();
     }
@@ -167,24 +167,20 @@ class MaintenenceRedirect extends RouteService
          * Here we just set a tempory redirect for all request. You
          * may redirect on request base or on user base.
          */
-        if ($this->route) $this->route->redirect = [
-            503,
-            'MAINTENANCE_MODE',
-            'The application is currently under maintenance. Please try again later.'
-        ];
+        if ($this->route) $this->route->redirect = 503;
     }
 }
 ```
 
-In this example, the `MaintenenceRedirect` class extends the `RouteService` base class and implements the `redirect` method to return a 503 Service Unavailable response with a maintenance message.
+In this example, the `MaintenenceRedirect` class extends the `RouteService` base class and implements the `redirect` method to return a **503 Service Unavailable** response.
 
 To enable maintenance mode, you can register the `MaintenenceRedirect` in your application's route configuration. This will ensure that all incoming requests are redirected to the maintenance mode response when the application is under maintenance.
 
-By using a route service for maintenance mode, Tonka provides a flexible and customizable way to handle maintenance periods, ensuring that users are informed and requests are properly managed during downtime.
+By using a route service for maintenance mode, **Tonka** provides a flexible and customizable way to handle maintenance periods, ensuring that users are informed and requests are properly managed during downtime.
 
-By default, Tonka does not provide a built-in maintenance mode. To implement maintenance mode, you need to manually create a route service and register it in the kernel file located in the `bootstrap` folder under the `tps` section.
+By default, **Tonka** does not provide a built-in maintenance mode. To implement maintenance mode, you need to manually create a route service and register it in the `kernel` file located in the `bootstrap` folder under the `tps` section.
 
-Next, register your custom route service in the kernel file located in the `bootstrap` folder. Add the service to the `tps` section:
+Next, register your custom route service in the `kernel` file located in the `bootstrap` folder. Add the service to the `tps` section:
 
 ```php
 // bootstrap/kernel.php

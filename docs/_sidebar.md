@@ -14,10 +14,12 @@
   - [Requests](requests.md)
   - [Responses](responses.md)
   - [Views](views.md)
+  - [Collection](collection.md)
+  - [Validation](validation.md)
 - Database
   - [Getting Started](database.md)
   - [Query Builder](query_builder.md)
   - [Entities](entities.md)
   - [Migration](migration.md)
   - [Seeding](seeding.md)
-  - [Object Mapping](orm.md)
+  - [Elegant ORM](orm.md)

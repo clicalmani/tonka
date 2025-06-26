@@ -1,12 +1,12 @@
 # Installation
 
-## Create a Tonka Project with Composer
+## Create a **Tonka** Project with Composer
 
-To create a new Tonka project using Composer, follow these steps:
+To create a new **Tonka** project using Composer, follow these steps:
 
 1. **Install Composer**: If you haven't already, download and install Composer from [getcomposer.org](https://getcomposer.org/).
 
-2. **Create a New Project**: Open your terminal and run the following command to create a new Tonka project:
+2. **Create a New Project**: Open your terminal and run the following command to create a new **Tonka** project:
 
     ```sh
     composer create-project clicalmani/tonka my-tonka-app
@@ -32,6 +32,6 @@ To create a new Tonka project using Composer, follow these steps:
     php tonka dev --port=8080
     ```
 
-    Open your browser and navigate to `http://localhost:8000` to see your new Tonka project in action.
+    Open your browser and navigate to `http://localhost:8000` to see your new **Tonka** project in action.
 
 5. **Configuration**: Customize your project by editing the configuration files located in the `config` directory.

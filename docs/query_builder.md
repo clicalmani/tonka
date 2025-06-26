@@ -36,13 +36,13 @@
     - [Lock and Unlock Tables](query_builder?id=lock-and-unlock-tables)
 
 ## Introduction
-Tonka ORM provides a convenient and smooth interface for creating and executing database queries. It can be used to perform most database operations in your application and works seamlessly with all [PDO](https://www.php.net/manual/fr/book.pdo.php) supported database systems.
+**Elegant ORM** provides a convenient and smooth interface for creating and executing database queries. It can be used to perform most database operations in your application and works seamlessly with all [PDO](https://www.php.net/manual/fr/book.pdo.php) supported database systems.
 
-The `Clicalmani\Database\DB` class uses the PHP Data Objects ([PDO](https://www.php.net/manual/fr/book.pdo.php)) extension interface to access the database. It creates a single [PDO](https://www.php.net/manual/fr/book.pdo.php) instance when connecting to the database and makes it available to all queries. In case you want to access the single instance and live the real experience with [PDO](https://www.php.net/manual/fr/book.pdo.php), Tonka ORM provides you with the static `getPDO()` method.
+The `Clicalmani\Foundation\Support\Facades\DB` class uses the PHP Data Objects ([PDO](https://www.php.net/manual/fr/book.pdo.php)) extension interface to access the database. It creates a single [PDO](https://www.php.net/manual/fr/book.pdo.php) instance when connecting to the database and makes it available to all queries. In case you want to access the single instance and live the real experience with [PDO](https://www.php.net/manual/fr/book.pdo.php), **Elegant ORM** provides you with the static `getPDO()` method.
 
 ```php
 <?php
-use Clicalmani\Database\DB;
+use Clicalmani\Foundation\Support\Facades\DB;
 $pdo = DB::getPdo();
 ```
 
@@ -57,7 +57,7 @@ You can use the `table` method provided by the `DB` facade to run a query. The `
  
 namespace App\Http\Controllers;
  
-use Clicalmani\Database\DB;
+use Clicalmani\Foundation\Support\Facades\DB;
 use Clicalmani\Foundation\Resources\View;
  
 class UserController extends Controller
@@ -65,7 +65,7 @@ class UserController extends Controller
     /**
      * Show a list of all of the application's users.
      */
-    public function index(): View
+    public function index(): ViewInterface
     {
         $users = DB::table('users')->get();
 
@@ -77,7 +77,7 @@ class UserController extends Controller
 The get method returns an instance of `Clicalmani\Foundation\Collection\Collection` containing the results of the query where each result is an instance of the [PHP stdClass](https://www.php.net/manual/en/class.stdclass.php) object. You can access the value of each column by accessing the column as a property of the object:
 
 ```php
-use Clicalmani\Database\DB;
+use Clicalmani\Foundation\Support\Facades\DB;
  
 $users = DB::table('users')->get();
  
@@ -86,7 +86,7 @@ foreach ($users as $user) {
 }
 ```
 
-!> Tonka Collections provide a variety of extremely powerful methods for mapping and reducing data. For more information about Collections, see the [Collection documentation](collections).
+!> **Tonka** Collections provide a variety of extremely powerful methods for mapping and reducing data. For more information about Collections, see the [Collection documentation](collections).
 
 ### Retrieving a Single Row / Column From a Table
 
@@ -121,7 +121,7 @@ $user = DB::table('users')->find(3);
 If you want to retrieve an `Clicalmani\Foundation\Collection\Collection` instance containing the values ​​of a single column, you can use the `pluck` method. In this example, we will retrieve a collection of user titles:
 
 ```php
-use Clicalmani\Database\DB;
+use Clicalmani\Foundation\Support\Facades\DB;
  
 $titles = DB::table('users')->pluck('title');
  
@@ -146,7 +146,7 @@ If you need to work with thousands of database records, consider using the `chun
 
 ```php
 use Clicalmani\Foundation\Collection\Collection;
-use Clicalmani\Database\DB;
+use Clicalmani\Foundation\Support\Facades\DB;
  
 DB::table('users')->orderBy('id')->chunk(100, function (Collection $users) {
     foreach ($users as $user) {
@@ -185,7 +185,7 @@ DB::table('users')->where('active', false)
 The `lazy` method works similarly to the `chunk` method in the sense that it executes the query in chunks. However, instead of passing each chunk into a callback, the `lazy()` method returns a LazyCollection, which lets you interact with the results as a single stream:
 
 ```php
-use Clicalmani\Database\DB;
+use Clicalmani\Foundation\Support\Facades\DB;
  
 DB::table('users')->orderBy('id')->lazy()->each(function (object $user) {
     // ...
@@ -482,7 +482,7 @@ $users = DB::table('users')
 The `insert` method allows you to insert records into the database. This method accepts an array of column names and values:
 
 ```php
-use Clicalmani\Database\DB;
+use Clicalmani\Foundation\Support\Facades\DB;
 
 DB::table('users')->insert([
     'name' => 'John',
@@ -525,7 +525,7 @@ $success = DB::table('users')->insertOrFail([
 If you need to insert a record if it does not exists and replace it otherwise, pass a boolean `true` as the second argument of the `insert` method:
 
 ```php
-use Clicalmani\Database\DB;
+use Clicalmani\Foundation\Support\Facades\DB;
 
 DB::table('users')->insert([
     'name' => 'John',
@@ -539,7 +539,7 @@ DB::table('users')->insert([
 The `update` method allows you to update existing records in the database. This method accepts an array of column names and values to update:
 
 ```php
-use Clicalmani\Database\DB;
+use Clicalmani\Foundation\Support\Facades\DB;
 
 DB::table('users')->where('id = :id', ['id' => 1])->update([
     'name' => 'John Doe',
@@ -562,7 +562,7 @@ The `increment` and `decrement` methods allow you to increment or decrement the 
 To increment a column's value:
 
 ```php
-use Clicalmani\Database\DB;
+use Clicalmani\Foundation\Support\Facades\DB;
 
 DB::table('users')->where('id = :id', ['id' => 1])->increment('votes');
 ```
@@ -592,7 +592,7 @@ DB::table('users')->where('id = :id', ['id' => 1])->decrement('votes', 1, ['name
 The `delete` method allows you to delete records from the database. You can use the `where` method to specify the conditions for the records to be deleted:
 
 ```php
-use Clicalmani\Database\DB;
+use Clicalmani\Foundation\Support\Facades\DB;
 
 DB::table('users')->where('id = :id', ['id' => 1])->delete();
 ```
@@ -616,7 +616,7 @@ The `lock` and `unlock` methods allow you to lock and unlock tables in the datab
 To lock a table, use the `lock` method:
 
 ```php
-use Clicalmani\Database\DB;
+use Clicalmani\Foundation\Support\Facades\DB;
 
 DB::table('users')->lock();
 ```
@@ -643,7 +643,7 @@ You can enable or disable foreign key checks while locking or unlocking a table.
 To disable foreign key checks while locking a table:
 
 ```php
-use Clicalmani\Database\DB;
+use Clicalmani\Foundation\Support\Facades\DB;
 
 DB::table('users')->lock('WRITE', false);
 ```

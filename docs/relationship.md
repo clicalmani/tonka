@@ -1,6 +1,6 @@
 ## Introduction
 
-Database tables are often related to one another. For example, a blog post may have many comments or an order could be related to the user who placed it. Tonka ORM makes managing and working with these relationships easy, and supports a variety of common relationships:
+Database tables are often related to one another. For example, a blog post may have many comments or an order could be related to the user who placed it. **Elegant ORM** makes managing and working with these relationships easy, and supports a variety of common relationships:
 
 - **One-to-One**: A single entity is associated with one other entity.
 - **One-to-Many**: A single entity is associated with multiple entities.
@@ -8,7 +8,7 @@ Database tables are often related to one another. For example, a blog post may h
 
 ## Defining Relationships
 
-To define relationships in Tonka ORM, you can use the following methods:
+To define relationships in **Elegant ORM**, you can use the following methods:
 
 ### One-to-One
 
@@ -88,7 +88,7 @@ This schema ensures that each profile is linked to a specific user, enforcing th
 
 ## Defining the Inverse of the Relationship
 
-In some cases, you may need to define the inverse of a relationship. This allows you to access the parent model from the related model. Tonka ORM makes this easy with the `belongsTo` method.
+In some cases, you may need to define the inverse of a relationship. This allows you to access the parent model from the related model. **Elegant ORM** makes this easy with the `belongsTo` method.
 
 ### Example
 
@@ -611,7 +611,7 @@ By defining these relationships, you can efficiently manage and query related da
 
 ## Custom Polymorphic Types
 
-In some cases, you may need to define custom polymorphic types to handle more complex relationships. Tonka ORM allows you to customize the polymorphic type column to suit your application's needs.
+In some cases, you may need to define custom polymorphic types to handle more complex relationships. **Elegant ORM** allows you to customize the polymorphic type column to suit your application's needs.
 
 ### Example
 
@@ -668,7 +668,7 @@ This schema ensures that each like can be linked to a post, comment, or photo, e
 By defining custom polymorphic types, you can efficiently manage and query related data, making your application more flexible and easier to maintain.
 ## Querying Relations
 
-Tonka ORM provides powerful methods to query relationships, allowing you to retrieve related data efficiently.
+**Elegant ORM** provides powerful methods to query relationships, allowing you to retrieve related data efficiently.
 
 ### Eager Loading
 
@@ -701,7 +701,7 @@ In this example, the `profile` relationship is loaded only when it is accessed.
 
 ### Querying Related Models
 
-You can query related models using dynamic properties and methods provided by Tonka ORM.
+You can query related models using dynamic properties and methods provided by **Elegant ORM**.
 
 #### Example
 

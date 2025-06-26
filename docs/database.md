@@ -22,7 +22,7 @@
     - [Configuring Multiple Connections](database.md?id=configuring-multiple-connections)
     - [Using Multiple Connections](database.md?id=using-multiple-connections)
         - [With the Query Builder](database.md?id=with-the-query-builder)
-        - [Using Tonka Database ORM](database.md?id=using-tonka-database-orm)
+        - [Using **Tonka** Database ORM](database.md?id=using-tonka-database-orm)
     - [Switching Connections at Runtime](database.md?id=switching-connections-at-runtime)
 - [Listening for Query Events](database.md?id=listening-for-query-events)
     - [Registering a Query Listener](database.md?id=registering-a-query-listener)
@@ -49,9 +49,9 @@
 
 ## Introduction
 
-Tonka Database is a powerful and scalable database solution designed to handle large volumes of data with ease. It offers robust features for data management, high availability, and security, making it an ideal choice for enterprise applications. With its user-friendly interface and comprehensive documentation, Tonka Database simplifies the process of database administration and development.
+**Tonka** Database is a powerful and scalable database solution designed to handle large volumes of data with ease. It offers robust features for data management, high availability, and security, making it an ideal choice for enterprise applications. With its user-friendly interface and comprehensive documentation, **Tonka** Database simplifies the process of database administration and development.
 
-Almost every modern web application interacts with a database. Tonka makes interacting with databases extremely simple across a variety of supported databases using raw SQL, a fluent query builder, and the Tonka ORM. Currently, Tonka provides first-party support for five databases:
+Almost every modern web application interacts with a database. **Tonka** makes interacting with databases extremely simple across a variety of supported databases using raw SQL, a fluent query builder, and the **Elegant ORM**. Currently, **Tonka** provides first-party support for five databases:
 
 ## Supported Databases
 
@@ -61,10 +61,10 @@ Almost every modern web application interacts with a database. Tonka makes inter
 4. **SQL Server**: A relational database management system developed by Microsoft.
 5. **Oracle**: A multi-model database management system produced and marketed by Oracle Corporation.
 
-Each of these databases is fully supported and can be easily integrated with Tonka Database, providing flexibility and scalability for your applications.
+Each of these databases is fully supported and can be easily integrated with **Tonka** Database, providing flexibility and scalability for your applications.
 ## Configuration
 
-To configure Tonka Database for your application, follow these steps:
+To configure **Tonka** Database for your application, follow these steps:
 
 1. **Install the Database Driver**: Ensure that the appropriate database driver for your chosen database is installed. This can typically be done via your package manager.
 
@@ -102,7 +102,7 @@ DB_FOREIGN_KEYS=false
 
 ### Microsoft SQL Server Configuration
 
-To configure Tonka Database for Microsoft SQL Server, follow these steps:
+To configure **Tonka** Database for Microsoft SQL Server, follow these steps:
 
 1. **Install the SQL Server Driver**: Ensure that the SQL Server driver is installed. You can read the documentation here [Microsoft SQL Server PDO Driver](https://learn.microsoft.com/fr-fr/sql/connect/php/pdo-query?view=sql-server-ver16).
 
@@ -135,7 +135,7 @@ Ensure that your SQL Server instance is configured to accept connections from yo
 
 ### Configuration Using URLs
 
-Tonka Database also supports configuring your database connections using URLs. This can simplify the configuration process by encapsulating all connection details in a single string. To use a URL for your database configuration, set the `DATABASE_URL` environment variable in your `.env` file:
+**Tonka** Database also supports configuring your database connections using URLs. This can simplify the configuration process by encapsulating all connection details in a single string. To use a URL for your database configuration, set the `DATABASE_URL` environment variable in your `.env` file:
 
 ```env
 DB_URL=mysql://your_username:your_password@127.0.0.1:3306/your_database
@@ -171,7 +171,7 @@ Once you have configured your database connection, you may run queries using the
 
 ### Running a Select Query
 
-To run a select query using Tonka Database, you can use the query builder or raw SQL. Here are examples of both methods:
+To run a select query using **Tonka** Database, you can use the query builder or raw SQL. Here are examples of both methods:
 
 #### Using the Query Builder
 
@@ -273,7 +273,7 @@ Use unprepared statements only when absolutely necessary and ensure that the inp
 
 ### Implicit Commits
 
-Tonka Database supports implicit commits for certain types of SQL statements. An implicit commit occurs automatically when a statement that modifies the database is executed. This ensures that the changes are saved without requiring an explicit `COMMIT` statement.
+**Tonka** Database supports implicit commits for certain types of SQL statements. An implicit commit occurs automatically when a statement that modifies the database is executed. This ensures that the changes are saved without requiring an explicit `COMMIT` statement.
 
 #### Statements That Cause Implicit Commits
 
@@ -331,7 +331,7 @@ DB::transaction(function () {
 
 ## Using Multiple Database Connections
 
-Tonka Database allows you to configure and use multiple database connections within your application. This can be useful for applications that need to interact with different databases or separate read and write operations.
+**Tonka** Database allows you to configure and use multiple database connections within your application. This can be useful for applications that need to interact with different databases or separate read and write operations.
 
 ### Configuring Multiple Connections
 
@@ -390,7 +390,7 @@ $users = DB::connection('pgsql')->table('users')->get();
 
 In this example, the `pgsql` connection is used to query the `users` table.
 
-You may access the raw, underlying PDO instance of a connection using the `getPdo` method on a connection instance. This can be useful if you need to perform low-level database operations that are not supported by the query builder or Tonka ORM.
+You may access the raw, underlying PDO instance of a connection using the `getPdo` method on a connection instance. This can be useful if you need to perform low-level database operations that are not supported by the query builder or **Elegant ORM**.
 
 Here's an example of how to access the PDO instance:
 
@@ -414,12 +414,12 @@ $user = $statement->fetch();
 
 Using the `getPdo` method, you have full control over the database connection and can execute any PDO operations as needed.
 
-#### Using Tonka Database ORM
+#### Using **Tonka** Database ORM
 
-If you are using Tonka ORM, you can specify the connection for a model by defining the `$connection` property:
+If you are using **Elegant ORM**, you can specify the connection for a model by defining the `$connection` property:
 
 ```php
-class User extends Model
+class User extends Elegant
 {
     protected $connection = 'pgsql';
 }
@@ -442,7 +442,7 @@ Using multiple database connections provides flexibility and allows your applica
 
 ## Listening for Query Events
 
-Tonka Database provides the ability to listen for query events, which can be useful for debugging, logging, or monitoring database queries. You can register a listener for query events using the `listen` method on the `DB` facade.
+**Tonka** Database provides the ability to listen for query events, which can be useful for debugging, logging, or monitoring database queries. You can register a listener for query events using the `listen` method on the `DB` facade.
 
 ### Registering a Query Listener
 
@@ -467,7 +467,7 @@ In this example, the query listener logs the executed SQL query, its bindings, a
 You can register the query listener in a service provider, such as the `AppServiceProvider`:
 
 ```php
-use Clicalmani\Database\DB;
+use Clicalmani\Foundation\Support\Facades\DB;
 use Clicalmani\Foundation\Support\Facades\Log;
 
 class AppServiceProvider extends ServiceProvider
@@ -490,14 +490,14 @@ Listening for query events can help you gain insights into the performance and b
 
 ## Monitoring Cumulative Query Time
 
-Tonka Database allows you to monitor the cumulative query time for your application. This can help you identify performance bottlenecks and optimize your database interactions.
+**Tonka** Database allows you to monitor the cumulative query time for your application. This can help you identify performance bottlenecks and optimize your database interactions.
 
 ### Registering a Cumulative Query Time Listener
 
 To monitor the cumulative query time, you can register a listener that tracks the total execution time of all queries. Here's an example:
 
 ```php
-use Clicalmani\Database\DB;
+use Clicalmani\Foundation\Support\Facades\DB;
 use Clicalmani\Foundation\Support\Facades\Log;
 
 class QueryTimeTracker
@@ -538,7 +538,7 @@ Monitoring the cumulative query time can help you understand the overall perform
 
 ## Database Transactions
 
-Tonka Database provides robust support for database transactions, allowing you to execute a series of operations as a single unit of work. Transactions ensure that either all operations are successfully executed, or none of them are, maintaining the integrity of your data.
+**Tonka** Database provides robust support for database transactions, allowing you to execute a series of operations as a single unit of work. Transactions ensure that either all operations are successfully executed, or none of them are, maintaining the integrity of your data.
 
 ### Using Transactions
 
@@ -612,7 +612,7 @@ In this example, the transaction is automatically committed if both insert opera
 
 ### Setting the Transaction Isolation Level
 
-Tonka Database allows you to set the transaction isolation level to control the visibility of changes made by other transactions. The isolation level determines how transaction integrity is maintained and can help prevent issues such as dirty reads, non-repeatable reads, and phantom reads.
+**Tonka** Database allows you to set the transaction isolation level to control the visibility of changes made by other transactions. The isolation level determines how transaction integrity is maintained and can help prevent issues such as dirty reads, non-repeatable reads, and phantom reads.
 
 To set the transaction isolation level, you can use the `DB::statement` method to execute the appropriate SQL command. Here are examples of setting different isolation levels:
 
@@ -682,15 +682,15 @@ DB::deadlock(function () {
 
 In this example, the transaction is retried up to five times if a deadlock occurs. This approach helps ensure that your application can recover from deadlocks and complete the transaction successfully.
 
-Using transactions in Tonka Database helps maintain data integrity and consistency, ensuring that your database operations are executed reliably.
+Using transactions in **Tonka** Database helps maintain data integrity and consistency, ensuring that your database operations are executed reliably.
 
 ## Connecting to the Database CLI
 
-Tonka Database provides a command-line interface (CLI) that allows you to interact with your database directly from the terminal. This can be useful for running queries, managing database migrations, and performing other administrative tasks.
+**Tonka** Database provides a command-line interface (CLI) that allows you to interact with your database directly from the terminal. This can be useful for running queries, managing database migrations, and performing other administrative tasks.
 
 ### Installing the CLI
 
-To install the Tonka Database CLI, you can use your package manager. For example, if you are using Composer, you can install it with the following command:
+To install the **Tonka** Database CLI, you can use your package manager. For example, if you are using Composer, you can install it with the following command:
 
 ```bash
 composer require tonka/database-cli
@@ -752,15 +752,15 @@ tonka db:help
 
 This will display detailed information about each command and how to use it.
 
-Using the Tonka Database CLI, you can efficiently manage your database and perform various tasks directly from the terminal.
+Using the **Tonka** Database CLI, you can efficiently manage your database and perform various tasks directly from the terminal.
 
 ## Inspecting Your Databases
 
-Tonka Database provides several tools to help you inspect and manage your databases. These tools allow you to view the structure of your databases, analyze query performance, and monitor database activity.
+**Tonka** Database provides several tools to help you inspect and manage your databases. These tools allow you to view the structure of your databases, analyze query performance, and monitor database activity.
 
 ### Viewing Table Structure
 
-To view the structure of a table, you can use the `describe` command in the Tonka Database CLI. This command provides detailed information about the columns, data types, and indexes of a table.
+To view the structure of a table, you can use the `describe` command in the **Tonka** Database CLI. This command provides detailed information about the columns, data types, and indexes of a table.
 
 ```bash
 tonka db:describe users
@@ -770,7 +770,7 @@ This will display the structure of the `users` table, including column names, da
 
 ### Analyzing Query Performance
 
-Tonka Database includes tools for analyzing the performance of your queries. You can use the `explain` command to get detailed information about how a query is executed, including the query plan and any potential performance bottlenecks.
+**Tonka** Database includes tools for analyzing the performance of your queries. You can use the `explain` command to get detailed information about how a query is executed, including the query plan and any potential performance bottlenecks.
 
 ```bash
 tonka db:explain "SELECT * FROM users WHERE email = 'john.doe@example.com'"
@@ -780,7 +780,7 @@ This will display the query plan for the given SQL query, helping you identify a
 
 ### Monitoring Database Activity
 
-To monitor database activity, you can use the `monitor` command in the Tonka Database CLI. This command provides real-time information about active connections, running queries, and other database metrics.
+To monitor database activity, you can use the `monitor` command in the **Tonka** Database CLI. This command provides real-time information about active connections, running queries, and other database metrics.
 
 ```bash
 tonka db:monitor
@@ -790,7 +790,7 @@ This will display real-time information about your database, allowing you to mon
 
 ### Viewing Database Logs
 
-Tonka Database also allows you to view database logs, which can be useful for debugging and auditing purposes. You can use the `logs` command to view recent database logs.
+**Tonka** Database also allows you to view database logs, which can be useful for debugging and auditing purposes. You can use the `logs` command to view recent database logs.
 
 ```bash
 tonka db:logs

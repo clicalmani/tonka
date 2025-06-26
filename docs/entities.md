@@ -38,7 +38,7 @@
 
 An entity is an object that exists. It doesn't have to do anything, it just has to exist. In database administration, an entity can be a thing, a person, a place, or a single object. Data can be stored about these entities. An entity contains attributes, which describe that entity. So anything about which we store information is called an entity.
 
-Tonka uses entities to store or manipulate data. A Tonka entity is a class that extends the [Clicalmani\Database\Factory\Entity](https://github.com/clicalmani/database/factory/entity) class, the underlying table attributes will be defined as public properties of the class.
+**Tonka** uses entities to store or manipulate data. A **Tonka** entity is a class that extends the [Clicalmani\Database\Factory\Entity](https://github.com/clicalmani/database/factory/entity) class, the underlying table attributes will be defined as public properties of the class.
 
 ## How To Create An Entity?
 
@@ -64,11 +64,11 @@ class PostEntity extends Entity
 ?>
 ```
 
-!> Tonka establishes a relationship between a `model` and its underlying `entity` that would require the model to be attached to its underlying entity. This relationship would like the entity to be named by having "Entity" attached to its model name such as `UserEntity` for `User` model.
+!> **Tonka** establishes a relationship between a `model` and its underlying `entity` that would require the model to be attached to its underlying entity. This relationship would like the entity to be named by having "Entity" attached to its model name such as `UserEntity` for `User` model.
 
 ## Entity Data Types
 
-A data type in Tonka is a class that extends [Clicalmani\Database\Factory\DataTypes\DataType](https://github.com/clicalmani/database/factory/datatypes/datatype) representing a SQL corresponding data type. Most of the types bear the same name such as `varchar`, `char`, `enum`... 
+A data type in **Tonka** is a class that extends [Clicalmani\Database\Factory\DataTypes\DataType](https://github.com/clicalmani/database/factory/datatypes/datatype) representing a SQL corresponding data type. Most of the types bear the same name such as `varchar`, `char`, `enum`... 
 
 In most SQL languages there are three main data types: string, numeric, and date and time.
 

@@ -6,7 +6,7 @@
 
 ## Introduction
 
-Cross-site request forgeries are a type of malicious exploit whereby unauthorized commands are performed on behalf of an authenticated user. Thankfully, Tonka makes it easy to protect your application from cross-site request forgery (CSRF) attacks.
+Cross-site request forgeries are a type of malicious exploit whereby unauthorized commands are performed on behalf of an authenticated user. Thankfully, **Tonka** makes it easy to protect your application from cross-site request forgery (CSRF) attacks.
 
 ## An Explanation of the Vulnerability
 
@@ -28,7 +28,7 @@ Cross-Site Request Forgery (CSRF) is a type of attack that occurs when a malicio
 
 ### Mitigation Strategies
 
-Tonka automatically generates a CSRF “token” for each active user session managed by the application. This token makes it possible to verify that the authenticated user is indeed the person who is actually making the requests to the application. Since this token is stored in the user's session and changes each time user session refresh, a malicious application cannot access it.
+**Tonka** automatically generates a CSRF “token” for each active user session managed by the application. This token makes it possible to verify that the authenticated user is indeed the person who is actually making the requests to the application. Since this token is stored in the user's session and changes each time user session refresh, a malicious application cannot access it.
 
 We need then to include the generated token in forms to ensure the request is legitimate. Here is an example:
 

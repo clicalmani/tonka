@@ -1,7 +1,7 @@
 <?php
 namespace App\Providers;
 
-use Clicalmani\Database\DB;
+use Clicalmani\Foundation\Support\Facades\DB;
 use Clicalmani\Foundation\Auth\Authenticate;
 use Clicalmani\Foundation\Http\Requests\RequestInterface;
 

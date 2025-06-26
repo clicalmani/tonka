@@ -1,5 +1,5 @@
 - [Introduction](responses.md?id=introduction)
-- [Creating Responses in Tonka](responses.md?id=creating-responses-in-tonka)
+- [Creating Responses in **Tonka**](responses.md?id=creating-responses-in-tonka)
     - [Response Object](responses.md?id=response-object)
         - [The `header` Method](responses.md?id=the-header-method)
         - [The `status` Method](responses.md?id=the-status-method)
@@ -42,11 +42,17 @@ Content-Type: application/json
 }
 ```
 
-## Creating Responses in Tonka
+## Creating Responses in **Tonka**
 
-To create an HTTP response in the Tonka PHP Framework, you can use the `response` helper function provided by the framework. Below is an example of how to create and return a text response:
+To create an HTTP response in the **Tonka** PHP Framework, you can use the `Response` facade or the response `response` helper function provided by the framework. Below is an example of how to create and return a text response:
 
 ```php
+use Clicalmani\Foundation\Support\Facades\Response;
+
+Route::get('/', function() {
+    return Response::send("This is a plain text response");
+});
+
 Route::get('/', function() {
     return response()->send("This is a plain text response");
 });
@@ -89,9 +95,7 @@ This method is used to set the response status.
 
 ```php
 Route::get('/status', function() {
-    return response('Content', 200)
-                  ->status(201)
-                  ->send();
+    return response()->status(201)->send('Content');
 });
 ```
 
@@ -185,7 +189,7 @@ To return a file as a response, you can use the `sendFile` method. Here is an ex
 
 ```php
 Route::get('/download', function() {
-    return response()->sendFile(public_path('example.pdf'));
+    return response()->sendFile(storage_path('/example.pdf'));
 });
 ```
 
@@ -193,23 +197,23 @@ You can also specify the file name that the user will see when downloading the f
 
 ```php
 Route::get('/download', function() {
-    return response()->sendFile(public_path('example.pdf'), 'custom_name.pdf');
+    return response()->sendFile(storage_path('/example.pdf'), 'custom_name.pdf');
 });
 ```
 
 If you want to display the file inline in the browser instead of downloading it, you can use the `stream` method:
 
 ```php
-Route::get('/file', function() {
+Route::get('/file/:filename', function(string $filename) {
     return response()
             ->header('Content-Disposition', "inline; filename=$filename")
-            ->stream(public_path('example.pdf'));
+            ->stream(storage_path('example.pdf'));
 });
 ```
 
-By default the streaming is manage internally to avoid memory overwelming. The provided code snippet demonstrates how to stream a large file using Tonka. This approach helps to avoid overwhelming the server's memory by reading and sending the file in small chunks.
+By default the streaming is manage internally to avoid memory overwelming. The provided code snippet demonstrates how to stream a large file using **Tonka**. This approach helps to avoid overwhelming the server's memory by reading and sending the file in small chunks.
 
-!> To manually manage the chunk size of a file being streamed, you can use the `Range` header. This allows you to specify the byte range of the file to be sent in the response.
+> To manually manage the chunk size of a file being streamed, you can use the `Range` header. This allows you to specify the byte range of the file to be sent in the response.
 
 ### Send Response Status
 
@@ -241,20 +245,21 @@ To handle responses within middleware, you can manipulate the response before it
 namespace App\Http\Middleware;
 
 use Clicalmani\Foundation\Http\Middlewares\Middleware;
-use Clicalmani\Foundation\Http\Request;
-use Clicalmani\Foundation\Http\Response;
+use Clicalmani\Foundation\Http\RequestInterface as Request;
+use Clicalmani\Foundation\Http\ResponseInterface;
+use Clicalmani\Foundation\Http\RedirectInterface;
 
 class AddCustomHeader extends Middleware
 {
     /**
      * Handler
      * 
-     * @param Request $request Current request object
-     * @param Response $response Http response
-     * @param callable $next 
-     * @return int|false
+     * @param \Clicalmani\Foundation\Http\RequestInterface $request Request object
+     * @param \Clicalmani\Foundation\Http\ResponseInterface $response Response object
+     * @param \Closure $next Next middleware function
+     * @return \Clicalmani\Foundation\Http\ResponseInterface|\Clicalmani\Foundation\Http\RedirectInterface
      */
-    public function handle(Request $request, Response $response, callable $next) : int|false
+    public function handle(RequestInterface $request, ResponseInterface $response, \Closure $next) : ResponseInterface|RedirectInterface
     {
         $response->header('X-Custom-Header', 'CustomValue');
 

@@ -5,7 +5,7 @@ window.$docsify = {
     repo: 'https://github.com/clicalmani/tonka',
     coverpage: true,
     onlyCover: true,
-    name: "Tonka Framework - Documentation", // Must configure when publishing
+    name: "**Tonka** Framework - Documentation", // Must configure when publishing
     hideSidebar: false, // Configurable when publishing
     subMaxLevel: 2, // Configurable when publishing
     basePath: "/tonka/", // Configurable when publishing

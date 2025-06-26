@@ -9,9 +9,9 @@
 
 ## Introduction
 
-Middleware provide a convenient mechanism for inspecting and filtering HTTP requests entering your application. For example, Tonka includes a middleware that verifies the user of your application is authenticated. If the user is not authenticated, the middleware will redirect the user to your application's login screen. However, if the user is authenticated, the middleware will allow the request to proceed further into the application.
+Middleware provide a convenient mechanism for inspecting and filtering HTTP requests entering your application. For example, **Tonka** includes a middleware that verifies the user of your application is authenticated. If the user is not authenticated, the middleware will redirect the user to your application's login screen. However, if the user is authenticated, the middleware will allow the request to proceed further into the application.
 
-Additional middleware can be written to perform a variety of tasks besides authentication. For example, a `checkAge` middleware might check the age of the user of your application. A variety of middleware are included in Tonka, including middleware for authentication and CSRF protection; however, all user-defined middleware are typically located in your application's `app/Http/Middlewares` directory.
+Additional middleware can be written to perform a variety of tasks besides authentication. For example, a `checkAge` middleware might check the age of the user of your application. A variety of middleware are included in **Tonka**, including middleware for authentication and CSRF protection; however, all user-defined middleware are typically located in your application's `app/Http/Middlewares` directory.
 
 ## Defining Middleware
 
@@ -29,26 +29,30 @@ This command will place a new `CheckAge` class within your `app/Http/Middlewares
 namespace App\Http\Middlewares;
 
 use Clicalmani\Foundation\Http\Middlewares\Middleware;
-use Clicalmani\Foundation\Http\Request;
+use Clicalmani\Foundation\Http\RequestInterface as Request;
 use Clicalmani\Foundation\Http\Response;
+use Clicalmani\Foundation\Http\ResponseInterface;
+use Clicalmani\Foundation\Http\RedirectInterface;
 
 class CheckAge extends Middleware
 {
     /**
-     * Handle the incoming request.
+     * Handler
      * 
-     * @param Request $request Current request object
-     * @param Response $response Http response
-     * @param callable $next 
-     * @return int|false
+     * @param \Clicalmani\Foundation\Http\Requests\RequestInterface $request Request object
+     * @param \Clicalmani\Foundation\Http\ResponseInterface $response Response object
+     * @param \Closure $next Next middleware function
+     * @return \Clicalmani\Foundation\Http\ResponseInterface|\Clicalmani\Foundation\Http\RedirectInterface
      */
-    public function handle(Request $request, Response $response, callable $next) : int|false
+    public function handle(RequestInterface $request, ResponseInterface $response, \Closure $next) : ResponseInterface|RedirectInterface
     {
         if ($request->age <= 18) {
             return redirect()->route('home');
         }
 
-        return $next($request);
+        // Add the application logic and pass the middleware to the next level
+
+        return $next($request, $response);
     }
 }
 ```
@@ -73,20 +77,22 @@ Of course, a middleware can perform tasks before or after passing the request de
 namespace App\Http\Middlewares;
 
 use Clicalmani\Foundation\Http\Middlewares\Middleware;
-use Clicalmani\Foundation\Http\Request;
+use Clicalmani\Foundation\Http\RequestInterface as Request;
 use Clicalmani\Foundation\Http\Response;
+use Clicalmani\Foundation\Http\ResponseInterface;
+use Clicalmani\Foundation\Http\RedirectInterface;
 
 class LogRequest extends Middleware
 {
     /**
-     * Handle the incoming request.
+     * Handler
      * 
-     * @param Request $request Current request object
-     * @param Response $response Http response
-     * @param callable $next 
-     * @return mixed
+     * @param \Clicalmani\Foundation\Http\Requests\RequestInterface $request Request object
+     * @param \Clicalmani\Foundation\Http\ResponseInterface $response Response object
+     * @param \Closure $next Next middleware function
+     * @return \Clicalmani\Foundation\Http\ResponseInterface|\Clicalmani\Foundation\Http\RedirectInterface
      */
-    public function handle(Request $request, Response $response, callable $next)
+    public function handle(RequestInterface $request, ResponseInterface $response, \Closure $next) : ResponseInterface|RedirectInterface
     {
         // Perform action before passing the request deeper into the application
         $this->log($request);
@@ -118,7 +124,7 @@ In this example, the `LogRequest` middleware logs the request details before pas
 
 ### Global Middleware
 
-If you want a middleware to run during every HTTP request to your application, you may append it to the global middleware stack in your application's `app/Http/kernel.php` file:
+If you want a middleware to run during every HTTP request to your application within a route file, you may append it to the global middleware stack in your application's `app/Http/kernel.php` file:
 
 ```php
 /**
@@ -143,7 +149,26 @@ If you want a middleware to run during every HTTP request to your application, y
     ],
 ```
 
-This will ensure that the `CheckAge` and `LogRequest` middleware are executed for every request to your application.
+To ensure that middleware is applied to all routes within the file, you should call the middleware at the beginning of your route file. Any routes defined before the middleware call will not be handled by that middleware. For example:
+
+```php
+// routes/web.php
+
+// Routes not handled by the middleware
+Route::get('/', function () {
+    // Public home page
+});
+
+// Call middleware
+Route::middleware('check.age');
+
+// Routes handled by the middleware
+Route::get('admin/profile', function () {
+    // Only accessible if the age is greater than 18...
+});
+```
+
+In this example, the `/` route is accessible to everyone, while the `admin/profile` route is protected by the `check.age` middleware. This approach allows you to control exactly which routes are affected by specific middleware.
 
 ### Assigning Middleware to Routes
 
@@ -208,14 +233,14 @@ This approach helps in maintaining a clean and manageable route definition struc
 When assigning middleware to a group of routes, you may occasionally need to prevent the middleware from being applied to an individual route within the group. You may accomplish this using the `withoutMiddleware` method:
 
 ```php
-Route::group(['middleware' => \App\Http\Middlewares\CheckAge::class . '|' . \App\Http\Middlewares\LogRequest::class], function () {
+Route::group(['middleware' => 'check.age|log.request'], function () {
         Route::get('/profile', function () {
             // This route has both middleware applied...
         });
 
         Route::get('/settings', function () {
             // This route will not have the CheckAge middleware applied...
-        })->withoutMiddleware(\App\Http\Middlewares\CheckAge::class);
+        })->withoutMiddleware('log.request');
 })->prefix('admin');
 ```
 

@@ -9,13 +9,13 @@
 
 ## Introduction
 
-Database migration in Tonka involves using data entities to seamlessly transfer and upgrade your database schema. Tonka provides automated migration files, ensuring that your database changes are version-controlled and easily reversible. This process helps maintain data integrity and minimizes downtime during updates.
+Database migration in **Tonka** involves using data entities to seamlessly transfer and upgrade your database schema. **Tonka** provides automated migration files, ensuring that your database changes are version-controlled and easily reversible. This process helps maintain data integrity and minimizes downtime during updates.
 
 ## How to do a Migration?
 
-To perform a migration in Tonka, you need to create entities that represent the changes you want to make to your database schema. These entities are defined using Tonka's schema definition language, which allows you to specify the structure and relationships of your data. Once you have defined your entities, you can generate migration files that will apply these changes to your database. Each migration file contains the necessary instructions to update your database schema in a controlled and reversible manner.
+To perform a migration in **Tonka**, you need to create entities that represent the changes you want to make to your database schema. These entities are defined using **Tonka**'s schema definition language, which allows you to specify the structure and relationships of your data. Once you have defined your entities, you can generate migration files that will apply these changes to your database. Each migration file contains the necessary instructions to update your database schema in a controlled and reversible manner.
 
-The generated migration files are saved in the `database/migrations` directory. This directory serves as a version-controlled repository of all the changes made to your database schema. By organizing your migrations in this way, Tonka ensures that you can easily track and manage the evolution of your database over time. Additionally, if you need to roll back a migration, Tonka provides tools to reverse the changes, helping you maintain data integrity and minimize downtime during updates.
+The generated migration files are saved in the `database/migrations` directory. This directory serves as a version-controlled repository of all the changes made to your database schema. By organizing your migrations in this way, **Tonka** ensures that you can easily track and manage the evolution of your database over time. Additionally, if you need to roll back a migration, **Tonka** provides tools to reverse the changes, helping you maintain data integrity and minimize downtime during updates.
 
 To perform a fresh database migration, use the `migrate:fresh` command in the console:
 
@@ -46,7 +46,7 @@ By using the `--output` option, you can ensure that the SQL statements generated
 
 ## Isolating Migration Execution
 
-Tonka automatically places locks on tables to isolate each migration, ensuring that each migration runs independently without interference from other operations. This mechanism helps maintain data integrity and consistency during the migration process.
+**Tonka** automatically places locks on tables to isolate each migration, ensuring that each migration runs independently without interference from other operations. This mechanism helps maintain data integrity and consistency during the migration process.
 
 ## Rolling Back Migrations
 
@@ -60,11 +60,11 @@ There are two different ways to perform the migration in production mode:
 2. Using the browser: Create a `/migrate` web route.
 
 ```php
-use Clicalmani\Foundation\Routing\Route;
-use Clicalmani\Foundation\Support\Facades\Tonka;
+use Clicalmani\Foundation\Support\Facades\Route;
+use Clicalmani\Foundation\Support\Facades\**Tonka**;
 
 Route::get('/migrate', function() {
-    $success = Tonka::migrateFresh( time() );
+    $success = **Tonka**::migrateFresh( time() );
     return response()->send($success);
 });
 ```
@@ -73,7 +73,7 @@ Route::get('/migrate', function() {
 
 ## Migrate a Single Database Table
 
-To migrate a single database table without losing data, Tonka provides the `migrate:entity` command. This command allows you to apply changes to a specific table while preserving the existing data.
+To migrate a single database table without losing data, **Tonka** provides the `migrate:entity` command. This command allows you to apply changes to a specific table while preserving the existing data.
 
 The `migrate:entity` command accepts the table model name as its unique argument. Models will be covered in the Models section.
 

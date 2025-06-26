@@ -43,13 +43,11 @@ class Kernel extends HttpKernel
     ];
 
     /**
-     * The application's global HTTP validator stack.
-     *
-     * These validators can be invoked anywhere in your application.
+     * The application's global HTTP validator rules stack.
      *
      * @var array
      */
-    protected array $validator = [
-        // Add here your custom validators
+    protected array $custom_rules = [
+        // Add here your custom validation rules
     ];
 }

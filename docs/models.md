@@ -1,6 +1,6 @@
 **Models**
 
-Models can be considered as layers that must be manipulated to act indirectly on the underlying database table. We have two (2) types of tables in any database (as far as I know): primary tables and associative tables. Primary tables declare primary keys and associative tables refer to them as foreign keys. A primary key can be an association of one or more attributes. In this case, in your model, a primary key may be represented by a character string when it is a unique key and a non-associative array when it is a composit key.
+Models can be considered as layers that must be manipulated to act indirectly on the underlying database table. We have two (2) types of tables in any database: primary tables and associative tables. Primary tables declare primary keys and associative tables refer to them as foreign keys. A primary key can be an association of one or more attributes. In this case, in your model, a primary key may be represented by a character string when it is a unique key and a non-associative array when it is a composit key.
 
 It is easier to create a model from the `make:model` console command as follows:
 
@@ -10,7 +10,7 @@ php tonka make:model <model_name> <table_name> <primary_keys>
 
 The model name, table name, and primary key(s) must be entered together. When your primary key is a composit key, separate each key with a space.
 
-!> The model name must be derived from the entity name it represent by removing the Entity suffix. For example, the `UserEntity` entity will have the `User` model as its wrapper.
+> The model name must be derived from the entity name it represent by removing the Entity suffix. For example, the `UserEntity` entity will have the `User` model as its wrapper. You can also use the `make:entity` command to create automatically the underlying model when creating an entity.
 
 Let's create a model named `User` by providing the following command:
 
@@ -24,9 +24,9 @@ Once the command is executed, a file named `User.php` will be created into `app/
 <?php 
 namespace App\Models;
 
-use Clicalmani\Database\Factory\Models\Model;
+use Clicalmani\Database\Factory\Models\Elegant;
 
-class User extends Model
+class User extends Elegant
 {
     /**
      * Model database table 
@@ -48,7 +48,7 @@ class User extends Model
      *
      * @var string|array $primary_keys Table primary key.
      */
-    protected $primaryKey = "user_id";
+    protected $primaryKey = "id";
 
     /**
      * Constructor 
@@ -65,7 +65,7 @@ class User extends Model
 
 Most SQL langage support table and attribute aliases. Because it will be more convenient to name your table with alias when using join statements. As an attribute can bear the same name in more than one table. In this case you can add an alias to your table by separating it with a space with the table name.
 
-!> Tonka ORM does not support the use of the operator `AS` as alias creator.
+!> **Elegant ORM** does not support the use of the operator `AS` as alias creator.
 
 ```php
 /**
@@ -81,7 +81,7 @@ protected $table = "users u";
  *
  * @var string|array $primary_keys Table primary key.
  */
-protected $primaryKey = "u.user_id";
+protected $primaryKey = "u.id";
 ```
 
 ### Model class methods
@@ -90,7 +90,7 @@ The Model class has several methods for creating and manipulating data.
 
 #### find()
 
-The `find()` method takes a single parameter which is the primary key and returns the record corresponding to that key. It accepts a string when dealing with a single key and a non-association array when dealing with a composit key. `NULL` will be returned when no record is associated to the specified key.
+The `find()` method takes a single parameter which is the primary key and returns the record corresponding to that key. It accepts a string when dealing with a single key and a non-association array when dealing with a composit key. `NULL` (empty object) will be returned when no record is associated to the specified key.
 
 ```php
 <?php
@@ -100,18 +100,19 @@ $post->publish_date = now(); // Set publish date
 ?>
 ```
 
-!> Technically speaking, in the absence of a record, `find()` returns an empty record which will be considered as `NULL`.
+> Technically speaking, in the absence of a record, `find()` returns an empty record which will be considered as `NULL`.
 
 #### where()
 
-The `where()` method allows you to specify the _where condition_ of your SQL statement. It accepts two (2) parameters, the second being optional. The first parameter is the statement parameters and the second parameter specifies the parameters options. As you can see, this is the syntax of the `prepare()` method of [PDO](https://www.php.net/manual/fr/book.pdo.php). *Tonka* aims to respect the basic syntax of PHP, thus allowing anyone who has mastered the basics of the language to take advantage of the features that *Tonka* makes available without the need for a special academy.
+The `where()` method allows you to specify the _where condition_ of your SQL statement. It accepts two (2) parameters, the second being optional. The first parameter is the statement parameters and the second parameter specifies the parameters options. As you can see, this is the syntax of the `prepare()` method of [PDO](https://www.php.net/manual/fr/book.pdo.php). ***Tonka*** aims to respect the basic syntax of PHP, thus allowing anyone who has mastered the basics of the language to take advantage of the features that ***Tonka*** makes available without the need for a special academy.
 
-Therefore all the SQL statements will not be prepared. *Tonka ORM* always verify the presence of the parameters options to decide whether to execute a prepared or a non-prepared statement.
+Therefore all the SQL statements will not be prepared. ***Tonka** Elegant ORM always verify the presence of the parameters options to decide whether to execute a prepared or a non-prepared statement.
 
 ```php
 <?php
 $result = Post::where('title LIKE "%my title%"')->select(); // Non-prepared statement
 $result = Post::where('title LIKE :title', ['title' => '%my title%'])->select(); // Prepared statement
+$result = Post::where('title LIKE ?', ['%my title%'])->select(); // Prepared statement
 ?>
 ```
 The advantage of a prepared statement is that the codes injected (by a [SQL injection](https://en.wikipedia.org/wiki/SQL_injection) method) will have no effect. Because the entered data is processed after the execution of the statement.
@@ -136,7 +137,7 @@ Post::where('LOCATE("sport", title)')->whereAnd('publish_date > :date', ['date' 
 
 Acts like `whereAnd()` but this time with `OR` as operator.
 
-!> The thruth is `where()` method accepts 3 parameters. The second parameter is the statement operator being used to join the statement condition to the previous one. To allow the use of multiple conditions, the `whereAnd()` and `whereOr()` methods have been added; since `where()` is a class method.
+> The thruth is `where()` method accepts 3 parameters. The second parameter is the statement operator being used to join the statement condition to the previous one. To allow the use of multiple conditions, the `whereAnd()` and `whereOr()` methods have been added; since `where()` is a class method.
 
 #### get()
 
@@ -158,7 +159,29 @@ The above query will return a [collection](collection.md) of posts which meets t
 
 #### insert()
 
-The `insert()` method create new records into the database. It mimics the SQL INSERT command, several records ​​can be inserted at once.
+The `insert()` method create new records into the database. It mimics the SQL INSERT command.
+
+```php
+$movie = new Movie;
+$movie->insert([
+    'title' => 'Le mépris', 
+    'author' => 'Jean-Luc Godard',
+    'release_year' => '1963'
+]);
+```
+
+You can also choose to replace an existing record by passing `true` as the second argument to the `insert()` method. This will perform an "insert or replace" operation.
+
+```php
+$movie = new Movie;
+$movie->insert([
+    'title' => 'Le mépris', 
+    'author' => 'Jean-Luc Godard',
+    'release_year' => '1963'
+], true); // Will replace the record if it exists
+```
+
+Several records ​​can be inserted or replaced at once.
 
 ```php
 $movie = new Movie;
@@ -175,7 +198,7 @@ Same as `insert()`.
 
 #### createOrFail()
 
-Same as `create()` with the only difference that the SQL statement will be executed in a transaction. The method returns `true` on success and `false` on failure.
+Same as `create()` with the only difference that the method returns `true` on success and `false` on failure.
 
 #### update()
 
@@ -264,7 +287,7 @@ public function store(Post $post, StoreUserRequest $request)
 
 #### filter()
 
-The `filter()` method works in the same manner as `swap()` method by reading request parameters. But this time, parameters are used to filter the query result. Let's say we want to retrieve posts published by a given user by making a request on a [route](routing/routes.md) like `/post?user_id=1` which use `PostController::index()` method as its action:
+The `filter()` method works in the same manner as `swap()` method by reading request parameters. But this time, parameters are used to filter the query result. Let's say we want to retrieve posts published by a given user by making a request on a [route](routing.md) like `/post?user_id=1` which use `PostController::index()` method as its action:
 
 ```php
 <?php
@@ -308,7 +331,7 @@ public function index()
 ?>
 ```
 
-!> As is the case for the `swap()` method, the parameters can be subprocessed by a custom [request](request.md) before being passed to the `filter()` method.
+> As is the case for the `swap()` method, the parameters can be subprocessed by a custom [request](request.md) before being passed to the `filter()` method.
 
 #### all()
 
@@ -337,7 +360,7 @@ If called on an instance, the record whose key matches that instance will be per
 
 public function destroy()
 {
-    Post::where('user_id = :id', ['id' => 1])
+    Post::where('user_id > :id', ['id' => 1])
         ->fetch()
         ->each(fn(Post $post) => $post->delete());
 }
@@ -345,7 +368,7 @@ public function destroy()
 
 #### forceDelete()
 
-Sometimes we would want to delete a certain number of records at a time respecting a given condition. This is where the `forceDelete()` method comes in action.
+Sometimes we would want to delete a certain number of records at a time respecting a given condition, or you would like to permanently delete soft deleted records. This is where the `forceDelete()` method comes in action.
 
 ```php
 <?php
@@ -358,7 +381,7 @@ public function destroy()
 }
 ```
 
-After running this command, the table records matched in the where condition will deleted permanently.
+After running this command, the table records matched in the where condition will be deleted permanently.
 
 > [!NOTE]
 > records
@@ -556,7 +579,7 @@ After then we can emit `product:purchased` event anywhere, the handler method of
 
 ## Relations
 
-Tonka ORM has 3 methods to establish relationships between models.
+**Elegant ORM** has 3 methods to establish relationships between models.
 
 ### hasOne()
 
