@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Tonka Framework's collection module provides a set of powerful, flexible data structures designed to simplify data management in your applications. With built-in support for common operations such as filtering, sorting, and transformation, the collection module enables developers to handle complex datasets with ease. Whether you're working with arrays, maps, or custom data types.
+**Tonka** Framework's collection module provides a set of powerful, flexible data structures designed to simplify data management in your applications. With built-in support for common operations such as filtering, sorting, and transformation, the collection module enables developers to handle complex datasets with ease. Whether you're working with arrays, maps, or custom data types.
 
 
 ## Table of Contents
@@ -25,7 +25,7 @@ Tonka Framework's collection module provides a set of powerful, flexible data st
 
 ## Getting Started
 
-To begin using the **Tonka** Framework's collection module, you can create a collection instance either by using the collection helper function or by directly importing the `Clicalmani\Foundation\Collection\Collection` class.
+To begin using the **Tonka** Framework's collection module, you can create a collection instance either by using the `collection` helper function or by directly importing the `Clicalmani\Foundation\Collection\Collection` class.
 
 #### Using the Collection Helper
 
@@ -48,18 +48,17 @@ Both approaches provide access to the full set of collection methods for managin
 Collections provide methods for filtering, sorting, and transforming data:
 
 ```php
-$filtered = $users->filter(fn($user) => $user['id'] > 1);
-$sorted = $users->sortBy('name');
+User::all()->filter(fn(User $user) => $user->isAdmin());
+User::all()->sortBy('name');
 ```
 
 ## Core Concepts
 
 The collection module is built around a few key principles:
 
-- **Mutability:** Most collection methods return new instances, ensuring your original data remains unchanged.
+- **Mutability:** Collections are designed to be mutable, by default—most operations modify the original instance.
 - **Chainability:** Methods can be chained for expressive and concise data manipulation.
 - **Type Flexibility:** Collections can handle arrays, objects, or custom data types.
-- **Consistency:** A unified API for all collection types simplifies learning and usage.
 
 Understanding these concepts will help you leverage the full power of the collection module in your applications.
 

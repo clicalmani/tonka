@@ -14,7 +14,6 @@
   - [Requests](requests.md)
   - [Responses](responses.md)
   - [Views](views.md)
-  - [Collection](collection.md)
   - [Validation](validation.md)
 - Database
   - [Getting Started](database.md)

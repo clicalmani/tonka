@@ -594,11 +594,11 @@ class ValidationController extends Controller
      */
     public function validateRequest(Request $request) : ViewInterface
     {
-        $request->validate(
-            name: 'required|string|max:255',
-            email: 'required|email|max:255',
-            age: 'nullable|integer|min:18',
-        );
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'age' => 'nullable|integer|min:18',
+        ]);
 
         // Logic to handle the validated data
 
@@ -742,9 +742,9 @@ if ($request->hasFile('photo')) {
 You can validate uploaded files using the `validate` method. For example, to ensure that an uploaded file is an image and does not exceed a certain size:
 
 ```php
-$request->validate(
-    photo: 'required|image|max:2048',
-);
+$request->validate([
+    'photo' => 'required|image|max:2048',
+]);
 ```
 
 #### Storing Uploaded Files

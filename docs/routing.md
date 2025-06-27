@@ -568,11 +568,11 @@ To validate request data, you can use the `validate` method within your route ca
 use Clicalmani\Foundation\Http\RequestInterface as Request;
 
 Route::post('/user', function (Request $request) {
-    $validated = $request->validate(
-        name: 'required|string|max:255',
-        email: 'required|email|unique:users,email',
-        password: 'required|string|min:8|confirmed:1',
-    );
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email',
+        'password' => 'required|string|min:8|confirmed:1',
+    ]);
 
     // The incoming request is valid...
     // You may proceed with your logic here...
