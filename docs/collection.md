@@ -1,27 +1,20 @@
-- [Introduction](collection.md?id=introduction)
-
-## Introduction
-
-**Tonka** Framework's collection module provides a set of powerful, flexible data structures designed to simplify data management in your applications. With built-in support for common operations such as filtering, sorting, and transformation, the collection module enables developers to handle complex datasets with ease. Whether you're working with arrays, maps, or custom data types.
-
-
-## Table of Contents
-
+- [Introduction](#introduction)
 - [Getting Started](#getting-started)
 - [Core Concepts](#core-concepts)
 - [Available Data Structures](#available-data-structures)
-    - [ArrayCollection](#arraycollection)
-    - [MapCollection](#mapcollection)
+    - [Array Collection](#array-collection)
+    - [Map Collection](#map-collection)
     - [Custom Collections](#custom-collections)
 - [Common Operations](#common-operations)
     - [Filtering](#filtering)
     - [Sorting](#sorting)
     - [Transformation](#transformation)
 - [Usage Examples](#usage-examples)
-- [Best Practices](#best-practices)
-- [API Reference](#api-reference)
-- [FAQ](#faq)
-- [Changelog](#changelog)
+- [Collection Methods](#collection-methods)
+
+## Introduction
+
+**Tonka** Framework's collection module provides a set of powerful, flexible data structures designed to simplify data management in your applications. With built-in support for common operations such as filtering, sorting, and transformation, the collection module enables developers to handle complex datasets with ease. Whether you're working with arrays, maps, or custom data types.
 
 ## Getting Started
 
@@ -66,24 +59,27 @@ Understanding these concepts will help you leverage the full power of the collec
 
 Tonka's collection module offers several built-in data structures to accommodate different use cases:
 
-### ArrayCollection
+### Array Collection
 
 A flexible wrapper around PHP arrays, providing advanced methods for manipulation, searching, and transformation.
 
 ```php
-use Clicalmani\Foundation\Collection\ArrayCollection;
+use Clicalmani\Foundation\Collection\Collection;
 
-$arrayCollection = new ArrayCollection([1, 2, 3, 4]);
+$arrayCollection = new Collection([1, 2, 3, 4]);
 ```
 
-### MapCollection
+### Map Collection
 
 A key-value store similar to associative arrays or maps, supporting efficient lookups and advanced operations.
 
 ```php
-use Clicalmani\Foundation\Collection\MapCollection;
+use Clicalmani\Foundation\Collection\Map;
 
-$mapCollection = new MapCollection(['name' => 'Alice', 'age' => 30]);
+$mapCollection = new Map(['name' => 'Alice', 'age' => 30]);
+$mapCollection->get('age'); // 30
+$mapCollection->set('age', 37);
+$mapCollection->get('age'); // 37
 ```
 
 ### Custom Collections
@@ -103,7 +99,7 @@ Each data structure provides a consistent API, making it easy to switch between 
 
 ## Common Operations
 
-Collections in Tonka provide a rich set of methods for manipulating and querying data. Here are some of the most commonly used operations:
+Collections in **Tonka** provide a rich set of methods for manipulating and querying data. Here are some of the most commonly used operations:
 
 ### Filtering
 
@@ -145,7 +141,7 @@ Find elements with `find`, `first`, or `contains`:
 
 ```php
 $firstAdmin = $users->first(fn($user) => $user['role'] === 'admin');
-$hasAlice = $users->contains('name', 'Alice');
+$hasAlice = $users->contains('Alice');
 ```
 
 These operations can be chained for expressive and concise data manipulation:
@@ -193,38 +189,20 @@ $totalAmount = $orders
 // $totalAmount is 225
 ```
 
-### Example 3: Working with MapCollection
+### Example 3: Working with Map
 
 ```php
-use Clicalmani\Foundation\Collection\MapCollection;
+use Clicalmani\Foundation\Collection\Map;
 
-$settings = new MapCollection([
+$settings = new Map([
     'theme' => 'dark',
     'notifications' => true,
 ]);
 
-$hasTheme = $settings->contains('theme'); // true
+$hasTheme = $settings->has('theme'); // true
 ```
 
 These examples illustrate how collections can simplify data processing and improve code readability.
-
-## Best Practices
-
-To get the most out of the Tonka collection module, consider the following best practices:
-
-- **Prefer Immutability:** Chain methods to avoid mutating the original collection, which helps prevent unintended side effects.
-- **Use Type Consistency:** Store similar data types within a collection to simplify operations and reduce errors.
-- **Leverage Method Chaining:** Combine multiple operations in a single, fluent chain for concise and readable code.
-- **Extend for Custom Logic:** Create custom collection classes for domain-specific behaviors or validation.
-- **Handle Empty Collections Gracefully:** Use methods like `firstOrNull()` or check for emptiness to avoid exceptions.
-- **Document Custom Methods:** When extending collections, document any custom methods for maintainability.
-
-Following these practices will help you write robust, maintainable, and expressive code with the Tonka collection module.
-
-
-## API Reference
-
-Below is a summary of the most commonly used methods available in the Tonka collection module. For detailed parameter and return type information, refer to the official documentation.
 
 ### Collection Methods
 
@@ -243,38 +221,3 @@ Below is a summary of the most commonly used methods available in the Tonka coll
 | `count()`             | Returns the number of items in the collection.                   |
 | `isEmpty()`           | Checks if the collection is empty.                               |
 | `toArray()`           | Converts the collection to a plain array.                        |
-
-### ArrayCollection & MapCollection
-
-These classes inherit all base collection methods and may provide additional methods specific to their data structure, such as:
-
-- `keys()` — Returns all keys in the collection.
-- `values()` — Returns all values in the collection.
-- `get($key, $default?)` — Retrieves a value by key (MapCollection).
-
-### Custom Collections
-
-When extending the base `Collection` class, you can add your own domain-specific methods as needed.
-
-For a complete list of methods and advanced usage, consult the [Tonka Framework documentation](https://tonka-framework-docs.example.com).
-
-## FAQ
-
-### What PHP version is required for the Tonka collection module?
-Tonka requires PHP 8.0 or higher.
-
-### Can I use collections with custom objects?
-Yes, collections can store and manipulate any data type, including custom objects.
-
-### Are collections mutable?
-Most collection methods return new instances, leaving the original collection unchanged.
-
-### How do I convert a collection back to a plain array?
-Use the `toArray()` method.
-
-### Can I extend the collection classes?
-Yes, you can extend the base `Collection` class to add custom methods or behaviors.
-
-### Where can I find more examples?
-See the [Usage Examples](#usage-examples) section or visit the [official documentation](https://tonka-framework-docs.example.com).
-

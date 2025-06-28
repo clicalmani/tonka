@@ -74,7 +74,7 @@ class UserController extends Controller
 }
 ```
 
-The get method returns an instance of `Clicalmani\Foundation\Collection\Collection` containing the results of the query where each result is an instance of the [PHP stdClass](https://www.php.net/manual/en/class.stdclass.php) object. You can access the value of each column by accessing the column as a property of the object:
+The get method returns an instance of [Collection](collection.md) containing the results of the query where each result is an instance of the [PHP stdClass](https://www.php.net/manual/en/class.stdclass.php) object. You can access the value of each column by accessing the column as a property of the object:
 
 ```php
 use Clicalmani\Foundation\Support\Facades\DB;
@@ -86,7 +86,7 @@ foreach ($users as $user) {
 }
 ```
 
-!> **Tonka** Collections provide a variety of extremely powerful methods for mapping and reducing data. For more information about Collections, see the [Collection documentation](collections).
+!> **Tonka** Collections provide a variety of extremely powerful methods for mapping and reducing data. For more information about Collections, see the [Collection documentation](collection.md).
 
 ### Retrieving a Single Row / Column From a Table
 
@@ -118,7 +118,7 @@ $user = DB::table('users')->find(3);
 
 ### Retrieving a List of Column Values
 
-If you want to retrieve an `Clicalmani\Foundation\Collection\Collection` instance containing the values ​​of a single column, you can use the `pluck` method. In this example, we will retrieve a collection of user titles:
+If you want to retrieve an [Collection](collection.md) instance containing the values ​​of a single column, you can use the `pluck` method. In this example, we will retrieve a collection of user titles:
 
 ```php
 use Clicalmani\Foundation\Support\Facades\DB;

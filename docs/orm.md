@@ -320,7 +320,7 @@ This feature is particularly useful in scenarios where multiple processes or use
 
 ## The `fetch` Method
 
-The `fetch` method in **Elegant ORM** allows you to retrieve records from the database as the model objects. This method is useful when you are planning to use some model properties or method on each record. The fetch method returns a collection to allows you to easily manage the records.
+The `fetch` method in **Elegant ORM** allows you to retrieve records from the database as the model objects. This method is useful when you are planning to use some model properties or method on each record. The fetch method returns a [collection](collection.md) to allows you to easily manage the records.
 
 Here is an example of how to use the `fetch` method:
 

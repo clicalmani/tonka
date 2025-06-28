@@ -404,7 +404,7 @@ public function destroy()
 
 #### first()
 
-As you can see, when the execution of an SQL command must produce several results, these will be made into a collection (we will discuss collections later). The first() method therefore the first value of the collection.
+As you can see, when the execution of an SQL command must produce several results, these will be made into a [collection](collection.md). The `first()` method therefore the first value of the collection.
 
 ```php
 Post::where('user_id = :id', ['id' => 1])

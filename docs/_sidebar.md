@@ -14,6 +14,7 @@
   - [Requests](requests.md)
   - [Responses](responses.md)
   - [Views](views.md)
+  - [Collection](collection.md)
   - [Validation](validation.md)
 - Database
   - [Getting Started](database.md)
@@ -22,3 +23,5 @@
   - [Migration](migration.md)
   - [Seeding](seeding.md)
   - [Elegant ORM](orm.md)
+- Advance
+  - [Testing](testing.md)

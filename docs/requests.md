@@ -502,7 +502,7 @@ $input = $request->all();
 
 #### Retrieving Input as a Collection
 
-Using the `collect` method, you may retrieve all of the incoming request's input data as a collection:
+Using the `collect` method, you may retrieve all of the incoming request's input data as a [collection](collection.md):
 
 ```php
 $input = $request->collect();
