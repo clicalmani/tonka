@@ -3,7 +3,7 @@ namespace App\Providers;
 
 use Clicalmani\Foundation\Support\Facades\DB;
 use Clicalmani\Foundation\Auth\Authenticate;
-use Clicalmani\Foundation\Http\Requests\RequestInterface;
+use Clicalmani\Foundation\Http\RequestInterface;
 
 class AuthServiceProvider extends Authenticate
 {
