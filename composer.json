@@ -6,14 +6,13 @@
     "license": "MIT",
     "require": {
         "clicalmani/console": ">=1.0",
-        "clicalmani/cookie": "^1.0",
+        "clicalmani/cookie": ">=1.0",
         "clicalmani/database": ">=1.0",
         "clicalmani/foundation": ">=2.0.3",
-        "clicalmani/psr7": "^1.0",
+        "clicalmani/psr7": ">=1.0",
         "clicalmani/routing": ">=1.0",
-        "clicalmani/validation": "^2.0",
-        "clicalmani/xpower": ">=1.2.1",
-        "inertia/tonka-adapter": "^1.0"
+        "clicalmani/validation": ">=2.0",
+        "clicalmani/xpower": ">=1.2.1"
     },
     "autoload": {
         "psr-4": {
