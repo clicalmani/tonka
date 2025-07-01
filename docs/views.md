@@ -20,6 +20,9 @@
     - [View Creators](views.md?id=view-creators)
         - [Defining a View Creator](views.md?id=defining-a-view-creator)
         - [Accessing Initialized Data in Views](views.md?id=accessing-initialized-data-in-views)
+- [Using Inertia.js with Tonka](#using-inertia.js-with-tonka)
+    - [Setting Up Inertia.js](#setting-up-inertia.js)
+    - [Using the Comet Inertia Starter Kit](#using-the-comet-inertia-starter-kit)
 
 ## Introduction
 
@@ -28,21 +31,20 @@ Views in **Tonka** are designed to be modular and reusable, allowing developers 
 When using **Tonka**, view templates are usually written using the Twig templating language. A simple view might look something like this:
 
 ```twig
-{% extends "base.html.twig" %}
+{% extends "base.twig.php" %}
 
 {% block content %}
-    <h1>{{ title }}</h1>
-    <p>{{ message }}</p>
+    <h1>Hello, Guest</h1>
 {% endblock %}
 ```
 
 In this example, the view extends a base template and defines a content block that displays a title and a message. The `{{ }}` syntax is used to output variables passed to the view.
 
-Since this view is stored at `resources/views/greeting.html.twig`, we may return it using the global view helper like so:
+Since this view is stored at `resources/views/greeting.twig.php`, we may return it using the global view helper like so:
 
 ```php
 Route::get('/greeting', function () {
-    return view('greeting', ['title' => 'Hello, World!', 'message' => 'Welcome to **Tonka**!']);
+    return view('greeting');
 });
 ```
 
@@ -54,14 +56,13 @@ To create a view in **Tonka**, you need to define a template file using the Twig
 
 ### Defining a View Template
 
-Create a new file in the `resources/views` directory, for example, `resources/views/welcome.html.twig`, and add the following content:
+Create a new file in the `resources/views` directory, for example, `resources/views/welcome.twig.php`, and add the following content:
 
 ```twig
-{% extends "base.html.twig" %}
+{% extends "base.twig.php" %}
 
 {% block content %}
-    <h1>{{ title }}</h1>
-    <p>{{ message }}</p>
+    <h1>Welcome Home!</h1>
 {% endblock %}
 ```
 
@@ -71,15 +72,34 @@ To render the view, you can use the global `view` helper function in a route or 
 
 ```php
 Route::get('/welcome', function () {
-    return view('welcome', ['title' => 'Welcome to **Tonka**', 'message' => 'This is your first view!']);
+    return view('welcome');
 });
 ```
 
-When you visit the `/welcome` URL in your browser, you should see the rendered view with the title and message you provided.
+When you visit the `/welcome` URL in your browser, you should see the rendered view with the "Welcome Home!" message.
 
 ### Passing Data to Views
 
 You can pass data to your views by providing an associative array as the second argument to the `view` helper function. The keys of the array will be available as variables in your Twig template.
+
+```php
+Route::get('/welcome', function () {
+    return view('profile', ['title' => 'Hello, World!', 'message' => 'Welcome to **Tonka**!']);
+});
+```
+
+In your `welcome.twig.php` template, you can access the `title` and the `message` variable like this:
+
+```twig
+{% extends "base.twig.php" %}
+
+{% block content %}
+    <h1>{{ title }}</h1>
+    <p>{{ message }}</p>
+{% endblock %}
+```
+
+You can also pass an array or an object as varialble:
 
 ```php
 Route::get('/profile', function () {
@@ -88,10 +108,10 @@ Route::get('/profile', function () {
 });
 ```
 
-In your `profile.html.twig` template, you can access the `user` variable like this:
+In your `profile.twig.php` temple, you can access the `user` variable like this:
 
 ```twig
-{% extends "base.html.twig" %}
+{% extends "base.twig.php" %}
 
 {% block content %}
     <h1>{{ user.name }}</h1>
@@ -108,17 +128,17 @@ By following these steps, you can create and render views in **Tonka**, making y
 ```
 resources/views/
 ├── layouts/
-│   └── app.html.twig
+│   └── app.twig.php
 ├── partials/
-│   └── header.html.twig
+│   └── header.twig.php
 └── pages/
-    ├── home.html.twig
-    └── about.html.twig
+    ├── home.twig.php
+    └── about.twig.php
 ```
 
 ### Defining Nested Views
 
-To define a nested view, create the necessary directories and files within the `resources/views` directory. For example, to create a `home` view inside the `pages` directory, you would create a file at `resources/views/pages/home.html.twig` with the following content:
+To define a nested view, create the necessary directories and files within the `resources/views` directory. For example, to create a `home` view inside the `pages` directory, you would create a file at `resources/views/pages/home.twig.php` with the following content:
 
 ```twig
 {% extends "layouts.app" %}
@@ -152,7 +172,7 @@ In some cases, you might want to share data with all views in your application. 
 Occasionally, you may need to share data with all views that are rendered by your application. You may do so using the `View` facade's `share` method. Typically, you should place calls to the `share` method within a service provider's `boot` method. You are free to add them to the `App\Providers\AppServiceProvider` class or generate a separate service provider to house them:
 
 ```php
-use Illuminate\Support\Facades\View;
+use Clicalmani\Foundation\Support\Facades\View;
 
 public function boot()
 {
@@ -162,57 +182,9 @@ public function boot()
 
 In this example, the `View::share` method is used to bind a piece of data to all views. The first argument is the key that will be available in the views, and the second argument is the value.
 
-### Example of a View Composer Class
-
-Now that we have registered the composer, the `compose` method of the `App\View\Composers\ProfileComposer` class will be executed each time the profile view is being rendered. Let's take a look at an example of the composer class:
-
-```php
-namespace App\View\Composers;
-
-use Illuminate\View\View;
-use App\Models\User;
-
-class ProfileComposer
-{
-    /**
-     * The user repository implementation.
-     *
-     * @var \App\Models\User
-     */
-    protected $users;
-
-    /**
-     * Create a new profile composer.
-     *
-     * @param  \App\Models\User  $users
-     * @return void
-     */
-    public function __construct(User $users)
-    {
-        // Dependencies automatically resolved by the service container...
-        $this->users = $users;
-    }
-
-    /**
-     * Bind data to the view.
-     *
-     * @param  \Illuminate\View\View  $view
-     * @return void
-     */
-    public function compose(View $view)
-    {
-        $view->with('count', $this->users->count());
-    }
-}
-```
-
-In this example, the `ProfileComposer` class is responsible for binding the total user count to the profile view. The `compose` method is called with an instance of the view, and the `with` method is used to bind the data to the view.
-
-By using view composers, you can encapsulate the logic for preparing data for views, making your code more modular and maintainable.
-
 ### Accessing Shared Data in Views
 
-Once you have shared the data using the `share` method, you can access it in any view. For example, in your `base.html.twig` template, you might display the shared data:
+Once you have shared the data using the `share` method, you can access it in any view. For example, in your `base.twig.php` template, you might display the shared data:
 
 ```twig
 <!DOCTYPE html>
@@ -238,7 +210,7 @@ By using the `share` method, you can easily share data across all views in your 
 To define a view composer, you can use the `View::composer` method in your application's service provider. For example, you might want to share the authenticated user's information with all views:
 
 ```php
-use Illuminate\Support\Facades\View;
+use Clicalmani\Foundation\Support\Facades\View;
 
 public function boot()
 {
@@ -252,7 +224,7 @@ In this example, the `View::composer` method is used to bind the `authUser` vari
 
 ### Accessing Shared Data in Views
 
-Once you have defined a view composer, you can access the shared data in any view. For example, in your `base.html.twig` template, you might display the authenticated user's name:
+Once you have defined a view composer, you can access the shared data in any view. For example, in your `base.twig.php` template, you might display the authenticated user's name:
 
 ```twig
 <!DOCTYPE html>
@@ -282,7 +254,7 @@ If you need to attach a composer to multiple views, you can specify an array of 
 To define a composer for multiple views, use the `View::composer` method and pass an array of view names as the first argument. For example, you might want to share the same data with the `dashboard` and `profile` views:
 
 ```php
-use Illuminate\Support\Facades\View;
+use Clicalmani\Foundation\Support\Facades\View;
 
 public function boot()
 {
@@ -296,11 +268,11 @@ In this example, the `sharedData` variable will be available in both the `dashbo
 
 ### Accessing Shared Data in Multiple Views
 
-Once you have defined the composer, you can access the shared data in the specified views. For example, in your `dashboard.html.twig` and `profile.html.twig` templates, you might display the shared data:
+Once you have defined the composer, you can access the shared data in the specified views. For example, in your `dashboard.twig.php` and `profile.twig.php` templates, you might display the shared data:
 
 ```twig
-<!-- dashboard.html.twig -->
-{% extends "base.html.twig" %}
+<!-- dashboard.twig.php -->
+{% extends "base.twig.php" %}
 
 {% block content %}
     <h1>Dashboard</h1>
@@ -309,8 +281,8 @@ Once you have defined the composer, you can access the shared data in the specif
 ```
 
 ```twig
-<!-- profile.html.twig -->
-{% extends "base.html.twig" %}
+<!-- profile.twig.php -->
+{% extends "base.twig.php" %}
 
 {% block content %}
     <h1>Profile</h1>
@@ -329,7 +301,9 @@ In addition to view composers, **Tonka** also supports view creators. View creat
 To define a view creator, use the `View::creator` method in your application's service provider. For example, you might want to initialize some data for the `dashboard` view:
 
 ```php
-use Illuminate\Support\Facades\View;
+// app/Providers/AppServiceProvider.php
+
+use Clicalmani\Foundation\Support\Facades\View;
 
 public function boot()
 {
@@ -343,10 +317,10 @@ In this example, the `initData` variable will be available in the `dashboard` vi
 
 ### Accessing Initialized Data in Views
 
-Once you have defined the view creator, you can access the initialized data in the specified view. For example, in your `dashboard.html.twig` template, you might display the initialized data:
+Once you have defined the view creator, you can access the initialized data in the specified view. For example, in your `dashboard.twig.php` template, you might display the initialized data:
 
 ```twig
-{% extends "base.html.twig" %}
+{% extends "base.twig.php" %}
 
 {% block content %}
     <h1>Dashboard</h1>
@@ -355,3 +329,117 @@ Once you have defined the view creator, you can access the initialized data in t
 ```
 
 By using view creators, you can perform any necessary setup or initialization for your views, making your application more flexible and maintainable.
+
+## Using Inertia.js with Tonka
+
+**Tonka** supports integration with [Inertia.js](https://inertiajs.com/), allowing you to build modern single-page applications (SPAs) using classic server-side routing and controllers, while leveraging client-side frameworks like Vue or React.
+
+### Setting Up Inertia.js
+
+To use Inertia.js in your Tonka application:
+
+1. **Install Inertia.js** in your frontend project (e.g., with Vue or React).
+2. **Configure your routes** to return Inertia responses instead of traditional views.
+
+### Returning Inertia Responses
+
+Instead of returning a view, use the `inertia` helper to return an Inertia response from your route or controller:
+
+```php
+use Inertia\Inertia;
+
+Route::get('/dashboard', function () {
+    return Inertia::render('Dashboard', [
+        'user' => auth()->user(),
+        'notifications' => Notification::recent(),
+    ]);
+});
+```
+
+In this example, the `Dashboard` component will receive the `user` and `notifications` props.
+
+### Creating Inertia Pages
+
+Your frontend should have a matching component (e.g., `resources/js/Pages/Dashboard.vue` for Vue):
+
+```vue
+<template>
+  <div>
+    <h1>Welcome, {{ user.name }}</h1>
+    <ul>
+      <li v-for="note in notifications" :key="note.id">{{ note.message }}</li>
+    </ul>
+  </div>
+</template>
+
+<script setup>
+defineProps(['user', 'notifications'])
+</script>
+```
+
+### Sharing Data with All Inertia Pages
+
+You can share data with all Inertia pages by defining shared props in your service provider:
+
+```php
+// app/Providers/AppServiceProvider.php
+
+use Inertia\Inertia;
+
+public function boot()
+{
+    Inertia::share([
+        'appName' => config('app.name'),
+        'authUser' => fn () => auth()->user(),
+    ]);
+}
+```
+
+Now, `appName` and `authUser` will be available as props in all Inertia pages.
+
+### Learn More
+
+For a full guide on using Inertia.js, see the [official documentation](https://inertiajs.com/).
+
+### Using the Comet Inertia Starter Kit
+
+To quickly get started with Inertia.js in your Tonka application, you can use the [Comet Inertia Starter Kit](https://github.com/clicalmani/comet). This kit provides a pre-configured setup with Inertia.js, Vue 3, and Vite, making it easy to scaffold a modern single-page application.
+
+#### Installation Steps
+
+1. **Create a New Project**: Open your terminal and run the following command to create a new **Tonka** project:
+
+    ```sh
+    composer create-project clicalmani/comet my-comet-app
+    ```
+
+2. **Install Frontend Dependencies:**
+
+    ```bash
+    npm install
+    ```
+
+3. **Build Frontend Assets:**
+
+    ```bash
+    npm run dev
+    ```
+
+4. **Configure Environment:**
+
+    Copy `.env.example` to `.env` and update any necessary environment variables.
+
+5. **Run Migrations (if applicable):**
+
+    ```bash
+    php tonka migrate:fresh --seed
+    ```
+
+6. **Start the Application:**
+
+    ```bash
+    php tonka dev
+    ```
+
+Now you have a Tonka application with Inertia.js and Vue 3 ready to go. You can start building your pages in `resources/js/Pages` and define your routes.
+
