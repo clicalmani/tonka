@@ -235,6 +235,10 @@ Route::get('/status', function() {
 Route::get('/status', function() {
     return response()->internalServerError();
 });
+
+Route::get('/status', function() {
+    return response()->status(201);
+});
 ```
 
 ### Middleware Response

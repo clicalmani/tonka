@@ -141,7 +141,7 @@ class UserController extends Controller
     {
         // Logic to retrieve user by $id
 
-        return new View('user.profile', ['user' => $user]);
+        return new View('user.profile', ['user' => User::find($id)]);
     }
 }
 ```
@@ -609,7 +609,7 @@ class ValidationController extends Controller
 
 In this example, the `validateRequest` method defines validation rules for the `name`, `email`, and `age` fields. If the validation fails, a `ValidationException` will be throw with an error message.
 
-You can also customize the error messages by implementing the `message` method of your [custom validator](orm.md?id=creating-a-custom-validator):
+You can also customize the error messages by implementing the `message` method of your [custom validator](validation.md?id=customizing-error-message):
 
 ```php
 <?php
@@ -648,7 +648,7 @@ Here is an example of a custom request class:
 ```php
 namespace App\Http\Requests;
 
-use Clicalmani\Foundation\Http\RequestInterface as Request;
+use Clicalmani\Foundation\Http\Request;
 
 class StoreUserRequest extends Request
 {
@@ -683,6 +683,7 @@ You can then use this custom request class in your controller:
 ```php
 namespace App\Http\Controllers;
 
+use Clicalmani\Foundation\Acme\Controller;
 use App\Http\Requests\StoreUserRequest;
 use Clicalmani\Foundation\Resources\View;
 

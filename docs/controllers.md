@@ -57,55 +57,102 @@ This command will create a new controller file at `app/Http/Controllers/UserCont
 Here is an example of a basic controller class:
 
 ```php
-<?php
-
+<?php 
 namespace App\Http\Controllers;
 
-use Clicalmani\Foundation\Http\RequestInterface as Request;
-use use Clicalmani\Foundation\Acme\Controller;
+use Clicalmani\Foundation\Acme\Controller;
+use Clicalmani\Foundation\Http\RequestInterface;
+use \Clicalmani\Foundation\Resources\ViewInterface;
+use \Clicalmani\Foundation\Http\RedirectInterface;
 
 class UserController extends Controller
 {
-    // Show a list of users
-    public function index()
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Clicalmani\Foundation\Resources\ViewInterface
+     */
+    public function index() : ViewInterface
     {
-        // Logic to retrieve and return a list of users
+        // Implement the resource listing code
+
+        return view('');
     }
 
-    // Show a single user
-    public function show(int $id)
+    /**
+     * Create the specified resource.
+     *
+     * @param  \Clicalmani\Foundation\Http\RequestInterface  $Request
+     * @return \Clicalmani\Foundation\Resources\ViewInterface
+     */
+    public function create(RequestInterface $Request) : ViewInterface
     {
-        // Logic to retrieve and return a single user by their ID
+        // Implement the resource creation code
+
+        return view('');
     }
 
-    // Show the form to create a new user
-    public function create()
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Clicalmani\Foundation\Http\RequestInterface  $Request
+     * @return \Clicalmani\Foundation\Resources\ViewInterface
+     */
+    public function store(RequestInterface $Request)
     {
-        // Logic to show a form for creating a new user
+        // Implement the resource storing code
     }
 
-    // Store a new user
-    public function store(Request $request)
+    /**
+     * Show the specified resource.
+     *
+     * @param  \Clicalmani\Foundation\Http\RequestInterface  $Request
+     * @param int $id
+     * @return \Clicalmani\Foundation\Resources\ViewInterface
+     */
+    public function show(RequestInterface $Request, int $id) : ViewInterface
     {
-        // Logic to store a new user in the database
+        // Implement the resource view code
+
+        return view('');
     }
 
-    // Show the form to edit an existing user
-    public function edit(int $id)
+    /**
+     * Edit the specified resource.
+     *
+     * @param  \Clicalmani\Foundation\Http\RequestInterface  $Request
+     * @param int $id
+     * @return \Clicalmani\Foundation\Resources\ViewInterface
+     */
+    public function edit(RequestInterface $Request, int $id) : ViewInterface
     {
-        // Logic to show a form for editing an existing user
+        // Implement the resource edit code
+
+        return view('');
     }
 
-    // Update an existing user
-    public function update(Request $request, int $id)
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Clicalmani\Foundation\Http\RequestInterface  $Request
+     * @param  int $id
+     * @return \Clicalmani\Foundation\Http\RedirectInterface
+     */
+    public function update(RequestInterface $Request, int $id) : RedirectInterface
     {
-        // Logic to update an existing user in the database
+        return redirect('/');
     }
 
-    // Delete a user
-    public function destroy(int $id)
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \Clicalmani\Foundation\Http\RequestInterface  $Request
+     * @param int $id 
+     * @return \Clicalmani\Foundation\Http\RedirectInterface
+     */
+    public function destroy(RequestInterface $Request, int $id) : RedirectInterface
     {
-        // Logic to delete a user from the database
+        return redirect('/');
     }
 }
 ```
@@ -128,7 +175,38 @@ Route::delete('/users/:id', [UserController::class, 'destroy']);
 
 These routes will map HTTP requests to the corresponding methods in the `UserController` class, allowing you to handle user-related actions through your controller.
 
-!> Do not forget to type-hint your controller methods parameters otherwise null will be used as default type.
+### Using the `@` Notation for Controllers
+
+**Tonka** supports a convenient `@` notation for referencing controller methods in your route definitions. This notation allows you to specify the controller and method as a string, making your route definitions more concise.
+
+For example, instead of passing an array to reference a controller method:
+
+```php
+use App\Http\Controllers\UserController;
+
+Route::get('/users', [UserController::class, 'index']);
+```
+
+You can use the `@` notation as follows:
+
+```php
+Route::get('/users', 'UserController@index');
+```
+
+This tells the router to use the `index` method of the `UserController` class. The `@` notation works for all HTTP verbs and controller methods:
+
+```php
+Route::get('/users/:id', 'UserController@show');
+Route::post('/users', 'UserController@store');
+Route::put('/users/:id', 'UserController@update');
+Route::delete('/users/:id', 'UserController@destroy');
+```
+
+> **Note:** When using the `@` notation, the controller class is resolved relative to your application's controller namespace (typically `App\Http\Controllers`).
+
+This approach can help keep your route files clean and easy to read, especially for smaller applications or when quickly prototyping routes.
+
+!> Do not forget to type-hint your controller methods parameters otherwise null will be used as default type and no value will be passed.
 
 ### Single Action Controllers
 
@@ -390,12 +468,12 @@ class User extends Elegant
      *
      * @param  mixed  $value
      * @param  string|null  $field
-     * @return \Clicalmani\Database\Factory\Models\Model|null
+     * @return ?self
      */
-    public function resolveRouteBinding($value, $field = null)
+    protected function resolveRouteBinding(mixed $value, ?string $field = null) : ?self
     {
         // Custom logic to retrieve the model or return null
-        return self::where($field ?? $this->getKey(), $value)->firstOr(function () {
+        return self::where("$field = ?", [$value])->firstOr(function () {
             // Custom behavior when model is not found
             throw new ModelNotFoundException('User not found', 404, 'NOT_FOUND');
         });
@@ -419,8 +497,8 @@ class AppServiceProvider extends ServiceProvider
 {
     public function boot()
     {
-        \Clicalmani\Database\Factory\Models\Model::resolveRouteBindingUsing(function ($value, $field = null, $model) {
-            return $model->where($field ?? $model->getRouteKeyName(), $value)->firstOr(function () {
+        \Clicalmani\Database\Factory\Models\Elegant::resolveRouteBindingUsing(function ($value, $field, $resource) {
+            return $resource->where("$field = ?", [$value])->firstOr(function () {
                 // Custom behavior when model is not found
                 throw new ModelNotFoundException('Model not found', 404, 'NOT_FOUND');
             });
@@ -432,6 +510,24 @@ class AppServiceProvider extends ServiceProvider
 This approach allows you to define a global behavior for all models when they are not found during route model binding.
 
 By customizing the missing model behavior, you can provide more informative responses and handle missing models in a way that suits your application's needs.
+
+> **Best Practice:**  
+> When retrieving a model by its primary key in your controller, always use the `findOrFail` method instead of `find`. The `findOrFail` method will automatically throw a `ModelNotFoundException` if the model does not exist, resulting in a 404 response. This ensures missing models are handled gracefully and consistently.
+
+**Example:**
+
+```php
+use App\Models\User;
+
+public function show($id)
+{
+    $user = User::findOrFail($id); // Throws ModelNotFoundException if not found
+
+    // Continue with your logic...
+}
+```
+
+This approach is preferred over `find`, which would return `null` if the model is missing and could lead to unexpected errors if not checked.
 
 #### Soft Deleted Models
 
@@ -492,13 +588,13 @@ This command will execute the migration and add the `deleted_at` column to the `
 When querying a model that uses soft deletes, the `deleted_at` column will be automatically checked to exclude soft deleted models. To include soft deleted models in your query, use the `withTrashed` method:
 
 ```php
-$users = User::withTrashed()->get();
+$users = User::where()->withTrashed()->get();
 ```
 
 To only retrieve soft deleted models, use the `onlyTrashed` method:
 
 ```php
-$trashedUsers = User::onlyTrashed()->get();
+$trashedUsers = User::where()->onlyTrashed()->get();
 ```
 
 ##### Restoring Soft Deleted Models
@@ -506,7 +602,7 @@ $trashedUsers = User::onlyTrashed()->get();
 To restore a soft deleted model, use the `restore` method:
 
 ```php
-$user = User::withTrashed()->fetch()
+$user = User::where()->onlyTrashed()->fetch()
             ->each(fn(User $user) => $user->restore());
 ```
 
@@ -515,7 +611,7 @@ $user = User::withTrashed()->fetch()
 To permanently delete a soft deleted model, use the `forceDelete` method:
 
 ```php
-$user = User::withTrashed()->find($id);
+$user = User::find($id)->withTrashed();
 $user->forceDelete();
 ```
 
@@ -568,7 +664,7 @@ class UserController extends Controller
     {
         // Implement the resource create here
 
-        return new View('');
+        return new View('', ['user' => $user]);
     }
 
     /**
@@ -685,7 +781,7 @@ class StoreUserRequest extends Request
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
             'password' => 'required|password|min:8|max:255|confirm:1|hash:1',
-            'password_confirm' => 'sometimes|required|string|min:8|max:255'
+            'password_confirmation' => 'sometimes|required|string|min:8|max:255'
         ]);
     }
 }
@@ -1411,13 +1507,13 @@ class ProfileController extends Controller
     {
         // Logic to store the profile in the database
         $profile = Profile::create($request->all());
-        return response()->json($profile, 201);
+        return response()->status(201)->json($profile);
     }
 
     public function show()
     {
         // Logic to retrieve and return the profile
-        return response()->json(Profile::first());
+        return response()->json(Profile::find(1));
     }
 
     public function edit()
@@ -1428,7 +1524,7 @@ class ProfileController extends Controller
     public function update(Request $request)
     {
         // Logic to update the profile in the database
-        $profile = Profile::first();
+        $profile = Profile::find(1);
         $profile->update($request->all());
         return response()->json($profile);
     }
@@ -1515,7 +1611,7 @@ Using API singleton resource controllers and routes can help you manage resource
 
 ### Constructor Injection
 
-**Tonka** allows you to take advantage of dependency injection in your controllers. You can type-hint dependencies in your controller's constructor, and they will be automatically resolved and injected by the service container.
+**Tonka** allows you to take advantage of dependency injection in your controllers. You can type-hint dependencies in your controller's constructor, and they will be automatically resolved and injected by the [service container](container.md).
 
 For example, let's inject a repository into a controller:
 
@@ -1582,7 +1678,7 @@ class UserController extends Controller
         return response()->json($user, 201);
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, int $id)
     {
         $data = $request->all();
         $user = $this->users->update($id, $data);
@@ -1617,7 +1713,7 @@ class UserController extends Controller
     /**
      * Update the given user.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, int $id)
     {
         // Update the user...
  
@@ -1650,7 +1746,7 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @return \Clicalmani\Psr\Response
+     * @return \Clicalmani\Foundation\Http\Responses\JsonResponseInterface
      */
     #[AsValidator(
         given_name: 'required|string|max:200',
@@ -1675,241 +1771,10 @@ class UserController extends Controller
 
 In this example, the `store` method in the `UserController` class creates a new `User` instance, fills it with data from the request, and validates the model's attributes. If the validation passes, the user is saved to the database. If the validation fails, a `ValidationException` is thrown, and an error response is returned.
 
-!> For further information about validators, read the [Validation](orm.md?id=validating-model-instances) documentation.
+!> For further information about validation rules, read the [Validation](validation.md) documentation.
 
 ### Testing Controllers
 
 **Tonka** provides a simple and intuitive way to test your controllers. You can use the built-in testing tools to simulate HTTP requests and assert the responses. This allows you to ensure that your controllers are handling requests correctly and returning the expected responses.
 
-#### Creating Tests for Controllers
-
-To create tests for your controllers, you can use the `make:test` console command to generate a test class. For example, let's create a test class for the `UserController`:
-
-```sh
-php tonka make:test UserController
-```
-
-After running the command, a test class will be created in the `test` directory:
-
-```php
-<?php
-
-namespace Test\Controllers;
-
-use Clicalmani\Foundation\Test\Controllers\TestController;
-use App\Http\Controllers\UserController;
-
-class UserControllerTest extends ControllerTest
-{
-    /**
-     * Controller class
-     *
-     * @var string Class name 
-     */
-    protected $controller = UserController::class;
-    	
-    /**
-     * Seed index method
-     * 
-     * @return array 
-     */
-    public function index() : array
-    {
-        return [
-            // Action parameters
-        ];
-    }
-
-    /**
-     * Seed store method
-     * 
-     * @return array 
-     */
-    public function store() : array
-    {
-        return [
-            // Action parameters
-        ];
-    }
-
-    /**
-     * Seed create method
-     * 
-     * @return array 
-     */
-    public function create() : array
-    {
-        return [
-            // Action parameters
-        ];
-    }
-
-    /**
-     * Seed update method
-     * 
-     * @return array 
-     */
-    public function update() : array
-    {
-        return [
-            // Action parameters
-        ];
-    }
-
-    /**
-     * Seed destroy method
-     * 
-     * @return array 
-     */
-    public function destroy() : array
-    {
-        return [
-            // Action parameters
-        ];
-    }
-
-    /**
-     * Test method
-     * 
-     * @return void 
-     */
-    public static function test() : void
-    {
-        // Test code
-    }
-}
-```
-
-#### Writing Tests
-
-Now that we have a test class, we need to add `HasTest` trait to the `UserController` class to make sure that the controller and its test class are interconnected:
-
-```php
-<?php
-
-namespace App\Http\Controllers;
-
-use use Clicalmani\Foundation\Acme\Controller;
-use Clicalmani\Foundation\Traits\HasTest;
-
-class UserController extends Controller
-{
-    use HasTest;
-
-    // ...
-}
-```
-
-Finally, we can write a test in the `test` method of UserControllerTest class:
-
-```php
-<?php
-
-namespace Test\Controllers;
-
-use Clicalmani\Foundation\Test\Controllers\TestController;
-use App\Http\Controllers\UserController;
-
-class UserControllerTest extends ControllerTest
-{
-    /**
-     * Seed update method
-     * 
-     * @return array 
-     */
-    public function update() : array
-    {
-        return [
-            'id' => 1,
-            'email' => faker()->unique()->safeEmail
-        ];
-    }
-
-    /**
-     * Test method
-     * 
-     * @return void 
-     */
-    public static function test() : void
-    {
-        UserController::test('update')
-            ->count(1)
-            ->make();
-    }
-}
-```
-
-In the generated test class, we wrote tests to verify the `update` method's behavior. An HTTP request will be made to update the user's email address.
-
-#### Running Tests
-
-To run your tests, you can use the `test` console command provided by **Tonka**. This command will execute all the tests in your application and display the results.
-
-```sh
-php tonka test
-```
-
-You can also run a specific test class by providing the class name as an argument:
-
-```sh
-php tonka test --controller=UserController
-```
-
-#### Using Sequences
-
-When testing controllers, you may need to perform multiple actions at a time. **Tonka** provides a convenient way to define and execute sequences of actions using the `Sequence` class.
-
-For example, let's define a sequence of actions to test the `UserController`:
-
-```php
-<?php
-
-namespace Test\Controllers;
-
-use Clicalmani\Foundation\Test\Controllers\TestController;
-use Clicalmani\Database\Factory\Sequence;
-use App\Http\Controllers\UserController;
-
-class UserControllerTest extends ControllerTest
-{
-    /**
-     * Seed store method
-     * 
-     * @return array 
-     */
-    public function store() : array
-    {
-        return [
-            'given_name' => null,
-            'family_name' => null,
-            'email' => null
-        ];
-    }
-
-    /**
-     * Test method
-     * 
-     * @return void 
-     */
-    public static function test() : void
-    {
-        UserController::test('store')
-            ->count(3)
-            ->defaultUsers()
-            ->make();
-    }
-
-    public function defaultUsers()
-    {
-        return $this->state(function() {
-            return [
-                'given_name' => new Sequence(faker()->name(), faker()->name(), faker()->name()),
-                'family_name' => new Sequence(faker()->name(), faker()->name(), faker()->name()),
-                'email' => new Sequence(faker()->unique()->safeEmail, faker()->unique()->safeEmail, faker()->unique()->safeEmail)
-            ];
-        });
-    }
-}
-```
-
-In this example, we define 3 sequences of users to test the `store` methods of the `UserController`. The `Sequence` class allows us to store one user at a time.
+!> For further information about controller tests, read the [Testing](testing.md) documentation.
