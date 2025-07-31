@@ -31,7 +31,7 @@ window.$docsify = {
       function(hook) {
         var footer = [
           '<footer style="text-align: center;margin-top: 50px;">',
-          '<span> TONKA Framework  &copy; 2024 </span>',
+          '<span> TONKA Framework  &copy; 2025 </span>',
           '</footer>'
         ].join('');
 

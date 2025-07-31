@@ -93,8 +93,8 @@ This setup ensures your scheduled tasks are consistently processed without manua
 
 ## Killing Scheduled Tasks
 
-To stop scheduled tasks, you can terminate the scheduled tasks by running `schedule:stop` command.
+To stop scheduled tasks, you can terminate the scheduled tasks by running `schedule:kill` command.
 
 ```bash
-php tonka schedule:stop
+php tonka schedule:kill
 ```
