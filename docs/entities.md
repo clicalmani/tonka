@@ -68,7 +68,7 @@ class PostEntity extends Entity
 
 ## Entity Data Types
 
-A data type in **Tonka** is a class that extends [Clicalmani\Database\Factory\DataTypes\DataType](https://github.com/clicalmani/database/factory/datatypes/datatype) representing a SQL corresponding data type. Most of the types bear the same name such as `varchar`, `char`, `enum`... 
+A data type in **Tonka** is a class that extends `DataType` class representing a SQL corresponding data type. Most of the types bear the same name such as `varchar`, `char`, `enum`... 
 
 In most SQL languages there are three main data types: string, numeric, and date and time.
 
@@ -78,7 +78,7 @@ Numeric data types are fundamental to database design and are used to store numb
 
 #### Integer
 
-You may use the [Clicalmani\Database\DataTypes\Integer](https://github.com/clicalmani/database/datatypes) to represent `INT` or `INTEGER` data type:
+You may use the `Integer` class to represent `INT` or `INTEGER` data type:
 
 ```php
 use Clicalmani\Database\DataTypes\Integer;
@@ -94,7 +94,7 @@ public Integer $id;
 
 #### Medium Integer
 
-You may use the [Clicalmani\Database\DataTypes\MediumInt](https://github.com/clicalmani/database/datatypes) to represent `MEDIUMINT` data type:
+You may use the `MediumInt` class to represent `MEDIUMINT` data type:
 
 ```php
 use Clicalmani\Database\DataTypes\MediumInt;
@@ -110,7 +110,7 @@ public MediumInt $id;
 
 #### Big Integer
 
-You may use the [Clicalmani\Database\DataTypes\BigInt](https://github.com/clicalmani/database/datatypes) to represent `BIGINT` data type:
+You may use the `BigInt` class to represent `BIGINT` data type:
 
 ```php
 use Clicalmani\Database\DataTypes\BigInt;
@@ -126,7 +126,7 @@ public BigInt $id;
 
 #### Small Integer
 
-You may use the [Clicalmani\Database\DataTypes\SmallInt](https://github.com/clicalmani/database/datatypes) to represent `SMALLINT` data type:
+You may use the `SmallInt` class to represent `SMALLINT` data type:
 
 ```php
 use Clicalmani\Database\DataTypes\SmallInt;
@@ -142,7 +142,7 @@ public SmallInt $id;
 
 #### Tiny Integer
 
-You may use the [Clicalmani\Database\DataTypes\TinyInt](https://github.com/clicalmani/database/datatypes) to represent `TINYINT` data type:
+You may use the `TinyInt` class to represent `TINYINT` data type:
 
 ```php
 use Clicalmani\Database\DataTypes\TinyInt;
@@ -158,7 +158,7 @@ public TinyInt $id;
 
 #### Decimal
 
-You may use the [Clicalmani\Database\DataTypes\Decimal](https://github.com/clicalmani/database/datatypes) to represent `DECIMAL` data type:
+You may use the `Decimal` class to represent `DECIMAL` data type:
 
 ```php
 use Clicalmani\Database\DataTypes\Decimal;
@@ -174,7 +174,7 @@ public Decimal $price;
 
 #### Fixed
 
-You may use the [Clicalmani\Database\DataTypes\Fixed](https://github.com/clicalmani/database/datatypes) to represent `FIXED` data type:
+You may use the `Fixed` class to represent `FIXED` data type:
 
 ```php
 use Clicalmani\Database\DataTypes\Fixed;
@@ -190,7 +190,7 @@ public Fixed $price;
 
 #### Double
 
-You may use the [Clicalmani\Database\DataTypes\Double](https://github.com/clicalmani/database/datatypes) to represent `DOUBLE` data type:
+You may use the `Double` class to represent `DOUBLE` data type:
 
 ```php
 use Clicalmani\Database\DataTypes\Double;
@@ -210,7 +210,7 @@ String data types are used to store text or character-based data.
 
 #### Char
 
-You may use the [Clicalmani\Database\DataTypes\Char](https://github.com/clicalmani/database/datatypes) to represent `CHAR` data type:
+You may use the `Char` class to represent `CHAR` data type:
 
 ```php
 use Clicalmani\Database\DataTypes\Char;
@@ -225,7 +225,7 @@ public Char $price;
 
 #### VarChar
 
-You may use the [Clicalmani\Database\DataTypes\VarChar](https://github.com/clicalmani/database/datatypes) to represent `VARCHAR` data type:
+You may use the `VarChar` class to represent `VARCHAR` data type:
 
 ```php
 use Clicalmani\Database\DataTypes\VarChar;
@@ -240,7 +240,7 @@ public VarChar $price;
 
 #### Text
 
-You may use the [Clicalmani\Database\DataTypes\Text](https://github.com/clicalmani/database/datatypes) to represent `TEXT` data type:
+You may use the `Text` class to represent `TEXT` data type:
 
 ```php
 use Clicalmani\Database\DataTypes\Text;
@@ -254,7 +254,7 @@ public Text $price;
 
 #### Tiny Text
 
-You may use the [Clicalmani\Database\DataTypes\TinyText](https://github.com/clicalmani/database/datatypes) to represent `TINYTEXT` data type:
+You may use the `TinyText` class to represent `TINYTEXT` data type:
 
 ```php
 use Clicalmani\Database\DataTypes\TinyText;
@@ -268,7 +268,7 @@ public TinyText $price;
 
 #### Long Text
 
-You may use the [Clicalmani\Database\DataTypes\LongText](https://github.com/clicalmani/database/datatypes) to represent `LONGTEXT` data type:
+You may use the `LongText` class to represent `LONGTEXT` data type:
 
 ```php
 use Clicalmani\Database\DataTypes\LongText;
@@ -282,7 +282,7 @@ public LongText $price;
 
 #### Tiny Blob
 
-You may use the [Clicalmani\Database\DataTypes\TinyBlob](https://github.com/clicalmani/database/datatypes) to represent `TINYBLOB` data type:
+You may use the `TinyBlob` class to represent `TINYBLOB` data type:
 
 ```php
 use Clicalmani\Database\DataTypes\TinyBlob;
@@ -296,7 +296,7 @@ public TinyBlob $price;
 
 #### Medium Blob
 
-You may use the [Clicalmani\Database\DataTypes\MediumBlob](https://github.com/clicalmani/database/datatypes) to represent `MEDIUMBLOB` data type:
+You may use the `MediumBlob` class to represent `MEDIUMBLOB` data type:
 
 ```php
 use Clicalmani\Database\DataTypes\MediumBlob;
@@ -310,7 +310,7 @@ public MediumBlob $price;
 
 #### Long Blob
 
-You may use the [Clicalmani\Database\DataTypes\LongBlob](https://github.com/clicalmani/database/datatypes) to represent `LONGBLOB` data type:
+You may use the `LongBlob` class to represent `LONGBLOB` data type:
 
 ```php
 use Clicalmani\Database\DataTypes\LongBlob;
@@ -324,7 +324,7 @@ public LongBlob $price;
 
 #### Binary
 
-You may use the [Clicalmani\Database\DataTypes\Binary](https://github.com/clicalmani/database/datatypes) to represent `BINARY` data type:
+You may use the `Binary` class to represent `BINARY` data type:
 
 ```php
 use Clicalmani\Database\DataTypes\Binary;
@@ -338,7 +338,7 @@ public Binary $price;
 
 #### CharByte
 
-You may use the [Clicalmani\Database\DataTypes\CharByte](https://github.com/clicalmani/database/datatypes) to represent `CHARBYTE` data type:
+You may use the `CharByte` class to represent `CHARBYTE` data type:
 
 ```php
 use Clicalmani\Database\DataTypes\CharByte;
@@ -352,7 +352,7 @@ public CharByte $price;
 
 #### VarBinary
 
-You may use the [Clicalmani\Database\DataTypes\VarBinary](https://github.com/clicalmani/database/datatypes) to represent `VARBINARY` data type:
+You may use the `VarBinary` class to represent `VARBINARY` data type:
 
 ```php
 use Clicalmani\Database\DataTypes\VarBinary;
@@ -366,7 +366,7 @@ public VarBinary $price;
 
 #### Blob
 
-You may use the [Clicalmani\Database\DataTypes\Blob](https://github.com/clicalmani/database/datatypes) to represent `BLOB` data type:
+You may use the `Blob` class to represent `BLOB` data type:
 
 ```php
 use Clicalmani\Database\DataTypes\Blob;
@@ -380,7 +380,7 @@ public Blob $price;
 
 #### Enum
 
-You may use the [Clicalmani\Database\DataTypes\Enum](https://github.com/clicalmani/database/datatypes) to represent `ENUM` data type:
+You may use the `Enum` class to represent `ENUM` data type:
 
 ```php
 use Clicalmani\Database\DataTypes\Enum;
@@ -396,7 +396,7 @@ public Enum $price;
 
 #### Set
 
-You may use the [Clicalmani\Database\DataTypes\Set](https://github.com/clicalmani/database/datatypes) to represent `SET` data type:
+You may use the `Set` class to represent `SET` data type:
 
 ```php
 use Clicalmani\Database\DataTypes\Set;
@@ -414,7 +414,7 @@ public Set $price;
 
 #### Date
 
-You may use the [Clicalmani\Database\DataTypes\Date](https://github.com/clicalmani/database/datatypes) to represent `DATE` data type:
+You may use the `Date` class to represent `DATE` data type:
 
 ```php
 use Clicalmani\Database\DataTypes\Date;
@@ -428,7 +428,7 @@ public Date $price;
 
 #### Date Time
 
-You may use the [Clicalmani\Database\DataTypes\DateTime](https://github.com/clicalmani/database/datatypes) to represent `DATETIME` data type:
+You may use the `DateTime` class to represent `DATETIME` data type:
 
 ```php
 use Clicalmani\Database\DataTypes\DateTime;
@@ -442,7 +442,7 @@ public DateTime $price;
 
 #### Timestamp
 
-You may use the [Clicalmani\Database\DataTypes\Timestamp](https://github.com/clicalmani/database/datatypes) to represent `TIMESTAMP` data type:
+You may use the `Timestamp` class to represent `TIMESTAMP` data type:
 
 ```php
 use Clicalmani\Database\DataTypes\Timestamp;
@@ -456,7 +456,7 @@ public Timestamp $price;
 
 ### Json Data Type
 
-You may use the [Clicalmani\Database\DataTypes\Json](https://github.com/clicalmani/database/datatypes) to represent `JSON` data type:
+You may use the `Json` class to represent `JSON` data type:
 
 ```php
 use Clicalmani\Database\DataTypes\Json;
@@ -495,7 +495,7 @@ Attributes with Json data type are automatically processed on reading or writing
 
 ### Indexes
 
-The [Clicalmani\Database\Factory\Index](https://github.com/clicalmani/database/factory/index) class is dedicated to represent indexes. It will be used as class attribute on entity classes:
+The `Index` class is dedicated to represent indexes. It will be used as class attribute on entity classes:
 
 #### Unique Index
 
