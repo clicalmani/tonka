@@ -7,12 +7,6 @@
 
 **Tonka** provides built-in support for task scheduling, enabling developers to automate repetitive operations such as database backups, email notifications, and report generation. By leveraging **Tonka**'s scheduler, you can define tasks to run at specific intervals using a simple and expressive syntax.
 
-## Key Features
-
-- **Cron-like Scheduling:** Schedule tasks using familiar cron expressions.
-- **Command Integration:** Run custom PHP commands or scripts.
-- **Error Handling:** Built-in logging and error reporting for scheduled tasks.
-
 ## Getting Started
 
 To schedule a task in **Tonka**, follow these steps:
