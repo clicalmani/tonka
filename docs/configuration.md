@@ -3,9 +3,6 @@
 - [Retrieving Environment Configuration](configuration.md?id=retrieving-environment-configuration)
 - [Accessing Configuration Values](configuration.md?id=accessing-configuration-values)
 - [App Debug Mode](configuration.md?id=app-debug-mode)
-    - [Enabling Debug Mode](configuration.md?id=enabling-debug-mode)
-    - [Disabling Debug Mode](configuration.md?id=disabling-debug-mode)
-    - [Accessing Debug Mode in Code](configuration.md?id=accessing-debug-mode-in-code)
 - [Maintenance Mode](configuration.md?id=maintenance-mode)
 
 ## Introduction

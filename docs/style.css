@@ -1078,6 +1078,33 @@ code[class*=language-], pre[class*=language-]
 	text-shadow: none !important;
 }
 
+#TOPBANNER {
+	z-index: 1000;
+}
+
+.heading {
+	position: relative;
+}
+
+.heading > .anchor {
+	position: absolute;
+	bottom: 0;
+	left: -1.4rem;
+	visibility: hidden;
+}
+
+.heading:hover > .anchor {
+	visibility: visible;
+}
+
+/* main {
+	padding-top: 60px;
+}
+
+.github-corner {
+	margin-top: 20px;
+} */
+
 /* .tooltip {
 	position: relative;
 }

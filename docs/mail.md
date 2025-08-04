@@ -2,7 +2,7 @@
 
 Tonka provides a simple and efficient way to send emails. This guide covers the basics of configuring mail settings, composing messages, and sending emails using the popular [Symfony Mailer](https://symfony.com/doc/current/mailer.html) component functionality.
 
-**## [Configuration](#configuration)**
+# Configuration
 
 Tonka's email services may also be configured via your application's `config/mail.php` configuration file. Each mailer defined in this file can have its own unique transport settings, allowing you to manage multiple mailers with different drivers or credentials as needed.
 
