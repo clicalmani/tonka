@@ -69,7 +69,9 @@ window.$docsify = {
           textColor: '#a8abb4ff',
           accent: '#EA453A',
           codeBackgroundColor: '#031420ff',
-          highlightColor: '#6b8faaff'
+          highlightColor: '#6b8faaff',
+          sidebarInputBackgroundColor: '#081c2c',
+          sidebarInputBorderColor: '#173044'
         },
         light: {
           coverBackground: '#FFF',

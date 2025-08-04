@@ -22,8 +22,8 @@ body:not(.ready) {
 }
 
 .search input {
-	border: 1px solid #173044 !important;
-	background-color: #081c2c !important;
+	border: 1px solid var(--sidebarInputBorderColor) !important;
+	background-color: var(--sidebarInputBackgroundColor) !important;
 	margin: 0 auto;
 	color: var(--textColor);
 	width: 90% !important;
