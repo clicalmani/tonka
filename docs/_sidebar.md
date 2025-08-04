@@ -1,5 +1,3 @@
-<!-- [![logo](_media/logo.png ':class=sidebar-logo')]() -->
-
 - Getting Started
   - [Introduction](introduction.md)
   - [Installation](installation.md)
@@ -14,6 +12,7 @@
   - [Requests](requests.md)
   - [Responses](responses.md)
   - [Views](views.md)
+  - [Mail](mail.md)
   - [Collection](collection.md)
   - [Validation](validation.md)
 - Database

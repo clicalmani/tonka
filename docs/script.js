@@ -26,8 +26,27 @@ window.$docsify = {
         '/': 'Search'
       }
     },
+    progress: {
+        position: "top",
+        color: "var(--theme-color,#EA453A)",
+        height: "3px",
+    },
+    markdown: {        
+        renderer: {
+          code: function (code, lang) {
+            let cc = document.createElement('code');
+            cc.textContent = code;
+            cc.setAttribute('class', 'language-' + lang);
+            return '<pre data-lang="' + lang + '" class="line-numbers">' + cc.outerHTML + '</pre>';
+          },
+        }
+    },
     plugins: [
-      // DocsifyCarbon.create('CE7I52QU', 'xmakeio'),
+      function (hook, vm) {
+          hook.doneEach(function (html) {                
+            Prism.highlightAll();
+          })
+      },
       function(hook) {
         var footer = [
           '<footer style="text-align: center;margin-top: 50px;">',
@@ -42,19 +61,22 @@ window.$docsify = {
     ],
     darklightTheme: {
         siteFont : 'PT Sans',
-        defaultTheme : 'light',
+        defaultTheme : 'dark',
         codeFontFamily : 'Roboto Mono, Monaco, courier, monospace',
         dark: {
-          coverBackground: '#FFF',
-          textColor: '#3A3D44',
+          sidebarSublink: '#7f8185ff',
+          coverBackground: '#091a28',
+          textColor: '#a8abb4ff',
           accent: '#EA453A',
+          codeBackgroundColor: '#031420ff',
+          highlightColor: '#6b8faaff'
         },
         light: {
           coverBackground: '#FFF',
           background: '#FFF',
           textColor: '#3A3D44',
           accent: '#EA453A',
-          codeBackgroundColor: '#FFF7F6'
+          codeBackgroundColor: '#FFF7F6',
         }
     },
     // docsify-copy-code (defaults)

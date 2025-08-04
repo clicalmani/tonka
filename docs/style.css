@@ -22,8 +22,8 @@ body:not(.ready) {
 }
 
 .search input {
-	border: 1px solid var(--borderColor) !important;
-	background-color: var(--background) !important;
+	border: 1px solid #173044 !important;
+	background-color: #081c2c !important;
 	margin: 0 auto;
 	color: var(--textColor);
 	width: 90% !important;
@@ -874,6 +874,10 @@ body {
 	font-family: var(--codeFontFamily);
 }
 
+#main > pre::after {
+  display: none;
+}
+
 .markdown-section pre {
 	-moz-osx-font-smoothing: initial;
 	-webkit-font-smoothing: initial;
@@ -993,14 +997,13 @@ body {
 	line-height: inherit;
 	margin: 0 2px;
 	max-width: inherit;
-	overflow: inherit;
-	padding: 2.2em 5px;
+	padding: 1em 3px;
 	white-space: inherit
 }
 
 .markdown-section code:after,
 .markdown-section code:before {
-	letter-spacing: .05rem
+	letter-spacing: .025rem
 }
 
 code .token {
@@ -1046,6 +1049,33 @@ pre:after {
 
 #docsify-darklight-theme p {
 	visibility: hidden
+}
+
+pre[class*=language-].line-numbers
+{
+	padding-left: 2.65em !important;
+}
+
+.markdown-section pre>code
+{
+	padding-left: 1em !important;
+}
+
+pre[class*=language-]
+{
+	border: .3em solid var(--codeBackgroundColor) !important;
+	box-shadow: none !important;
+	text-shadow: none !important;
+}
+
+:not(pre)>code[class*=language-], pre[class*=language-]
+{
+	background: var(--codeBackgroundColor) !important;
+}
+
+code[class*=language-], pre[class*=language-]
+{
+	text-shadow: none !important;
 }
 
 /* .tooltip {

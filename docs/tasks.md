@@ -7,6 +7,13 @@
 
 **Tonka** provides built-in support for task scheduling, enabling developers to automate repetitive operations such as database backups, email notifications, and report generation. By leveraging **Tonka**'s scheduler, you can define tasks to run at specific intervals using a simple and expressive syntax.
 
+## Prerequisite
+Ensure the [`clicalmani/task`](https://packagist.org/packages/clicalmani/task) package is installed in your project before proceeding. You can add it using Composer:
+
+```bash
+composer require clicalmani/task
+```
+
 ## Getting Started
 
 To schedule a task in **Tonka**, follow these steps:
@@ -16,15 +23,19 @@ To schedule a task in **Tonka**, follow these steps:
 Create a message class representing the task data:
 
 ```php
-// app/Scheduler/Message
+<?php
+namespace App\Scheduler\Message;
 
-class BackupDatabase
+class BackupDatabase implements \Clicalmani\Task\Messenger\MessageInterface
 {
-    private $database;
-
-    public function __construct(object $database)
+    public function __construct(private int $id)
     {
-        $this->database = $database;
+        // ...
+    }
+
+    public function getId() : int
+    {
+        return $this->id;
     }
 }
 ```
@@ -34,15 +45,16 @@ class BackupDatabase
 Implement a handler class with an `__invoke()` method:
 
 ```php
-// app/Scheduler/Handler
+<?php
+namespace App\Scheduler\Handler;
 
-use App\Scheduler\Message\BackupDatabase;
+use Clicalmani\Task\Messenger\MessageInterface;
 
-class BackupDatabaseHandler
+class BackupDatabaseHandler implements \Clicalmani\Task\Handler\TaskHandlerInterface
 {
-    public function __invoke(BackupDatabase $message)
+    public function __invoke(MessageInterface $message) : void
     {
-        // Logic to back up the database
+        // ...
     }
 }
 ```
@@ -65,8 +77,7 @@ class BackupDatabase
         return (new Schedule)->with(
             RecurringMessage::cron(
                 '0 2 * * *', // Runs daily at 2 AM
-                new BackupDatabase(DB::getInstance()),
-                \DateTime::createFromImmutable(new \DateTimeImmutable('11:23', new \DateTimeZone('Africa/Porto-Novo')))
+                new BackupDatabase(DB::getInstance())
             )
         );
     }
@@ -87,7 +98,7 @@ This setup ensures your scheduled tasks are consistently processed without manua
 
 ## Killing Scheduled Tasks
 
-To stop scheduled tasks, you can terminate the scheduled tasks by running `schedule:kill` command.
+To kill scheduled tasks, you can terminate the scheduled tasks by running `schedule:kill` command.
 
 ```bash
 php tonka schedule:kill

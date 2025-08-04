@@ -1,4 +1,4 @@
-![logo](logo.png)
+![logo](logo-dark.png)
 
 # TONKA, A TRUE PHP FRAMEWORK
 
