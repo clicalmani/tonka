@@ -15,7 +15,7 @@ class Tokenizer extends JWTAuth
      * @param \Closure $next Next middleware function
      * @return \Clicalmani\Foundation\Http\ResponseInterface|\Clicalmani\Foundation\Http\RedirectInterface
      */
-    public function handle(RequestInterface $request, ResponseInterface $response, callable $next) : \Clicalmani\Foundation\Http\ResponseInterface|\Clicalmani\Foundation\Http\RedirectInterface
+    public function handle(RequestInterface $request, ResponseInterface $response, \Closure $next) : \Clicalmani\Foundation\Http\ResponseInterface|\Clicalmani\Foundation\Http\RedirectInterface
     {
         if (false !== $this->verifyToken($request->bearerToken())) return $next();
         
@@ -29,8 +29,7 @@ class Tokenizer extends JWTAuth
      */
     public function boot() : void
     {
-        /**
-         * TODO
-         */
+        // Please create the auth.php file
+        include_once routes_path('/auth.php');
     }
 }

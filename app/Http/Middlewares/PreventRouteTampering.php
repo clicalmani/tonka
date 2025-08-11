@@ -15,7 +15,7 @@ class PreventRouteTampering extends Middleware
      * @param \Closure $next Next middleware function
      * @return \Clicalmani\Foundation\Http\ResponseInterface|\Clicalmani\Foundation\Http\RedirectInterface
      */
-    public function handle(RequestInterface $request, ResponseInterface $response, callable $next) : \Clicalmani\Foundation\Http\ResponseInterface|\Clicalmani\Foundation\Http\RedirectInterface
+    public function handle(RequestInterface $request, ResponseInterface $response, \Closure $next) : \Clicalmani\Foundation\Http\ResponseInterface|\Clicalmani\Foundation\Http\RedirectInterface
     {
         if (!!$request->hash && false == $request->verifyParameters()) {
             return $response->unauthorized();
