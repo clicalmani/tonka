@@ -9,10 +9,11 @@
         "clicalmani/cookie": ">=1.0",
         "clicalmani/database": ">=1.0",
         "clicalmani/foundation": ">=2.0.3",
-        "clicalmani/psr7": ">=1.0",
+        "clicalmani/psr": ">=1.0",
         "clicalmani/routing": ">=1.0",
         "clicalmani/validation": ">=2.0",
-        "clicalmani/xpower": ">=1.2.1"
+        "clicalmani/xpower": ">=1.2.1",
+        "clicalmani/task": ">=1.0"
     },
     "autoload": {
         "psr-4": {
