@@ -45,7 +45,7 @@ An entity is an object that exists. It doesn't have to do anything, it just has 
 The `db:entity` console command allows the creation of a database entity. It accepts a single argument which is the name of the entity to create.
 
 ```sh
-php tonka db:entity PostEntity
+php tonka db:entity Post
 ```
 
 The above command will create the `PostEntity.php` file. When you dive into `database/entities` you will see the content of the file as show here:
