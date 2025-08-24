@@ -82,23 +82,23 @@
 
 An **Elegant ORM** model class is a representation of a database table within your application. Each model class maps to a specific table in the database, and each instance of the model represents a row within that table. By defining model classes, you can interact with your database using object-oriented principles, making your code more intuitive and easier to manage.
 
-**Elegant ORM** provides a convenient command-line tool to generate model classes quickly. You can use the `make:entity` command to create a new model class and its underlying entity. This command will generate a boilerplate model class file in your project, saving you time and effort.
+**Elegant ORM** provides a convenient command-line tool to generate model classes quickly. You can use the `make:model` command to create a new model class. This command will generate a boilerplate model class file in your project, saving you time and effort.
 
 To create a new model class, run the following command in your terminal:
 
 ```sh
-php tonka make:entity <ModelName> <table-name> <primary key, primary key,...>
+php tonka make:model ModelName
 ```
 
 Replace `ModelName` with the desired name of your model. For example, to create a `Product` model, you would run:
 
 ```sh
-php tonka make:entity Product products id
+php tonka make:model Product
 ```
 
 This command will generate a new file named `Product.php` with a basic structure for your model class. You can then customize this file by adding fields and methods as needed.
 
-By using the `make:entity` command, you can streamline the process of creating new models and ensure consistency across your project.
+By using the `make:model` command, you can streamline the process of creating new models and ensure consistency across your project.
 
 Here is an example of a simple model class in **Elegant ORM**:
 
@@ -106,21 +106,21 @@ Here is an example of a simple model class in **Elegant ORM**:
 <?php
 use Clicalmani\Database\Factory\Models\Elegant;
 
-class Product extends Elegant
+class User extends Elegant
 {
     /**
      * Model database table 
      *
      * @var string $table Table name
      */
-    protected $table = "products";
+    protected $table = "users";
 
     /**
      * Model entity
      * 
      * @var string
      */
-    protected string $entity = \Database\Entities\ProductEntity::class;
+    protected string $entity = \Database\Entities\UserEntity::class;
 
     /**
      * Table primary key(s)
