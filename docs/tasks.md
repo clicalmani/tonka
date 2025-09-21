@@ -28,14 +28,14 @@ namespace App\Scheduler\Message;
 
 class BackupDatabase implements \Clicalmani\Task\Messenger\MessageInterface
 {
-    public function __construct(private int $id)
+    public function __construct(private $db)
     {
         // ...
     }
 
-    public function getId() : int
+    public function getDb() : \Clicalmani\Database\DB
     {
-        return $this->id;
+        return $this->db;
     }
 }
 ```
@@ -70,7 +70,7 @@ use Clicalmani\Task\Messenger\RecurringMessage;
 use Clicalmani\Foundation\Support\Facade\DB;
 use Clicalmani\Task\Scheduler\Schedule;
 
-class BackupDatabase
+class BackupDatabaseScheduler
 {
     public function getSchedule(): Schedule
     {
