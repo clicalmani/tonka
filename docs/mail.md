@@ -1,3 +1,16 @@
+- [Introduction](#introduction)
+- [Configuration](#configuration)
+- [Driver Prerequisite](#driver-prerequisite)
+- [Mail Transport](#mail-transport)
+- [Transport Setup](#transport-setup)
+- [Using a 3rd Party Transport](#using-a-3rd-party-transport)
+- [Composing](#composing)
+- [High Availability Configuration](#high-availability-configuration)
+- [Load Balancing Configuration](#load-balancing-configuration)
+- [Configuring Emails Globally](#configuring-emails-globally)
+- [Sending Emails](#sending-emails)
+- [Queueing Mail](#queueing-mail)
+
 # Introduction
 
 Tonka provides a simple and efficient way to send emails. This guide covers the basics of configuring mail settings, composing messages, and sending emails using the popular [Symfony Mailer](https://symfony.com/doc/current/mailer.html) component functionality.
@@ -88,14 +101,14 @@ use Symfony\Component\DependencyInjection\Loader\Configurator\ServiceConfigurato
 return Application::setup(rootPath: dirname(__DIR__))
     ->withService(static function(Application $app) {
         $app->addService('smtp.mailer.transport', [\Clicalmani\Foundation\Mail\MailerTransport::class]);
-            $app->addService(
-                'smtp.mailer', 
-                [
-                    \Clicalmani\Foundation\Mail\Mailer::class,
-                    static fn(ServiceConfigurator|DefaultsConfigurator $config) => 
-                        $config->args([$app->dependency('service', 'smtp.mailer.transport')])
-                ]
-            );
+        $app->addService(
+            'smtp.mailer', 
+            [
+                \Clicalmani\Foundation\Mail\Mailer::class,
+                static fn(ServiceConfigurator|DefaultsConfigurator $config) => 
+                    $config->args([$app->dependency('service', 'smtp.mailer.transport')])
+            ]
+        );
     })
     ->run();
 ```
@@ -332,6 +345,117 @@ $mail->from('custom-sender@example.com', 'Custom Sender');
 ```
 
 This approach helps maintain a consistent sender identity and simplifies email management throughout your application.
+
+## Sending Emails
+
+Once your mailer and transport are configured, you can send emails using the injected `MailerInterface` in your controllers or services. Here’s a basic example:
+
+```php
+use Clicalmani\Foundation\Mail\Email;
+use Clicalmani\Foundation\Mail\MailerInterface;
+
+public function notifyUser(MailerInterface $mailer)
+{
+    $email = (new Email('Welcome!', 'Thank you for registering.'))
+        ->from(env('MAIL_FROM_ADDRESS', ''))
+        ->to('user@example.com');
+    $mailer->send($email);
+}
+```
+
+You may customize the subject, body, recipients, and add attachments as needed. For advanced usage, refer to the [Symfony Mailer documentation](https://symfony.com/doc/current/mailer.html#creating-sending-messages).
+
+### Email Address Formats
+
+When specifying email addresses in Tonka, you can use either a simple string (e.g., `'user@example.com'`) or an instance of the `Address` object from Symfony's Mime component. This provides flexibility for advanced use cases, such as specifying a display name along with the email address.
+
+**Using a string:**
+```php
+$mail->to('user@example.com');
+```
+
+**Using an Address object:**
+```php
+use Symfony\Component\Mime\Address;
+
+$mail->to(new Address('user@example.com', 'User Name'));
+$mail->to(Address::create('user@example.com <User Name>'));
+```
+
+You can use `Address` objects for `from()`, `to()`, `cc()`, and `bcc()` methods. This allows you to set both the email and the display name:
+
+```php
+$mail->from(new Address('no-reply@example.com'));
+$mail->cc(new Address('manager@example.com', 'Manager'));
+```
+
+You can specify multiple recipients for `to()`, `cc()`, or `bcc()` by passing multiple addresses to each method:
+
+```php
+use Symfony\Component\Mime\Address;
+
+// Using strings
+$mail->to('user1@example.com', 'user2@example.com');
+
+$mail->cc(new Address('manager@example.com', 'Manager'), new Address('teamlead@example.com', 'Team Lead'));
+
+// Mixing strings and Address objects
+$mail->bcc('auditor@example.com', new Address('ceo@example.com', 'CEO'));
+```
+
+This allows you to easily send emails to multiple recipients in a single call.
+
+## Message Headers
+
+You can customize email headers to include additional metadata or comply with specific requirements. Symfony's Email class provides methods to add custom headers to your messages.
+
+**Adding a custom header:**
+```php
+$mail->getHeaders()->addTextHeader('X-Custom-Header', 'HeaderValue');
+```
+
+**Adding multiple headers:**
+```php
+$mail->getHeaders()
+    ->addTextHeader('X-Tracking-ID', '123456')
+    ->addTextHeader('X-Environment', 'Production');
+```
+
+You can also set structured headers, such as tags or metadata, using the appropriate header types:
+
+```php
+use Symfony\Component\Mime\Header\UnstructuredHeader;
+
+$mail->getHeaders()->add(new UnstructuredHeader('X-Tag', 'welcome-email'));
+```
+
+These headers will be included in the outgoing email and can be used by mail servers or third-party services for tracking, categorization, or custom processing.
+
+For more details, see the [Symfony Mailer headers documentation](https://symfony.com/doc/current/mailer.html#message-headers).
+
+## Handling Attachments
+
+You can attach files to your emails using the `attach()` method. This method accepts the file path and an optional name for the attachment:
+
+```php
+$mail->attach('/path/to/document.pdf', 'UserGuide.pdf');
+```
+
+To attach files from a string (for example, dynamically generated content), use `attachFromPath()` or `attachFromData()`:
+
+```php
+$mail->attachFromData('Report content', 'report.txt', 'text/plain');
+```
+
+You may also embed images in HTML emails using the `embed()` method, which returns a Content-ID (CID) that you can reference in your HTML body:
+
+```php
+$cid = $mail->embed('/path/to/image.png');
+$mail->html('<img src="cid:' . $cid . '" alt="Embedded Image">');
+```
+
+For more details on attachments and embedding, see the [Symfony Email attachments documentation](https://symfony.com/doc/current/mailer.html#attachments-and-embeds).
+
 
 ## Queueing Mail
 

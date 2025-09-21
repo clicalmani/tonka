@@ -64,6 +64,7 @@
     - [Querying Related Models](orm.md?id=querying-related-models)
         - [Model Joins](orm.md?id=model-joins)
         - [The `fetch` Method on Joins](orm.md?id=the-fetch-method-on-joins)
+        - [Related Tables Key Convention](#related-tables-key-convention)
         - [Table Alias](orm.md?id=table-alias)
     - [Model Attributes Validation](orm.md?id=model-attributes-validation)
         - [Defining Validation Rules](orm.md.md?id=defining-validation-rules)
@@ -87,7 +88,7 @@ An **Elegant ORM** model class is a representation of a database table within yo
 To create a new model class, run the following command in your terminal:
 
 ```sh
-php tonka make:entity ModelName table-name primary key primary key ...
+php tonka make:entity <ModelName> <table-name> <primary key, primary key,...>
 ```
 
 Replace `ModelName` with the desired name of your model. For example, to create a `Product` model, you would run:
@@ -106,21 +107,21 @@ Here is an example of a simple model class in **Elegant ORM**:
 <?php
 use Clicalmani\Database\Factory\Models\Elegant;
 
-class User extends Elegant
+class Product extends Elegant
 {
     /**
      * Model database table 
      *
      * @var string $table Table name
      */
-    protected $table = "users";
+    protected $table = "products";
 
     /**
      * Model entity
      * 
      * @var string
      */
-    protected string $entity = \Database\Entities\UserEntity::class;
+    protected string $entity = \Database\Entities\ProductEntity::class;
 
     /**
      * Table primary key(s)
@@ -1209,8 +1210,6 @@ By using observers, you can keep your event handling logic organized and maintai
 
 ### Observers and Database Transactions
 
-### Observers and Database Transactions
-
 When working with observers and database transactions, it's important to ensure that your event handling logic is consistent and reliable. **Elegant ORM** provides a way to handle model events within the context of a database transaction, ensuring that your events are only triggered if the transaction is successful.
 
 Here is an example of how to use observers with database transactions:
@@ -1267,14 +1266,14 @@ In this example, the `saving` and `saved` events will not be triggered when the 
 
 Database tables are often related to one another. For example, a blog post may have many comments or an order could be related to the user who placed it. **Elegant ORM** makes managing and working with these relationships easy, and supports a variety of common relationships:
 
-- **One-to-One**: A single model is associated with one other model.
-- **One-to-Many**: A single model is associated with multiple models.
-- **Many-to-Many**: Multiple models are associated with multiple other models.
-- **Has One-through**: This relationship indicates that a model is related to another model through a third model. It is typically used to define a one-to-one relationship that is connected via an intermediary model.
-- **Has-Many-Through**: This relationship type is used to define a many-to-many relationship that is accessed through an intermediate model. It is useful when you need to work with a relationship that involves three models. For example, if you have a `User` model, a `Role` model, and a `Permission` model, and you want to define a relationship where users have many permissions through roles, you would use a "Has-Many-Through" relationship.
-- **One-to-One (Polymorphic)**: This type of relationship allows an entity to belong to more than one other entity on a single association. For example, a `Photo` model might belong to either a `User` model or an `Article` model. This is useful when you have a single model that can be associated with multiple other models in a one-to-one relationship.
-- **One-to-Many (Polymorphic)**: This relationship type allows a single model to be associated with multiple models. For example, a comment model can belong to both a post model and a video model. This is useful when you want to reuse the same relationship logic for different models.
-- **Many-to-Many (Polymorphic)**: In a many-to-many polymorphic relationship, a model can belong to more than one type of model on a single association. This is useful for scenarios where a model needs to be associated with multiple other models using a single relationship.
+- [**One-to-One**](#one-to-one): A single model is associated with one other model.
+- [**One-to-Many**](#one-to-many): A single model is associated with multiple models.
+- [**Many-to-Many**](#many-to-many): Multiple models are associated with multiple other models.
+- [**Has One-through**](#has-one-through): This relationship indicates that a model is related to another model through a third model. It is typically used to define a one-to-one relationship that is connected via an intermediary model.
+- [**Has-Many-Through**](#has-many-through): This relationship type is used to define a many-to-many relationship that is accessed through an intermediate model. It is useful when you need to work with a relationship that involves three models. For example, if you have a `User` model, a `Role` model, and a `Permission` model, and you want to define a relationship where users have many permissions through roles, you would use a "Has-Many-Through" relationship.
+- [**One-to-One (Polymorphic)**](#one-to-one-polymorphic-): This type of relationship allows an entity to belong to more than one other entity on a single association. For example, a `Photo` model might belong to either a `User` model or an `Article` model. This is useful when you have a single model that can be associated with multiple other models in a one-to-one relationship.
+- [**One-to-Many (Polymorphic)**](#one-to-many-polymorphic-): This relationship type allows a single model to be associated with multiple models. For example, a comment model can belong to both a post model and a video model. This is useful when you want to reuse the same relationship logic for different models.
+- [**Many-to-Many (Polymorphic)**](#many-to-many-polymorphic-): In a many-to-many polymorphic relationship, a model can belong to more than one type of model on a single association. This is useful for scenarios where a model needs to be associated with multiple other models using a single relationship.
 
 ## Defining Relationships
 
@@ -2794,6 +2793,63 @@ $orders = User::where('status = ?', ['active'])
 ```
 
 This query retrieves the orders of all active users. By default, if none is specified, the users will be returned.
+
+## Related Tables Key Convention
+
+When defining relationships between tables in **Elegant ORM**, it is important to follow a consistent key naming convention to ensure smooth operation and automatic relationship resolution.
+
+- The **parent table's primary key** must always be named `id`.
+- The **foreign key** in the related (child) table should be named using the singular form of the parent table name, followed by `_id`.
+
+**Example:**
+
+If you have a `users` table and a `profiles` table:
+
+- The `users` table should have a primary key named `id`.
+- The `profiles` table should have a foreign key named `user_id` that references the `users.id` column.
+
+```php
+// users table
+class UserEntity extends Entity
+{
+    #[Property(
+        length: 10,
+        unsigned: true,
+        nullable: false,
+        autoIncrement: true
+    ), PrimaryKey]
+    public Integer $id;
+    // ...
+}
+
+// profiles table
+class ProfileEntity extends Entity
+{
+    #[Property(
+        length: 10,
+        unsigned: true,
+        nullable: false
+    )]
+    public Integer $user_id;
+    // ...
+}
+```
+
+This convention applies to all relationships, including one-to-one, one-to-many, and many-to-many (where pivot tables should use `user_id`, `role_id`, etc.).
+
+Following this convention ensures that **Elegant ORM** can automatically detect and manage relationships between your models without requiring additional configuration.
+
+> **Note:** To ensure correct relationship resolution, you must specify the singular name of the table in the model class using the protected property `table_singular`. For example:
+>
+> ```php
+> class User extends Elegant
+> {
+>     protected $table = 'users';
+>     protected $table_singular = 'user';
+> }
+> ```
+>
+> This helps **Elegant ORM** automatically detect foreign key names such as `user_id` in related tables.
 
 ### Table Alias
 
