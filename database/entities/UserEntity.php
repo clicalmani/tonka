@@ -15,44 +15,36 @@ class UserEntity extends Entity
     #[Property(
         length: 10,
         unsigned: true,
-        nullable: false,
         autoIncrement: true
     ), PrimaryKey]
     public Integer $id;
 
     #[Property(
-        length: 191,
-        nullable: false
+        length: 191
     )]
     public VarChar $given_name;
     
     #[Property(
-        length: 191,
-        nullable: false
+        length: 191
     )]
     public VarChar $family_name;
 
     #[Property(
-        length: 200,
-        nullable: false
+        length: 200
     )]
     public VarChar $email;
 
     #[Property(
-        length: 10,
-        nullable: false
+        length: 10
     )]
     public Char $phone;
 
-    #[Property(
-        nullable: false
-    )]
+    #[Property]
     public Date $birth_date;
 
     #[Property(
         values: ['male', 'femail'],
-        nullable: false,
         default: 'male'
     )]
-    public Enum $gender;
+    public Enum|string $gender = 'male';
 }

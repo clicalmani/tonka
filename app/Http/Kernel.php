@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * |----------------------------------------------------------------
+ * | HTTP Kernel
+ * |----------------------------------------------------------------
+ * 
+ * This class defines the HTTP kernel for the application, extending
+ * the base HttpKernel provided by the Clicalmani framework.
+ * It manages the global HTTP middleware stack and custom validation rules.
+ */
+
 namespace App\Http;
 
 use Clicalmani\Foundation\Maker\HttpKernel;

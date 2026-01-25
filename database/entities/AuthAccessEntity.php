@@ -25,21 +25,18 @@ class AuthAccessEntity extends Entity
     #[Property(
         length: 10,
         unsigned: true,
-        nullable: false,
         autoIncrement: true
     ), PrimaryKey]
     public Integer $id;
 
     #[Property(
         length: 10,
-        unsigned: true,
-        nullable: false
+        unsigned: true
     )]
     public Integer $user_id;
 
     #[Property(
-        length: 64,
-        nullable: false
+        length: 64
     )]
     public VarChar $token;
 }

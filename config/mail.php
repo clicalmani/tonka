@@ -25,7 +25,7 @@ return [
     | their respective settings. Several examples have been configured for
     | you and you are free to add your own as your application requires.
     |
-    | Laravel supports a variety of mail "transport" drivers that can be used
+    | Tonka supports a variety of mail "transport" drivers that can be used
     | when delivering an email. You may specify which one you're using for
     | your mailers below. You may also add additional mailers if needed.
     |
@@ -99,38 +99,5 @@ return [
     'from' => [
         'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
         'name' => env('MAIL_FROM_NAME', 'Example'),
-    ],
-
-    'to' => [
-        'address' => env('MAIL_TO_ADDRESS', ''),
-        'name' => env('MAIL_TO_NAME', ''),
-    ],
-
-    'cc' => [
-        'address' => env('MAIL_CC_ADDRESS', ''),
-        'name' => env('MAIL_CC_NAME', ''),
-    ],
-
-    'headers' => [
-        'dates' => [
-            'X-Mailer-Date' => \DateTime::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s'), new \DateTimeZone('UTC')),
-            'X-Mailer-Received' => \DateTime::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s'), new \DateTimeZone('UTC')),
-        ],
-        'mailbox' => [
-            'X-Mailer-From' => 'Clicalmani Mailer <' . env('MAIL_FROM_ADDRESS') . '>',
-            'X-Mailer-To' => 'Clicalmani Mailer <' . env('MAIL_TO_ADDRESS', '') . '>',
-        ],
-        'tags' => ['password-reset'],
-        'metadata' => [
-            'X-Mailer' => 'Clicalmani Mailer',
-            'X-Mailer-Version' => '2.3.4',
-        ],
-        'unstructured' => [
-            'X-Mailer-Header' => 'Clicalmani Mailer',
-        ],
-        'parametized' => [
-            'X-Mailer-Param' => 'Clicalmani Mailer',
-        ]
-    ],
-
+    ]
 ];

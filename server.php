@@ -1,4 +1,15 @@
 <?php
+
+/**
+ * |----------------------------------------------------------------
+ * | Static File Server
+ * |----------------------------------------------------------------
+ * This script serves static files directly when they exist, bypassing
+ * the main application logic for improved performance. 
+ * It checks if the requested URI corresponds to a file in the 'public'
+ * directory and serves it with the correct MIME type.
+ */
+
 $mime_types = [
     'css' => 'text/css',
     'gif' => 'image/gif',
@@ -22,17 +33,18 @@ $uri = urldecode(
 if ($uri !== '/' && file_exists(__DIR__.'/public'.$uri)) {
 
     /**
-     * This line has been tested and work on development
-     * Not tested on production. May be it should be commented on production
-     * because there is a try and catch which did the same thing in public/index.php. 
-     * If there is no conflict we can keep it.
+     * |----------------------------------------------------------------
+     * | Serve Static File
+     * |----------------------------------------------------------------
+     * If the requested URI matches a file in the 'public' directory,
+     * serve that file with the appropriate MIME type.
      */
     $file = __DIR__.'/public' . $uri;
     $ext = pathinfo($file, PATHINFO_EXTENSION);
     header('Content-Type: ' . @$mime_types[$ext] ?? mime_content_type($file)); // Only content type is needed the remaining headers will be guest by the browser
     include $file;
 
-    // We should exit to end the file transfer process
+    // Terminate script execution after serving the file
     exit;
 }
 
