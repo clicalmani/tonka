@@ -7,7 +7,7 @@
 
 ## Introduction
 
-All Tonka configuration files reside in the `config` directory. This directory contains all the necessary configuration files required for the proper functioning of the Tonka application. Each file within this directory is structured to handle specific configuration settings, ensuring that the application runs smoothly and efficiently.
+All **Tonka** configuration files reside in the `config` directory. This directory contains all the necessary configuration files required for the proper functioning of the **Tonka** application. Each file within this directory is structured to handle specific configuration settings, ensuring that the application runs smoothly and efficiently.
 
 The `config` directory is organized to facilitate easy access and management of configuration files. By centralizing all configuration files in one location, it simplifies the process of updating and maintaining the application's settings. This organization helps in keeping the configuration process streamlined and reduces the chances of errors.
 

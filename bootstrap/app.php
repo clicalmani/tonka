@@ -9,7 +9,7 @@
  * 
  * @package Clicalmani\Foundation
  * @author Clicalmani
- * @version 2.3.4
+ * @since 2.3.4
  * @link https://github.com/clicalmani/foundation
  */
 

@@ -51,6 +51,7 @@
     - [Muting Events](orm.md?id=muting-events)
     - [Saving a Single Model Without Events](orm.md?id=saving-a-single-model-without-events)
 - [Relationships](orm.md?id=relationships)
+    - [Key Conventions](#key-conventions)
     - [Defining Relationships](orm.md?id=defining-relationships)
         - [One-to-One](orm.md?id=one-to-one)
         - [One-to-Many](orm.md?id=one-to-many)
@@ -1274,6 +1275,54 @@ Database tables are often related to one another. For example, a blog post may h
 - [**One-to-One (Polymorphic)**](#one-to-one-polymorphic-): This type of relationship allows an entity to belong to more than one other entity on a single association. For example, a `Photo` model might belong to either a `User` model or an `Article` model. This is useful when you have a single model that can be associated with multiple other models in a one-to-one relationship.
 - [**One-to-Many (Polymorphic)**](#one-to-many-polymorphic-): This relationship type allows a single model to be associated with multiple models. For example, a comment model can belong to both a post model and a video model. This is useful when you want to reuse the same relationship logic for different models.
 - [**Many-to-Many (Polymorphic)**](#many-to-many-polymorphic-): In a many-to-many polymorphic relationship, a model can belong to more than one type of model on a single association. This is useful for scenarios where a model needs to be associated with multiple other models using a single relationship.
+
+## Key Conventions
+
+**Tonka** enforces and uses certain conventions for database consistency. It is important to adhere to these conventions to ensure that relationships and key management are handled automatically.
+
+### 1. Primary Keys
+
+The primary keys of the tables are named id.
+
+*   **Rule :**
+    *   The name of the primary key column must be `id`.
+    *   Prioritize primary keys of integer type (`int`).
+    *   If your primary key is not `id`, you will need to explicitly declare it in the model with `protected $primaryKey = 'your_id';`.
+
+### 2. Foreign Keys
+
+To establish a relationship, foreign keys must follow this naming rule, which is crucial for **Tonka** to automatically deduce the nature of the relationship:
+
+*   **Format :** `{parent_table_name_singular}_{id}`.
+*   **Eg,** If a `posts` table depends on the `users` table, the foreign key in the `posts` table must be named `user_id`.
+
+The relationship in the Post model is established as:
+
+```php
+public function user()
+{
+    return $this->belongsTo(User::class);
+}
+```
+
+!> The name must be in the **singular** (`user_id` and not `users_id`) because the relationship is a single entity.
+
+### 3. Singularization
+
+Tonka has internal logic that allows determining the singular form of the table name.
+
+*   If your table is named `posts`, **Tonka** will automatically deduce its singular form `post`.
+*   This deduction is essential in relationships like `belongsTo` for example.
+*   If you do not follow this convention, you will have to specify the keys manually.
+
+Then, The relationship in the Post model must be established as:
+
+```php
+public function user()
+{
+    return $this->belongsTo(User::class, 'my_id', 'user_id');
+}
+```
 
 ## Defining Relationships
 

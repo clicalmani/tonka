@@ -5,11 +5,11 @@ window.$docsify = {
     repo: 'https://github.com/clicalmani/tonka',
     coverpage: true,
     onlyCover: true,
-    name: "Tonka Framework - Documentation", // Must configure when publishing
-    hideSidebar: false, // Configurable when publishing
-    subMaxLevel: 2, // Configurable when publishing
-    basePath: "/tonka/", // Configurable when publishing
-    homepage: "README.md", // Configurable when publishing
+    // name: "Tonka Framework - Documentation", // Must configure when publishing
+    // hideSidebar: false, // Configurable when publishing
+    // subMaxLevel: 2, // Configurable when publishing
+    // basePath: "/tonka/", // Configurable when publishing
+    // homepage: "README.md", // Configurable when publishing
     alias: {
       '/.*/_sidebar.md': '/tonka/_sidebar.md',
       '/.*/README.md': '/tonka/README.md',
