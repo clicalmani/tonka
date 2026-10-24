@@ -1,10 +1,9 @@
-![logo](logo-dark.png)
+![Logo de Tonka](logo-dark.png)
 
-# TONKA, A TRUE PHP FRAMEWORK
+# TONKA, UN VÉRITABLE FRAMEWORK PHP
 
-> Lightweight, Fast Coding and Secure!
+> Léger, productif et sécurisé.
 
-**Tonka** is a PHP Framework based on the MVC model (Model View Controller), fast, lightweight and full of features to make the development experience more exciting and brighter.
+**Tonka** est un framework PHP reposant sur l'architecture MVC (Modèle-Vue-Contrôleur). Conçu pour allier légèreté et performance, il fournit un ensemble complet de fonctionnalités qui simplifient le développement et accélèrent la livraison de vos applications.
 
-[Github Repo](https://github.com/clicalmani/Tonka)
-[Getting Started](./introduction.md)
+[Dépôt GitHub](https://github.com/clicalmani/Tonka) · [Prise en main](./introduction.md)
