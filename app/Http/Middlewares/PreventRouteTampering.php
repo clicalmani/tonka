@@ -1,23 +1,23 @@
 <?php
 namespace App\Http\Middlewares;
 
-use Clicalmani\Foundation\Http\Middlewares\Middleware;
-use Clicalmani\Foundation\Http\RequestInterface;
-use Clicalmani\Foundation\Http\ResponseInterface;
+use Clicalmani\Core\Http\Middlewares\Middleware;
+use Clicalmani\Core\Http\RequestInterface;
+use Clicalmani\Core\Http\ResponseInterface;
 
 class PreventRouteTampering extends Middleware 
 {
     /**
      * Handler
      * 
-     * @param \Clicalmani\Foundation\Http\Requests\RequestInterface $request Request object
-     * @param \Clicalmani\Foundation\Http\ResponseInterface $response Response object
+     * @param \Clicalmani\Core\Http\RequestInterface $request Request object
+     * @param \Clicalmani\Core\Http\ResponseInterface $response Response object
      * @param \Closure $next Next middleware function
-     * @return \Clicalmani\Foundation\Http\ResponseInterface|\Clicalmani\Foundation\Http\RedirectInterface
+     * @return \Clicalmani\Core\Http\ResponseInterface|\Clicalmani\Core\Http\RedirectInterface
      */
-    public function handle(RequestInterface $request, ResponseInterface $response, \Closure $next) : \Clicalmani\Foundation\Http\ResponseInterface|\Clicalmani\Foundation\Http\RedirectInterface
+    public function handle(RequestInterface $request, ResponseInterface $response, \Closure $next) : \Clicalmani\Core\Http\ResponseInterface|\Clicalmani\Core\Http\RedirectInterface
     {
-        if (!!$request->hash && false == $request->verifyParameters()) {
+        if ( ! $request->verifyParameters() ) {
             return $response->unauthorized();
         }
 

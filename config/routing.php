@@ -26,6 +26,6 @@ return [
     */
 
     'builders' => [
-        // Available Route Builders
+        // Example: \App\Routing\CustomBuilder::class,
     ]
 ];

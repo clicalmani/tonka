@@ -16,27 +16,28 @@ use Clicalmani\Database\Factory\Property;
     name: 'fk_authaccess_user1_idx',
     key: 'user_id',
     constraint: 'fk_authaccess_user1',
-    references: \App\Models\User::class,
-    onDelete: Index::ON_DELETE_CASCADE,
-    onUpdate: Index::ON_UPDATE_CASCADE
+    references: \App\Models\User::class
 )]
 class AuthAccessEntity extends Entity
 {
     #[Property(
         length: 10,
         unsigned: true,
+        nullable: false,
         autoIncrement: true
     ), PrimaryKey]
     public Integer $id;
 
     #[Property(
         length: 10,
-        unsigned: true
+        unsigned: true,
+        nullable: false
     )]
     public Integer $user_id;
 
     #[Property(
-        length: 64
+        length: 192,
+        nullable: false
     )]
-    public VarChar $token;
+    public ?VarChar $token;
 }

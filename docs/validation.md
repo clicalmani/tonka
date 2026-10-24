@@ -1,437 +1,444 @@
-- [Introduction](#introduction)
-- [Getting Started](#getting-started)
-- [Defining Validation Rules](#defining-validation-rules)
-- [Integrating with Application Logic](#integrating-with-application-logic)
-- [Built-in Validation Rules](#built-in-validation-rules)
-- [Custom Validation Rules](#custom-validation-rules)
-- [Customizing Error Message](#customizing-error-message)
+# Validation
 
-## Introduction
-The **Tonka** Validation module provides a robust set of tools for validating user input and application data. It offers a flexible API for defining validation rules, customizing error messages, and integrating validation logic seamlessly into your application workflows. With support for common validation scenarios and extensibility for custom rules, the module helps ensure data integrity and improves application security.
+Tonka propose un système de validation à la fois riche (chaque règle expose ses propres options, au-delà d'un simple mot-clé) et applicable à plusieurs niveaux du cycle de vie d'une requête. Cette page sert de référence complète : niveaux de validation, syntaxe des règles, catalogue des règles intégrées, et création de règles personnalisées.
 
-## Getting Started
-The **Tonka** Validation module provides an intuitive way to validate user input, route parameters, or database attributes using simple rule definitions. This ensures your application receives clean and expected data before further processing.
+- [Validation](#validation)
+- [Niveaux de Validation](#niveaux-de-validation)
+- [Validation des Paramètres de Route](#validation-des-parametres-de-route)
+  - [Méthodes de Validation](#methodes-de-validation)
+  - [Validation Personnalisée](#validation-personnalisee)
+  - [Contraintes Globales](#contraintes-globales)
+- [Validation des Requêtes (Form Requests)](#validation-des-requetes-form-requests-)
+  - [Création d'un Form Request](#creation-d-39-un-form-request)
+  - [Structure d'un Form Request](#structure-d-39-un-form-request)
+  - [Validation Directe](#validation-directe)
+  - [Validation avec Attributs](#validation-avec-attributs)
+- [Validation des Entités](#validation-des-entites)
+- [Règles Intégrées](#regles-integrees)
+- [Règles Personnalisées](#regles-personnalisees)
+  - [Création d'une Règle](#creation-d-39-une-regle)
+  - [Enregistrement](#enregistrement)
+- [Messages d'Erreur Personnalisés](#messages-d-39-erreur-personnalises)
+- [Exemple Complet](#exemple-complet)
+- [Prochaines Étapes](#prochaines-etapes)
 
-## Defining Validation Rules
-Validation rules in **Tonka** are defined using a concise, pipe-separated string syntax. Each rule specifies a constraint that the input data must satisfy. You can combine multiple rules for a single field by separating them with the `|` character.
+---
 
-**Example:**
+## Niveaux de Validation
+
+Tonka propose une validation à **trois niveaux**, chacun adapté à un moment différent du traitement de la donnée :
+
+| Niveau | Applicable à | Description |
+|--------|------------|-------------|
+| **Route** | Paramètres d'URL | Validation des paramètres dynamiques, avant même le dispatch vers le contrôleur |
+| **Request** | Données HTTP | Validation des formulaires et des requêtes entrantes |
+| **Entity** | Propriétés de modèle | Validation des attributs métier, appliquée quel que soit le point d'entrée (HTTP, console, seeder) |
+
+> **Pour les développeurs Laravel/Symfony :** la validation de route n'a pas d'équivalent direct dans ces deux écosystèmes (où elle se limite généralement à des contraintes regex sur le segment d'URI) ; la validation de requête reprend l'esprit des Form Requests Laravel ; la validation d'entité se rapproche des contraintes `#[Assert\...]` de Symfony Validator sur une entité Doctrine.
+
+---
+
+## Validation des Paramètres de Route
+
+### Méthodes de Validation
 
 ```php
-'email' => 'required|email|unique:users',
-'password' => 'required|min:8|confirmed:1',
+Route::get('/users/:id', [UserController::class, 'show'])
+    ->whereInt('id');                       // Numérique
+
+Route::get('/posts/:slug', [PostController::class, 'show'])
+    ->wherePattern('slug', '^[a-z0-9-]+$'); // Pattern regex
+
+Route::get('/users/:id', [UserController::class, 'show'])
+    ->whereModel('id', User::class);        // Existence en base
+
+Route::get('/users/:id/posts/:post_id', [PostController::class, 'show'])
+    ->whereInt(['id', 'post_id']);          // Application à plusieurs paramètres
 ```
 
-- `required`: Ensures the field is present and not empty.
-- `email`: Validates that the value is a properly formatted email address.
-- `unique:users`: Checks that the value is unique in the `users` table.
-- `min:8`: Ensures the value has at least 8 characters.
-- `confirmed`: Requires a matching confirmation field (e.g., `password_confirmation`).
-
-You can apply these rules in controllers, route definitions, or entity attributes. For more advanced scenarios, rules can accept options (e.g., `min:3`, `max:255`) or be customized with your own logic.
-
-Refer to the [Built-in Validation Rules](#built-in-validation-rules) table for a complete list of available rules and their options.
-
-### Validating Route Parameters
-To validate route parameters, you can use several built-in validation rules. Most of the rules provide a corresponding method that can be chained with the route definition. This ensures that incoming parameters meet your application's requirements before executing any business logic.
-
-For example, you can define validation rules directly on your route:
+### Validation Personnalisée
 
 ```php
-$route->get('/category/:id', function($id) {
-    // $id is guaranteed to be in the provided list
-})->whereIn('id', [1, 2, 3, 4]);
+// Validation avec la méthode where()
+Route::get('/users/:id', [UserController::class, 'show'])
+    ->where('id', 'required|numeric|min:1|max:1000');
+
+// Validation combinée
+Route::get('/posts/:slug', [PostController::class, 'show'])
+    ->where('slug', 'required|string|pattern:[a-z0-9-]+|min:3|max:50');
 ```
 
-This approach automatically validates the `id` parameter before your route handler is executed. If validation fails, a 404 HTTP error is returned.
-
-#### Available Methods
-
-The Validation module offers a variety of methods to define and apply validation rules to your data. You can use the `where` method to specify validation rules for any type of argument. Besides the `where` method, you can use other validation helpers to further constrain your route parameters:
-
-- [**whereNumber**](validation.md?id=wherenumber-method): Ensures the parameter is a valid number.
-- [**whereInt**](validation.md?id=whereint-method): Ensures the parameter is an integer.
-- [**whereFloat**](validation.md?id=wherefloat-method): Ensures the parameter is a valid floating-point number.
-- [**whereEnum**](validation.md?id=whereenum-method): Ensures the parameter value matches one of a set of allowed values (an enumeration).
-- [**whereToken**](validation.md?id=wheretoken-method): Ensures the value is at least the specified minimum (length or number).
-- [**wherePattern**](validation.md?id=wherepattern-method): Ensures the parameter matches a specific regular expression pattern.
-- [**guardAgainst**](validation.md?id=guardagainst-method): Allows you to guard against specific values or patterns for a parameter, rejecting requests that match the guarded criteria.
-- [**whereModel**](validation.md?id=wheremodel-method): Ensures the parameter corresponds to a valid model instance in your database.
-- [**whereIn**](validation.md?id=wherein-method): Ensures the parameter value is within a specific set.
-
-You can chain these methods to create complex validation rules.
-
-##### `whereNumber` Method
-
-The `whereNumber` method ensures that a route parameter is a valid number (integer or float). This is useful for validating IDs, quantities, or any numeric input.
-
-**Usage Example:**
+### Contraintes Globales
 
 ```php
-$route->get('/product/:price', function($price) {
-    // $price is guaranteed to be a number
-})->whereNumber('price');
-```
-
-If the parameter does not pass the numeric check, a 404 error response is returned.
-
-##### `whereInt` Method
-
-The `whereInt` method validates that a route parameter is an integer. This is particularly useful for IDs or any value that must be a whole number.
-
-**Usage Example:**
-
-```php
-$route->get('/order/:orderId', function($orderId) {
-    // $orderId is guaranteed to be an integer
-})->whereInt('orderId');
-```
-
-If the parameter is not a valid integer, a 404 error response is returned.
-
-##### `whereFloat` Method
-
-The `whereFloat` method checks that a route parameter is a valid floating-point number. This is useful for validating prices, measurements, or any value that may contain decimals.
-
-**Usage Example:**
-
-```php
-$route->get('/measurement/:value', function($value) {
-    // $value is guaranteed to be a float
-})->whereFloat('value');
-```
-
-If the parameter is not a valid float, a 404 error response is returned.
-
-##### `whereEnum` Method
-
-The `whereEnum` method validates that a route parameter matches one of a predefined set of allowed values. This is useful for parameters that should only accept specific options, such as status codes or categories.
-
-**Usage Example:**
-
-```php
-$route->get('/status/:state', function($state) {
-    // $state is guaranteed to be one of the allowed values
-})->whereEnum('state', ['active', 'inactive', 'pending']);
-```
-
-If the parameter does not match any of the allowed values, a 404 error response is returned.
-
-##### `whereIn` Method
-
-The `whereIn` method ensures that a route parameter's value exists within a given array of acceptable values. This is similar to `whereEnum` and is often used for validating IDs or codes against a known list.
-
-**Usage Example:**
-
-```php
-$route->get('/category/:id', function($id) {
-    // $id is guaranteed to be in the provided list
-})->whereIn('id', [1, 2, 3, 4]);
-```
-
-If the parameter value is not found in the list, a 404 error response is returned.
-
-##### `whereToken` Method
-
-The `whereToken` method validates that a route parameter matches an API token. This method ensures the parameter consists of a valid token.
-
-**Usage Example:**
-
-```php
-$route->get('/session/:token', function($token) {
-    // $token is guaranteed to be a valid token string
-})->whereToken('token');
-```
-
-If the parameter does not conform to the expected token format, a 404 error response is returned.
-
-##### `wherePattern` Method
-
-The `wherePattern` method validates that a route parameter matches a given regular expression pattern. This is useful for enforcing specific formats, such as UUIDs, custom codes, or date strings.
-
-**Usage Example:**
-
-```php
-$route->get('/invoice/:code', function($code) {
-    // $code matches the specified pattern
-})->wherePattern('code', '/^INV-\d{6}$/');
-```
-
-!> **Note:** The regular expression pattern provided to `wherePattern` must not contain the `|` character, as it is reserved and used internally by the validation module.
-
-If the parameter does not match the provided pattern, a 404 error response is returnedthe framework will automatically return a 404 error response.
-
-##### `guardAgainst` Method
-
-The `guardAgainst` method allows you to explicitly reject certain values or patterns for a route parameter. This is useful when you want to prevent specific inputs from being accepted by your route.
-
-**Usage Example (Range):**
-
-```php
-$route->get('/age/:years', function($years) {
-    // $years is guaranteed to be between 18 and 65
-})->guardAgainst('years', fn(string $years) => in_array($years, range(18, 65)));
-```
-
-If the parameter fails the guard check, a 404 error response is returned.
-
-##### `whereModel` Method
-
-The `whereModel` method validates that a route parameter corresponds to an existing model record in your database. This is commonly used for resource routes where the parameter should match a primary key or unique identifier of a model.
-
-**Usage Example:**
-
-```php
-$route->get('/user/:id', function($user) {
-    // $user is an instance of \App\Models\User if found
-})->whereModel('id', \App\Models\User::class);
-```
-
-If the parameter does not match any record in the specified model, a 404 error response is returned. When validation passes, the resolved model instance is injected into your route handler.
-
-## Integrating with Application Logic
-
-The **Tonka** Validation module is designed to integrate seamlessly with your application's workflow. You can apply validation rules at various points in your application, such as within controllers, routes, or database entities, to ensure that data is validated before any critical operations are performed.
-
-### Validating User Inputs
-
-User inputs can be validated by specifying validation rules through the `AsValidator` attribute on controller actions. This approach allows you to define validation logic directly alongside your controller methods, ensuring that incoming request data meets your application's requirements before any business logic is executed.
-
-To validate user input, annotate your controller action with the `AsValidator` attribute and provide the validation rules as parameters values. **Tonka** will automatically validate the request data against these rules before invoking your action.
-
-**Example:**
-
-```php
-use Clicalmani\Validation\AsValidator;
-
-class UserController
+// app/Providers/RouteServiceProvider.php
+public function register(): void
 {
-    #[AsValidator(
-        email: 'required|email',
-        password: 'required|min:8',
-    )]
-    public function register(Request $request)
+    Route::pattern('id', '[0-9]+');
+    Route::pattern('slug', '[a-z-]+');
+}
+```
+
+---
+
+## Validation des Requêtes (Form Requests)
+
+### Création d'un Form Request
+
+```bash
+php tonka make:request StoreUserRequest
+```
+
+### Structure d'un Form Request
+
+```php
+namespace App\Http\Requests;
+
+use Clicalmani\Core\Http\RequestInterface;
+
+class StoreUserRequest extends Request
+{
+    /**
+     * Autorisation
+     */
+    public function authorize(): bool
     {
-        // $request->email and $request->password are validated
-        // Proceed with registration logic
+        return true;
     }
-}
-```
-
-If validation fails, a `ValidationException` is thrown with an appropriate error message, and your controller action will not be executed.
-
-### Validating Entity Attributes
-
-You can validate entity attributes by using the `Validate` attribute directly on the entity class property. The `Validate` attribute accepts a validation pattern as its parameter, allowing you to enforce rules such as required fields, formats, or custom constraints at the entity level.
-
-**Example:**
-
-```php
-use Clicalmani\Database\Factory\Entity;
-use Clicalmani\Database\Factory\Property;
-use Clicalmani\Database\DataTypes\VarChar;
-use Clicalmani\Database\Factory\Validate;
-
-class UserEntity extends Entity
-{
-    #[Property(
-        length: 191,
-        nullable: false
-    ), Validate('required|email|unique:users')]
-    public VarChar $email;
-
-    #[Property(
-        length: 255
-    ), Validate('required|password|min:8|confirmed:1|hash:1')]
-    public VarChar $password;
-}
-```
-
-When the entity is processed (e.g., during persistence or form handling), **Tonka** will automatically validate the attributes according to the specified patterns. If validation fails, appropriate error messages will be generated and the operation will be halted.
-
-### Built-in Validation Rules
-
-| Rule Argument      | Description                                                      | Options                 |
-|----------------|------------------------------------------------------------------|-------------------------------------|
-| `required`     | Ensures the value is present and not empty                       | None                                |
-| `nullable`     | Ensures the value can be empty                       | None                                |
-| `sometimes`     | Ensures the value can be sometimes empty                       | None                                |
-| `email`        | Validates that the value is a valid email address                | `unique:[model-name-kebab-case]` model to check against (e.g., `unique:user`, `unique:user_role`) `confirm:0-or-1` checks for confirmation parameter (e.g., `email_confirmation`) `attr:[attribute-name]` table attribute name, if not present parameter name will be used `id:[primary-key-value-not-to-include]`                               |
-| `bool`          | Checks that the value is a boolean            | None                     |
-| `datetime`          | Ensures the value is a valid date-time  | `format:<date-time-format>` e.g., `format:y-m-d H:i:s`                    |
-| `date`        | Ensures the value is a valid date            | `format:<date-format>` e.g., `format:y-m-d`                                |
-| `enum`    | Ensures the value is within a set of allowed values          | `list:<user,admin,guest>`                                |
-| `numeric`      | Ensures the value is numeric (integer or float)                  | `min:[min-value]` `max:[max-value]` `rang:[from-to]`                                |
-| `int`      | Ensures the value is an integer                                  | `min:[min-value]` `max:[max-value]` `rang:[from-to]`                                |
-| `float`        | Ensures the value is a floating-point number                     | `min:[min-value]` `max:[max-value]` `rang:[from-to]`                                |
-| `boolean`      | Ensures the value is a boolean                                   | None                                |
-| `in`           | Checks that the value is within a set of allowed values          | `list:[value1,value2,...]`              |
-| `not_in`       | Checks that the value is not within a set of disallowed values   | `list:[value1,value2,...]`          |
-| `id`       | Ensures the value is unique in a specified database table        | `model:<model-name-in-kebab-case>` e.g., `model:user`, `model:user_role` model name in camel-case        |
-| `regexp`       | Validates the value against a regular expression           | `pattern:<regular-expression-pattern>`         |
-| `string`      | Validates a string                 | `min:[min-length]` `max:[max-legth]` `length:[exact-length]`                   |
-| `string[]`    | Validates a string array                   | `min:[min-length]` `max:[max-legth]` `length:[exact-length]`                                |
-| `id[]`         | Validates IDs array                                |   `model:<model-name>`                              |
-| `url`          | Ensures the value is a valid URL                                 | None                                |
-| `json`         | Ensures the value is a valid JSON string                         | `assoc:[1-or-0]` returns an associative array, otherwise stdClass object is returned `depth:[default-to-512]`                                |
-| `numeric[]`        | Validate numeric array                                    | `min:[min-value]` `max:[max-value]` `rang:[from-to]`                                |
-| `image`        | Ensures the uploaded file is an image                                     | `max:[max-file-length]` `ext:[png,jpg,jpeg,...]`                                |
-| `pdf`        | Ensures the uploaded file is a PDF                                           | `max:[max-file-length]`             |
-| `file`         | Ensures the uploaded file is a valid                                      | `max:[max-file-length]` `ext:[docx,xlsx,txt,...]`                     |
-| `num`        | Ensures the value is a valid number                                           | `min:[minimum-value]` `max:[maximum-value]` `range:[from-to]`            |
-| `alpha`        | Ensures the value contains only alphabetic characters                                          | `min:[minimum-length]` `max:[maximum-length]` `length:[exact-length]`            |
-| `password`     | Ensures the value meets password requirements (such as minimum length, character types, etc.) | `min:[min-length]` `max:[max-length]` `confirmed:[1-or-0]` `hash:[1-or-0]` |           |
-
-> **Note:**  
-> Some validation rules are specifically intended for use with route parameters (such as `whereModel`, `whereEnum`, or `wherePattern`), while others are designed for validating user input in route actions (using the `AsValidator` attribute) or for enforcing constraints on database entity attributes (using the `Validate` attribute).  
->  
-> Choose the appropriate validation approach based on where and how you need to enforce data integrity within your application.
-
-## Custom Validation Rules
-
-The **Tonka** Validation module supports the creation of custom validation rules to handle application-specific requirements. Custom rules are useful when the built-in rules do not cover your use case.
-
-## Creating a Custom Rule
-
-You can extend the **Tonka** Validation module by defining your own custom validation rules. To do this, create a new class that extends the `Rule` base class and implement the `validate` method with your custom logic.
-
-**Example: Custom Rule**
-
-```php
-<?php
-
-namespace App\Http\Validators;
-
-use Clicalmani\Validation\Rule;
-
-class PhoneNumberValidator extends Rule
-{
-    /**
-     * Validator argument
-     * 
-     * @var string
-     */
-    protected string $argument = 'phone';
 
     /**
-     * Validator options
-     * 
-     * @return array
+     * Préparation des données avant validation
      */
-    public function options() : array
+    public function prepareForValidation(): void
+    {
+        $this->merge([
+            'email' => strtolower($this->email),
+            'name' => trim($this->name)
+        ]);
+    }
+
+    /**
+     * Règles de validation
+     */
+    public function signatures(): array
     {
         return [
-            'pattern' => [
-                'required' => true,
-                'type' => 'string'
-            ]
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|password|min:8',
+            'age' => 'nullable|int|min:18',
+            'role' => 'required|in|list:admin,user,moderator',
+            'is_active' => 'boolean|nullable'
         ];
     }
 
     /**
-     * Validate the attribute.
-     *
-     * @param mixed &$value
-     * @return bool
+     * Messages personnalisés
      */
-    public function validate(&$value): bool
+    public function messages(): array
     {
-        // Custom validation logic for phone numbers
-        return preg_match('/^' . $this->options['pattern'] . '$/', $value);
+        return [
+            'name'  => 'Le nom est obligatoire',
+            'email' => 'L\'email est obligatoire'
+        ];
     }
 }
 ```
 
-The `validate` method receives the value by reference, allowing you to modify the value if needed during validation (for example, to normalize or transform the input before further processing).
-
-### Registering the Custom Rule
-
-To register the custom rule, you need to add it to the `custom_rules` list in `app\Http\Kernel.php` file:
+### Validation Directe
 
 ```php
-<?php
-
-namespace App\Http;
-
-class Kernel
+class UserController extends Controller
 {
-    protected $custom_rules = [
-        \App\Http\Validators\PhoneNumberValidator::class,
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|password|min:8',
+            'age' => 'nullable|integer|min:18'
+        ]);
+
+        $user = User::create($validated);
+        return redirect('/users');
+    }
+}
+```
+
+### Validation avec Attributs
+
+```php
+use Clicalmani\Validation\AsValidator;
+
+class UserController extends Controller
+{
+    #[AsValidator([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users',
+        'password' => 'required|password|min:8'
+    ])]
+    public function store(Request $request)
+    {
+        $validated = $request->validated();
+        $user = User::create($validated);
+        return response()->json($user);
+    }
+}
+```
+
+---
+
+## Validation des Entités
+
+```php
+// database/entities/UserEntity.php
+use Clicalmani\Database\Factory\Validate;
+
+class UserEntity extends Entity
+{
+    #[Validate('required|email|max:255')]
+    public VarChar $email;
+
+    #[Validate('required|password|hash|min:8')]
+    public VarChar $password;
+
+    #[Validate('required|in:M,F,O')]
+    public Enum|string|null $gender = 'M';
+
+    #[Validate('integer|min:18|max:120')]
+    public TinyInt|int|null $age;
+}
+```
+
+---
+
+## Règles Intégrées
+
+La syntaxe générale d'une règle est `regle:option1,option2` ou, pour une option nommée, `regle|option:valeur`. Les options se combinent en les enchaînant avec le caractère `|` : `password|min:8|common:no`.
+
+| Règle | Description | Options |
+|-------|-------------|---------|
+| `string` | Chaîne de caractères | <ul><li>`length` Taille exacte de la chaîne (ex : 8)</li><li>`min` Nombre de caractères minimal (ex : 0)</li><li>`max` Nombre de caractères maximal (ex : 100)</li><li>`pattern` Expression régulière (ex : [a-zA-Z0-9])</li><li>`format` un des formats (email, url, uuid, ip, alpha, alnum, numeric, slug)</li><li>`sanitize` une des fonctions de filtrage (_trim_, _lower_, _upper_, _ucfirst_, _ucwords_, _strip_tags_, _htmlspecialchars_)</li><li>`noSpace` interdit les espaces (booléen : _yes_, _no_, _true_, _false_, _0_, _1_)</li><li>`noSpecial` interdit les caractères spéciaux (ex : @#;$..., booléen : _yes_, _no_, _true_, _false_, _0_, _1_)</li></ul> |
+| `string[]` | Tableau de chaînes de caractères | Toutes les options de `string`, plus <ul><li>`minItems` Nombre minimal d'éléments requis dans le tableau</li><li>`maxItems` Nombre maximal d'éléments autorisé dans le tableau</li><li>`distinct` Supprime les doublons du tableau</li><li>`allowEmpty` Autorise les chaînes vides dans le jeu de données</li><li>`join` Concatène les éléments valides en une seule chaîne de sortie</li><li>`separator` Séparateur utilisé lors de la concaténation</li></ul> |
+| `number`, `num` | Nombre | <ul><li>`min` Valeur minimale</li><li>`max` Valeur maximale</li><li>`range` Intervalle (ex : _1-6_)</li><li>`type` un des types suivants (_integer_, _float_, _positive_, _negative_, _natural_, _even_, _odd_)</li><li>`round` Nombre de chiffres après la virgule</li><li>`format` un des formats (_integer_, _float_, _string_)</li></ul> |
+| `numeric` | Nombre (entier ou flottant) | <ul><li>`length` Nombre maximal de chiffres</li><li>`precision` Nombre de chiffres après la virgule</li><li>`format` un des formats (_integer_, _decimal_, _percentage_, _currency_)</li><li>`round` Arrondit à _n_ chiffres</li><li>`allowNegative` Autorise les nombres négatifs (_yes_, _no_, _true_, _false_, _0_, _1_)</li><li>`allowZero` Autorise la valeur zéro (_yes_, _no_, _true_, _false_, _0_, _1_)</li><li>`min` Valeur minimale</li><li>`max` Valeur maximale</li></ul> |
+| `integer`, `int` | Entier | Toutes les options de `number`, sauf `round` et `precision` |
+| `float` | Nombre à virgule flottante | Toutes les options de `number`, avec le format `float` |
+| `boolean` | Booléen | <ul><li>`default` Valeur par défaut lorsque le champ est vide</li><li>`strict` N'accepte strictement qu'une valeur booléenne</li></ul> |
+| `email` | Adresse e-mail valide | <ul><li>`unique` Unicité vérifiée sur le modèle (nom du modèle en minuscules, en kebab-case)</li><li>`column` Colonne à vérifier dans la table (par défaut, le nom du champ validé)</li><li>`except` Valeur à exclure de la vérification d'unicité</li><li>`exceptColumn` Colonne portant la valeur à exclure (par défaut, la clé primaire de la table)</li><li>`mx` Résolution MX (vérifie l'existence d'un enregistrement MX pour le domaine)</li><li>`dns` Résolution DNS</li><li>`block` Liste noire de domaines (ex : domaine1.com, domaine2.org, domaine2.info...)</li><li>`only` Liste blanche de domaines</li></ul> |
+| `url` | URL valide | <ul><li>`schemes` ex : http,https</li><li>`allowedDomains` Liste blanche de domaines</li><li>`blockedDomains` Liste noire de domaines</li><li>`allowedPorts` Liste blanche de ports</li><li>`dns` Active la résolution DNS</li><li>`sanitize` une des valeurs _trim_, _lower_</li></ul> |
+| `date`, `datetime` | Date valide | <ul><li>`format` (supporte Y, m, d, H, i, s, etc.)</li><li>`formats` Plusieurs formats acceptés</li><li>`min` Date minimale</li><li>`max` Date maximale</li><li>`timezone` Identifiant de fuseau horaire (ex : UTC, Africa/Porto-Novo...)</li><li>`relative` Date relative (_now_, _+1 day_...)</li><li>`strict` Vérification stricte du calendrier (_yes_, _no_, _true_, _false_, _0_, _1_)</li></ul> |
+| `in`, `enum` | Dans une liste de valeurs | <ul><li>`list` Liste des valeurs supportées</li><li>`caseInsensitive` Ignore la casse (_yes_, _no_, _true_, _false_, _0_, _1_)</li><li>`sanitize` Filtre appliqué avant comparaison (_trim_, _lower_, _upper_)</li><li>`strict` Comparaison stricte (_yes_, _no_, _true_, _false_, _0_, _1_)</li></ul> |
+| `not_in` | Absente d'une liste de valeurs | Options identiques à `in`, logique inversée |
+| `password` | Mot de passe | <ul><li>`length` Taille exacte (ex : 8)</li><li>`min` Nombre minimal de caractères</li><li>`max` Nombre maximal de caractères</li><li>`uppercase` Nombre minimal de majuscules</li><li>`lowercase` Nombre minimal de minuscules</li><li>`numbers` Nombre minimal de chiffres</li><li>`symbols` Nombre minimal de caractères symboliques (ex : @, #, $...)</li><li>`strength` une des valeurs (_weak_, _medium_, _strong_, _very_strong_)</li><li>`common` Rejette les mots de passe usuels et faciles à deviner (_yes_, _no_, _true_, _false_, _0_, _1_)</li><li>`repeat` Nombre maximal de caractères identiques consécutifs (ex : 2)</li><li>`noSpace` Interdit les espaces (_yes_, _no_, _true_, _false_, _0_, _1_)</li></ul> |
+| `id` | Identifiant existant en base | <ul><li>`model` Nom du modèle (ex : 'user_profile' → UserProfile)</li><li>`column` Colonne à vérifier (par défaut, la clé primaire)</li><li>`scope` Conditions supplémentaires (combinées par ET) ajoutées à la requête d'existence. Accepte un tableau colonne => valeur, ou colonne => callable évalué au moment de la validation. Exemple : `['company_id' => fn() => auth()->company_id]`</li><li>`withTrashed` Si vrai, inclut les enregistrements supprimés logiquement (soft-deleted) dans la recherche d'existence (ignoré si le modèle cible n'utilise pas le trait `SoftDelete`)</li></ul> |
+| `id[]` | Tableau d'identifiants | Toutes les options de `id`, plus <ul><li>`join` Concatène les identifiants valides en une chaîne délimitée après validation</li><li>`limit` Limite le nombre maximal d'identifiants acceptés en entrée</li><li>`distinct` Supprime les identifiants en double du résultat final</li><li>`separator` Délimiteur personnalisé (la virgule par défaut)</li><li>`allowEmpty` Autorise les valeurs d'identifiant vides dans les données soumises</li></ul> |
+| `file` | Fichier | <ul><li>`max` Taille maximale du fichier, convertie en octets (ex : 1024, 10k, 2M, 5G)</li><li>`min` Taille minimale du fichier, convertie en octets</li><li>`ext` Extensions de fichier autorisées (ex : png, jpg, pdf, doc...)</li><li>`mime` Types MIME autorisés</li><li>`minWidth` Largeur minimale de l'image, en pixels</li><li>`maxWidth` Largeur maximale de l'image, en pixels</li><li>`minHeight` Hauteur minimale de l'image, en pixels</li><li>`maxHeight` Hauteur maximale de l'image, en pixels</li><li>`filename` Expression régulière validant le nom du fichier (ex : [a-zA-Z0-9-_])</li><li>`allowEmpty` Autorise un champ fichier vide ou non renseigné</li></ul> |
+| `image` | Image | Toutes les options de `file`, plus <ul><li>`ratio` ex : 512:512</li><li>`minRatio` Ratio minimal</li><li>`maxRatio` Ratio maximal</li></ul> |
+| `regexp` | Expression régulière | <ul><li>`pattern` Motif d'expression régulière cible (sans les délimiteurs)</li><li>`flags` Indicateurs de modification du motif (ex : i, m, s, u)</li><li>`sanitize` Filtre de nettoyage appliqué avant évaluation (_trim_, _lower_, _upper_, _strip_tags_)</li><li>`capture` Capture les sous-groupes correspondants dans un tableau</li><li>`not` Inverse la logique d'évaluation — la valeur ne doit **pas** correspondre au motif (_yes_, _no_, _true_, _false_, _0_, _1_)</li></ul> |
+| `json` | JSON | <ul><li>`assoc` Décodage en tableau associatif (`true`) ou en objet `stdClass` (`false`)</li><li>`depth` Profondeur maximale de récursion lors de l'analyse</li><li>`types` Validation avec typage des champs (ex : `required\|json\|types:array` → `{"users": [{"name": "John"}]}`)</li><li>`schema` Schéma de validation JSON — clés requises, types de propriétés, valeurs par défaut (ex : `required\|json\|schema:{"required":["name","email"],"properties":{"name":{"type":"string"},"email":{"type":"string"}}}` → `{"name": "John", "email": "john@example.com"}`)</li><li>`clean` Validation avec nettoyage préalable (ex : `required\|json\|clean:true`)</li><li>`maxSize` Longueur maximale de la charge utile, en nombre de caractères</li></ul> |
+| `pdf` | Fichier PDF | Toutes les options de `file`, plus <ul><li>`minVersion` Version PDF minimale autorisée (ex : '1.4')</li><li>`maxVersion` Version PDF maximale autorisée (ex : '1.7')</li><li>`checkContent` Effectue des vérifications d'intégrité du contenu ; valide la structure via `pdftotext` si le binaire est disponible</li><li>`maxPages` Nombre maximal de pages autorisé. Stratégie 1 : utilitaire en ligne de commande `pdftk`. Stratégie 2 : comptage des sauts de page via `pdftotext`. Stratégie 3 : analyse directe du flux</li></ul> |
+
+Au-delà des options propres à chaque règle, les arguments suivants s'appliquent à toute règle :
+
+| Argument | Rôle | Exemple |
+| --- | --- | --- |
+| `required` | Indique que le champ est obligatoire | `required\|string\|min:8` |
+| `nullable` | Indique que le champ accepte une valeur nulle | `bool\|nullable` |
+| `sometimes` | N'applique la validation que si le champ est présent dans les données soumises | `bool\|sometimes` |
+
+> Chaque règle accepte en outre une dernière option, `message`, qui permet de personnaliser le message d'erreur directement dans la signature de la règle plutôt que dans `messages()`.
+
+---
+
+## Règles Personnalisées
+
+### Création d'une Règle
+
+```php
+namespace App\Http\Validators;
+
+use Clicalmani\Validation\Rule;
+
+class PhoneValidator extends Rule
+{
+    protected static string $argument = 'phone';
+
+    public function options(): array
+    {
+        return [
+            'country' => [
+                'required' => false,
+                'type' => 'string',
+                'function' => function(string $country) {
+                    return strtoupper($country);
+                }
+            ],
+            'format' => [
+                'required' => false,
+                'type' => 'string',
+                'validator' => function($value) {
+                    return in_array($value, ['international', 'national']);
+                }
+            ]
+        ];
+    }
+
+    public function validate(mixed &$value): bool
+    {
+        // Nettoyage
+        $value = preg_replace('/[^0-9+]/', '', $value);
+
+        // Validation
+        if (strlen($value) < 8) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function message(): ?string
+    {
+        return "Le numéro de téléphone n'est pas valide.";
+    }
+}
+```
+
+> **Pour les développeurs Symfony :** une règle personnalisée Tonka regroupe en une seule classe ce que Symfony Validator répartit entre deux classes distinctes (`Constraint` + `ConstraintValidator`). C'est plus proche, dans l'esprit, d'une classe implémentant `Illuminate\Contracts\Validation\Rule` côté Laravel.
+
+### Enregistrement
+
+```php
+// app/Http/Kernel.php
+class Kernel extends HttpKernel
+{
+    protected array $custom_rules = [
+        PhoneValidator::class,
+        UuidValidator::class,
     ];
 }
 ```
 
-### Using the Custom Rule
+---
 
-Here is an example of how to use the custom rule in your validation logic:
+## Messages d'Erreur Personnalisés
 
-```php
-Route::post('/user/:phone', function (Request $request) {
-    // ...
-})->where('phone', 'required|phone|pattern:[0-9]{8}');
-```
-
-Custom rules allow you to encapsulate complex or application-specific validation logic and reuse it throughout your application.
-
-### Customizing Error Message
-
-To customize the error message for a validation rule, you can implement the `message` method on your custom validation rule class. This method should return the error message you want to display when validation fails.
-
-**Example: Custom Rule with Custom Message**
+### Dans un Form Request
 
 ```php
-use Clicalmani\Validation\Rule;
-
-class Uppercase extends Rule
+class UserRequest extends Request
 {
-    protected string $argument = 'uppercase';
-
-    public function validate(mixed &$value) : bool
+    public function signatures(): array
     {
-        return strtoupper($value) === $value;
+        return [
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users',
+        ];
     }
 
-    public function message() : string
+    public function messages(): array
     {
-        return "The {$this->parameter} must be uppercase.";
+        return [
+            'name'  => 'Le nom est obligatoire',
+            'email' => 'L\'email est obligatoire'
+        ];
     }
 }
 ```
 
-To customize the error message for a built-in validation rule, you can override the rule class by running the following command:
+---
 
-```bash
-php tonka make:validator RuleName --argument=argument-value --override
-```
+## Exemple Complet
 
-Replace `RuleName` with the name of the validator rule. This will generate a new rule class in your application where you can modify the `message` method to return your custom error message.
-
-**Example: Overriding Built-in Rule**
-
-```bash
-php tonka make:validator EmailValidator --argument=email --override
-```
-
-Edit the generated `EmailValidator` rule class and implement the `message` method as needed.
+### Route
 
 ```php
-<?php
+// routes/web.php
+Route::post('/users', [UserController::class, 'store'])
+    ->where('email', 'required|email');
+```
 
-namespace App\Http\Validators;
+### Form Request
 
-use Clicalmani\Validation\Rules\EmailValidator as Base;
+```php
+namespace App\Http\Requests;
 
-class EmailValidator extends Base
+use Clicalmani\Core\Http\RequestInterface;
+
+class UserRequest extends Request
 {
-    /**
-     * Get the validation error message.
-     *
-     * @return string
-     */
-    public function message(): string
+    public function authorize(): bool
     {
-        return sprintf("The %s field must be a valid email address.", $this->parameter);
+        return auth()->user()->can('create_user');
+    }
+
+    public function prepareForValidation(): void
+    {
+        $this->merge([
+            'email' => strtolower($this->email),
+            'name' => trim($this->name)
+        ]);
+    }
+
+    public function signatures(): array
+    {
+        return [
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|password|min:8|confirmed',
+            'age' => 'nullable|integer|min:18',
+            'role' => 'required|in:admin,user,moderator'
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'name' => 'Le nom est obligatoire',
+            'email' => 'L\'email est obligatoire',
+            'password' => 'Le mot de passe est obligatoire',
+        ];
     }
 }
 ```
-Don't forget to register your custom rule. Once registered, the new rule will be called instead of the built-in rule each time the validator is invoked.
+
+### Contrôleur
+
+```php
+namespace App\Http\Controllers;
+
+use App\Http\Requests\UserRequest;
+use Clicalmani\Validation\AsValidator;
+use App\Models\User;
+
+class UserController extends Controller
+{
+    #[AsValidator([
+        'email' => 'required|email|unique:users'
+    ])]
+    public function store(UserRequest $request)
+    {
+        // La validation s'exécute automatiquement
+        $validated = $request->validated();
+
+        $user = User::create($validated);
+
+        return redirect('/users')
+            ->with('success', 'User created successfully!');
+    }
+}
+```
+
+---
+
+## Prochaines Étapes
+
+Maintenant que vous maîtrisez la validation :
+
+1. **[Sessions](sessions.md)** → Gérer les sessions
+2. **[Base de Données](database.md)** → Travailler avec les modèles
+3. **[Elegant ORM](orm.md)** → Approfondir l'ORM
+
+---
+
+**Validation comprise !** 🚀 → [Sessions](sessions.md)

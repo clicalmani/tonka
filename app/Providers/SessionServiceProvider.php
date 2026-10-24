@@ -1,11 +1,11 @@
 <?php
 namespace App\Providers;
 
-use Clicalmani\Foundation\Providers\SessionStorageServiceProvider as SessionProvider;
+use Clicalmani\Core\Providers\SessionStorageServiceProvider as SessionProvider;
 
 class SessionServiceProvider extends SessionProvider
 {
-    protected static $driver = \Clicalmani\Foundation\Http\Session\FileSessionHandler::class;
+    protected static string $driver = \Clicalmani\Core\Http\Session\FileSessionHandler::class;
 
     /**
      * Here you may specify the number of seconds that you wish the session
@@ -13,7 +13,7 @@ class SessionServiceProvider extends SessionProvider
      * 
      * @var int
      */
-    protected static $lifetime = 300;
+    protected static int $lifetime = 3000;
 
     /**
      * Here you may specify the maximum number of seconds that you wish the session
@@ -21,22 +21,38 @@ class SessionServiceProvider extends SessionProvider
      * 
      * @var int
      */
-    protected static $max_lifetime = 900;
+    protected static int $max_lifetime = 9000;
 
     /**
      * If you want session to immediately expire on the browser closing, set that option.
      * 
      * @var bool
      */
-    protected static $expire_on_close = false;
+    protected static bool $expire_on_close = false;
+
+    /**
+     * Map block defining browser tracking cookie policies and boundary visibility controls.
+     * 
+     * @var array
+     */
+    protected static array $cookie = [
+        'name'      => '__SESSION_COOKIE__',
+        'path'      => '/',
+        'domain'    => '',
+        'secure'    => false,
+        'http_only' => true,
+        'samesite'  => true
+    ];
     
     /**
      * Bootstrap
      * 
      * @return void
      */
-    public function boot(): void
+    public function boot(
+        ?\Clicalmani\Core\Acme\Container $container = null
+    ): void
     {
-        parent::boot();
+        parent::boot($container);
     }
 }

@@ -1,80 +1,86 @@
 - [Introduction](#introduction)
-- [Getting Started](#getting-started)
-- [Core Concepts](#core-concepts)
-- [Available Data Structures](#available-data-structures)
-    - [Array Collection](#array-collection)
-    - [Map Collection](#map-collection)
-    - [Custom Collections](#custom-collections)
-- [Common Operations](#common-operations)
-    - [Filtering](#filtering)
-    - [Sorting](#sorting)
+- [Prise en main](#prise-en-main)
+- [Principes de conception](#principes-de-conception)
+- [Structures de données disponibles](#structures-de-donnees-disponibles)
+    - [Collection de tableaux](#collection-de-tableaux)
+    - [Collection associative (Map)](#collection-associative-map-)
+    - [Collections personnalisées](#collections-personnalisees)
+- [Opérations courantes](#operations-courantes)
+    - [Filtrage](#filtrage)
+    - [Tri](#tri)
     - [Transformation](#transformation)
-- [Usage Examples](#usage-examples)
-- [Collection Methods](#collection-methods)
+    - [Agrégation](#agregation)
+    - [Recherche](#recherche)
+    - [Chaînage](#chainage)
+- [Exemples d'utilisation](#exemples-d-39-utilisation)
+- [Référence des méthodes](#reference-des-methodes)
 
 ## Introduction
 
-**Tonka** Framework's collection module provides a set of powerful, flexible data structures designed to simplify data management in your applications. With built-in support for common operations such as filtering, sorting, and transformation, the collection module enables developers to handle complex datasets with ease. Whether you're working with arrays, maps, or custom data types.
+Le module de collections du framework **Tonka** fournit une couche d'abstraction orientée objet au-dessus des structures de données natives de PHP. Il expose une API fluide et cohérente pour manipuler des jeux de données (filtrage, tri, transformation, agrégation) sans recourir à des boucles impératives ni à l'enchaînement de fonctions `array_*` peu lisibles.
 
-## Getting Started
+Le module prend en charge les tableaux indexés, les structures clé-valeur et les types de données personnalisés, ce qui permet d'écrire un code plus déclaratif, plus concis et plus facile à maintenir.
 
-To begin using the **Tonka** Framework's collection module, you can create a collection instance either by using the `collection` helper function or by directly importing the `Clicalmani\Foundation\Collection\Collection` class.
+## Prise en main
 
-#### Using the Collection Helper
+Une collection s'instancie de deux manières : via la fonction utilitaire `collection()` ou directement à partir de la classe `Clicalmani\Core\Collection\Collection`.
+
+#### Via la fonction utilitaire
 
 ```php
 $collection = collection([1, 2, 3, 4]);
 ```
 
-#### Importing the Collection Class
+#### Via l'instanciation de la classe
 
 ```php
-use Clicalmani\Foundation\Collection\Collection;
+use Clicalmani\Core\Collection\Collection;
 
 $collection = new Collection([1, 2, 3, 4]);
 ```
 
-Both approaches provide access to the full set of collection methods for managing and manipulating your data.
+Les deux approches sont équivalentes et donnent accès à l'ensemble des méthodes décrites dans cette documentation.
 
-#### Performing Operations
+#### Exécuter des opérations
 
-Collections provide methods for filtering, sorting, and transforming data:
+Les collections exposent des méthodes de filtrage, de tri et de transformation directement chaînables :
 
 ```php
 User::all()->filter(fn(User $user) => $user->isAdmin());
 User::all()->sortBy('name');
 ```
 
-## Core Concepts
+## Principes de conception
 
-The collection module is built around a few key principles:
+Le module repose sur trois principes directeurs :
 
-- **Mutability:** Collections are designed to be mutable, by default—most operations modify the original instance.
-- **Chainability:** Methods can be chained for expressive and concise data manipulation.
-- **Type Flexibility:** Collections can handle arrays, objects, or custom data types.
+- **Mutabilité :** par défaut, les collections sont mutables. La plupart des opérations modifient l'instance courante au lieu d'en créer une nouvelle.
+  <!-- À vérifier : le tableau de référence indique que filter() et map() « retournent une nouvelle collection ». Harmoniser les deux affirmations. -->
+- **Chaînabilité :** chaque méthode de transformation retourne une collection, ce qui autorise le chaînage d'appels pour un code expressif et concis.
+- **Flexibilité de typage :** une collection peut contenir des tableaux, des objets ou tout type de donnée personnalisé.
 
-Understanding these concepts will help you leverage the full power of the collection module in your applications.
+La compréhension de ces principes est essentielle pour exploiter pleinement le module, en particulier le comportement lié à la mutabilité lors de l'enchaînement de plusieurs opérations.
 
-## Available Data Structures
+## Structures de données disponibles
 
-Tonka's collection module offers several built-in data structures to accommodate different use cases:
+Le module propose plusieurs structures adaptées à différents cas d'usage. Toutes partagent une API cohérente, ce qui permet de passer de l'une à l'autre sans réécrire la logique métier.
 
-### Array Collection
+### Collection de tableaux
 
-A flexible wrapper around PHP arrays, providing advanced methods for manipulation, searching, and transformation.
+Encapsulation orientée objet d'un tableau PHP, enrichie de méthodes avancées de manipulation, de recherche et de transformation.
 
 ```php
-use Clicalmani\Foundation\Collection\Collection;
+use Clicalmani\Core\Collection\Collection;
 
 $arrayCollection = new Collection([1, 2, 3, 4]);
 ```
 
-### Map Collection
+### Collection associative (Map)
 
-A key-value store similar to associative arrays or maps, supporting efficient lookups and advanced operations.
+Structure clé-valeur comparable à un tableau associatif, optimisée pour les accès par clé et dotée d'opérations avancées.
 
 ```php
-use Clicalmani\Foundation\Collection\Map;
+use Clicalmani\Core\Collection\Map;
 
 $mapCollection = new Map(['name' => 'Alice', 'age' => 30]);
 $mapCollection->get('age'); // 30
@@ -82,36 +88,34 @@ $mapCollection->set('age', 37);
 $mapCollection->get('age'); // 37
 ```
 
-### Custom Collections
+### Collections personnalisées
 
-You can extend the base `Collection` class to create your own custom data structures tailored to your application's needs.
+Il est possible d'étendre la classe de base `Collection` afin de définir des structures spécialisées, propres au domaine métier de l'application.
 
 ```php
-use Clicalmani\Foundation\Collection\Collection;
+use Clicalmani\Core\Collection\Collection;
 
 class UserCollection extends Collection
 {
-    // Add custom methods or overrides here
+    // Ajoutez ici vos méthodes spécifiques ou surchargez le comportement existant
 }
 ```
 
-Each data structure provides a consistent API, making it easy to switch between them as your requirements evolve.
+## Opérations courantes
 
-## Common Operations
+Les opérations ci-dessous couvrent la majorité des besoins de manipulation de données.
 
-Collections in **Tonka** provide a rich set of methods for manipulating and querying data. Here are some of the most commonly used operations:
+### Filtrage
 
-### Filtering
-
-Filter elements based on a condition using the `filter` method:
+La méthode `filter` conserve uniquement les éléments qui satisfont la condition définie par la fonction de rappel (*callback*) :
 
 ```php
 $adults = $users->filter(fn($user) => $user['age'] >= 18);
 ```
 
-### Sorting
+### Tri
 
-Sort collections by a specific field or custom logic:
+Les éléments peuvent être triés selon une clé ou une logique personnalisée, en ordre croissant (`sortBy`) ou décroissant (`sortByDesc`) :
 
 ```php
 $sorted = $users->sortBy('name');
@@ -120,31 +124,33 @@ $sortedDesc = $users->sortByDesc('created_at');
 
 ### Transformation
 
-Transform each element using the `map` method:
+La méthode `map` applique une fonction à chaque élément et construit le résultat à partir des valeurs retournées :
 
 ```php
 $names = $users->map(fn($user) => $user['name']);
 ```
 
-### Aggregation
+### Agrégation
 
-Aggregate data with methods like `sum`, `count`, or `reduce`:
+Les méthodes `sum`, `count` et `reduce` permettent de calculer une valeur unique à partir de l'ensemble des éléments :
 
 ```php
 $total = $orders->sum('amount');
 $count = $users->count();
 ```
 
-### Searching
+### Recherche
 
-Find elements with `find`, `first`, or `contains`:
+Les méthodes `find`, `first` et `contains` permettent de localiser un ou plusieurs éléments :
 
 ```php
 $firstAdmin = $users->first(fn($user) => $user['role'] === 'admin');
 $hasAlice = $users->contains('Alice');
 ```
 
-These operations can be chained for expressive and concise data manipulation:
+### Chaînage
+
+Ces opérations se combinent pour former des pipelines de traitement lisibles, où chaque étape décrit une intention précise :
 
 ```php
 $names = $users
@@ -153,11 +159,13 @@ $names = $users
     ->map(fn($user) => $user['name']);
 ```
 
-## Usage Examples
+## Exemples d'utilisation
 
-Here are some practical examples demonstrating how to use the Tonka collection module in real-world scenarios.
+Les exemples suivants illustrent des cas d'usage concrets du module.
 
-### Example 1: Filtering and Mapping Users
+### Exemple 1 : filtrer et transformer une liste d'utilisateurs
+
+Sélection des utilisateurs actifs et majeurs, puis extraction de leur nom :
 
 ```php
 $users = collection([
@@ -170,10 +178,12 @@ $activeAdults = $users
     ->filter(fn($user) => $user['active'] && $user['age'] >= 18)
     ->map(fn($user) => $user['name']);
 
-// $activeAdults contains ['Alice', 'Charlie']
+// $activeAdults contient ['Alice', 'Charlie']
 ```
 
-### Example 2: Sorting and Reducing Orders
+### Exemple 2 : trier et agréger des commandes
+
+Classement des commandes par montant décroissant, puis calcul du montant total :
 
 ```php
 $orders = collection([
@@ -182,17 +192,23 @@ $orders = collection([
     ['id' => 3, 'amount' => 75],
 ]);
 
-$totalAmount = $orders
+$biggestOrder = $orders
     ->sortByDesc('amount')
-    ->sum('amount');
+    ->first();
 
-// $totalAmount is 225
+// $biggestOrder correspond à ['id' => 2, 'amount' => 100]
+
+$totalAmount = $orders->sum('amount');
+
+// $totalAmount vaut 225
 ```
 
-### Example 3: Working with Map
+### Exemple 3 : manipuler une Map
+
+Vérification de l'existence d'une clé dans une collection associative :
 
 ```php
-use Clicalmani\Foundation\Collection\Map;
+use Clicalmani\Core\Collection\Map;
 
 $settings = new Map([
     'theme' => 'dark',
@@ -202,22 +218,22 @@ $settings = new Map([
 $hasTheme = $settings->has('theme'); // true
 ```
 
-These examples illustrate how collections can simplify data processing and improve code readability.
+Ces exemples montrent comment les collections réduisent la complexité du traitement de données et améliorent la lisibilité du code.
 
-### Collection Methods
+## Référence des méthodes
 
-| Method                | Description                                                      |
-|-----------------------|------------------------------------------------------------------|
-| `all()`               | Returns all items in the collection as an array.                 |
-| `filter(callable)`    | Filters items using a callback and returns a new collection.     |
-| `map(callable)`       | Transforms each item using a callback and returns a new collection. |
-| `reduce(callable, $initial)` | Reduces the collection to a single value.                |
-| `sortBy($key)`        | Sorts items by a given key or callback.                          |
-| `sortByDesc($key)`    | Sorts items by a given key or callback in descending order.      |
-| `first(callable?)`    | Returns the first item matching a condition, or the first item.  |
-| `find($key, $default?)` | Finds an item by key, or returns default if not found.         |
-| `contains($key, $value?)` | Checks if the collection contains a key or value.            |
-| `sum($key?)`          | Returns the sum of values for a given key or all items.          |
-| `count()`             | Returns the number of items in the collection.                   |
-| `isEmpty()`           | Checks if the collection is empty.                               |
-| `toArray()`           | Converts the collection to a plain array.                        |
+| Méthode                      | Description                                                                                   |
+|------------------------------|-----------------------------------------------------------------------------------------------|
+| `all()`                      | Retourne l'ensemble des éléments sous forme de tableau.                                       |
+| `filter(callable)`           | Filtre les éléments à l'aide d'un callback et retourne une nouvelle collection.               |
+| `map(callable)`              | Applique un callback à chaque élément et retourne une nouvelle collection.                    |
+| `reduce(callable, $initial)` | Réduit la collection à une valeur unique, à partir d'une valeur initiale.                     |
+| `sortBy($key)`               | Trie les éléments selon une clé ou un callback (ordre croissant).                             |
+| `sortByDesc($key)`           | Trie les éléments selon une clé ou un callback (ordre décroissant).                           |
+| `first(callable?)`           | Retourne le premier élément satisfaisant la condition, ou le premier élément par défaut.      |
+| `find($key, $default?)`      | Recherche un élément par clé ; retourne la valeur par défaut si aucun élément n'est trouvé.   |
+| `contains($key, $value?)`    | Indique si la collection contient la clé ou la valeur spécifiée.                              |
+| `sum($key?)`                 | Retourne la somme des valeurs d'une clé donnée, ou de tous les éléments.                      |
+| `count()`                    | Retourne le nombre d'éléments de la collection.                                               |
+| `isEmpty()`                  | Indique si la collection est vide.                                                            |
+| `toArray()`                  | Convertit la collection en tableau PHP natif.                                                 |

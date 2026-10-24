@@ -1,319 +1,504 @@
-- [Introduction](responses.md?id=introduction)
-- [Creating Responses in **Tonka**](responses.md?id=creating-responses-in-tonka)
-    - [Response Object](responses.md?id=response-object)
-        - [The `header` Method](responses.md?id=the-header-method)
-        - [The `status` Method](responses.md?id=the-status-method)
-        - [The `json` Method](responses.md?id=the-json-method)
-        - [The `view` Method](responses.md?id=the-view-method)
-        - [The `cookie` Method](responses.md?id=the-cookie-method)
-    - [File Streaming](responses.md?id=file-streaming)
-    - [Send Response Status](responses.md?id=send-response-status)
-    - [Middleware Response](responses.md?id=middleware-response)
-    - [Redirects](responses.md?id=redirects)
+# Réponses
 
-<h1>HTTP Responses</h1>
+Cette page recense les différentes façons de construire une réponse HTTP dans Tonka — JSON, vues Inertia, redirections, fichiers, cookies et en-têtes — et les situations où chacune est la plus appropriée.
 
-## Introduction
+- [Réponses](#reponses)
+- [Types de Réponses](#types-de-reponses)
+- [Réponses JSON](#reponses-json)
+  - [JSON Simple](#json-simple)
+  - [Réponse Success](#reponse-success)
+  - [Réponse Error](#reponse-error)
+- [Réponses Inertia (Vues/React)](#reponses-inertia-vues-react-)
+  - [Rendu Simple](#rendu-simple)
+  - [Partage de Données](#partage-de-donnees)
+  - [Version et Cache](#version-et-cache)
+- [Redirections](#redirections)
+  - [Redirection Simple](#redirection-simple)
+  - [Redirection avec Messages Flash](#redirection-avec-messages-flash)
+  - [Redirection avec Données](#redirection-avec-donnees)
+  - [Redirection vers une Route Nommée](#redirection-vers-une-route-nommee)
+  - [Redirection Inertia](#redirection-inertia)
+- [Fichiers](#fichiers)
+  - [Téléchargement](#telechargement)
+  - [Streaming](#streaming)
+- [Codes d'Erreur](#codes-derreur)
+- [Cookies](#cookies-1)
+  - [Définir un Cookie](#definir-un-cookie)
+  - [Supprimer un Cookie](#supprimer-un-cookie)
+- [En-têtes HTTP](#en-tetes-http)
+  - [Ajouter des En-têtes](#ajouter-des-en-tetes)
+- [Exemple Complet](#exemple-complet)
+- [Prochaines Étapes](#prochaines-etapes)
 
-HTTP responses are standardized replies from a server to a client's request made to the server. They consist of a status line, headers, and an optional body. The status line includes the HTTP version, a status code, and a reason phrase.
+---
 
-Here are common HTTP status codes:
+## Types de Réponses
 
-- **200 OK**: The request has succeeded.
-- **201 Created**: The request has been fulfilled and has resulted in a new resource being created.
-- **400 Bad Request**: The server could not understand the request due to invalid syntax.
-- **401 Unauthorized**: The client must authenticate itself to get the requested response.
-- **403 Forbidden**: The client does not have access rights to the content.
-- **404 Not Found**: The server can not find the requested resource.
-- **500 Internal Server Error**: The server has encountered a situation it doesn't know how to handle.
+**Tonka** propose plusieurs types de réponses, chacun adapté à un contexte de consommation différent :
 
-Here is an exemple of an HTTP response:
+| Type | Méthode | Description |
+|------|---------|-------------|
+| **JSON** | `response()->json()` | Réponse JSON |
+| **Vue** | `Inertia::render()` | Vue Inertia (React/Vue) |
+| **Vue Twig** | `view()` | Vue Twig |
+| **Redirection** | `redirect()` | Redirection HTTP |
+| **Fichier** | `response()->sendFile()` | Téléchargement |
+| **Stream** | `response()->stream()` | Streaming |
+| **Erreur** | `response()->notFound()` | Code d'erreur |
+| **Statut HTTP** | `response()->sendStatus()` | Envoi d'un statut HTTP |
+| **En-tête** | `response()->sendHeader()` | En-tête HTTP |
+| **HTML** | `response()->send()` | HTML brut |
 
-```http
-HTTP/1.1 200 OK
-Content-Type: application/json
+---
 
+## Réponses JSON
+
+### JSON Simple
+
+```php
+// Réponse JSON standard
+return response()->json([
+    'success' => true,
+    'data' => $users
+]);
+
+// Réponse JSON avec code d'état explicite
+return response()->status(404)->json([
+    'error' => 'Not found'
+]);
+```
+
+### Réponse Success
+
+```php
+// Réponse de succès avec message
+return response()->success('User created successfully!');
+
+// Réponse de succès avec données structurées
+return response()->success(['user' => $user]);
+```
+
+### Réponse Error
+
+```php
+// Réponse d'erreur
+return response()->error('User not found');
+```
+
+`success()` et `error()` encapsulent une enveloppe JSON cohérente (statut, message, données) sans qu'il soit nécessaire de la reconstruire à la main à chaque endpoint — un contrat de réponse homogène simplifie considérablement le traitement côté client, notamment pour une application front-end consommant plusieurs endpoints API.
+
+---
+
+## Réponses Inertia (Vues/React)
+
+### Rendu Simple
+
+```php
+use Inertia\Inertia;
+
+// Rendu d'un composant React/Vue
+return Inertia::render('User.Index', [
+    'users' => $users,
+    'filters' => $filters
+]);
+
+// Via le helper
+return inertia('User.Index');
+```
+
+> **Pour les développeurs Laravel :** l'intégration Inertia de Tonka (`Inertia::render`, `Inertia::share`, `Inertia::version`) reprend directement l'API du package `inertiajs/inertia-laravel` — si vous avez déjà travaillé avec une stack Laravel + Inertia, cette section ne présente aucune surprise.
+
+### Partage de Données
+
+```php
+// app/Providers/AppServiceProvider.php
+
+public function boot(): void
 {
-    "message": "Success",
-    "data": {
-        "id": 1,
-        "name": "Example"
-    }
+    Inertia::share([
+        'appName' => config('app.name'),
+        'user' => auth()->id // Identifiant de l'utilisateur authentifié
+    ]);
+}
+
+// Dans le contrôleur
+return Inertia::render('User.Index', [
+    'users' => $users
+])->withViewData([
+    'metaTitle' => 'Liste des utilisateurs'
+]);
+```
+
+Les données partagées via `Inertia::share()` sont injectées dans **chaque** réponse Inertia de l'application (souvent utile pour l'utilisateur courant, la configuration, les traductions) — à ne pas confondre avec `withViewData()`, qui n'affecte que la réponse courante et n'est pas transmis au composant front-end en tant que prop, mais fusionné aux métadonnées de la vue racine.
+
+### Version et Cache
+
+```php
+// app/Providers/AppServiceProvider.php
+
+use Inertia\Inertia;
+
+public function register(): void
+{
+    // Définir une version fixe des assets
+    Inertia::version('1.0.0');
+
+    // Version dynamique, dérivée du manifeste de build
+    Inertia::version(md5_file(public_path('build/manifest.json')));
 }
 ```
 
-## Creating Responses in **Tonka**
+Le mécanisme de versionnement permet à Inertia de détecter qu'un nouveau build front-end a été déployé (le hash change) et de forcer un rechargement complet côté client plutôt qu'une navigation SPA — évitant ainsi qu'un utilisateur reste bloqué sur des assets JavaScript obsolètes après une mise en production.
 
-To create an HTTP response in the **Tonka** PHP Framework, you can use the `Response` facade or the response `response` helper function provided by the framework. Below is an example of how to create and return a text response:
+---
+
+## Redirections
+
+### Redirection Simple
 
 ```php
-use Clicalmani\Foundation\Support\Facades\Response;
+// Helper redirect
+return redirect('/users');
 
-Route::get('/', function() {
-    return Response::send("This is a plain text response");
-});
+// Depuis l'objet réponse
+return response()->redirect('/users');
 
-Route::get('/', function() {
-    return response()->send("This is a plain text response");
-});
+// Retour à la page précédente
+return back();
 ```
 
-### Response Object
-
-The `response` helper function returns an instance of the `Clicalmani\Foundation\Http\Response` class, which provides a variety of methods for building HTTP responses.
-
-#### The `header` Method
-
-To add a header to the response, you can use the `header` method. Here is an example:
+### Redirection avec Messages Flash
 
 ```php
-Route::get('/header', function() {
-    return response('Hello World', 200)
-                  ->header('Content-Type', 'text/plain')
-                  ->header('X-Custom-Header', 'CustomValue')
-                  ->send();
-});
+// Message de succès
+return redirect('/users')->with('success', 'User created!');
+return redirect('/users')->withSuccess('User created!');
+
+// Message d'erreur
+return redirect('/users')->with('error', 'User not found');
+return redirect('/users')->withError('User not found');
+
+// Message d'information
+return redirect('/users')->with('info', 'User updated');
+
+// Message d'avertissement
+return redirect('/users')->with('warning', 'User deleted');
 ```
 
-To set multiple headers at once, you can use the `withHeaders` method. Here is an example:
+Ces messages sont stockés en session le temps d'une seule requête (voir [Messages Flash](requests.md#messages-flash)) — `withSuccess()`/`withError()` sont de simples raccourcis pour `with('success', ...)`/`with('error', ...)`.
+
+### Redirection avec Données
 
 ```php
-Route::get('/multiple-headers', function() {
-    return response('Hello World', 200)
-                  ->withHeaders([
-                      'Content-Type' => 'text/plain',
-                      'X-Custom-Header-One' => 'ValueOne',
-                      'X-Custom-Header-Two' => 'ValueTwo'
-                  ])
-                  ->send();
-});
+// Redirection avec les données précédemment soumises (old input)
+return redirect('/users')->withInput($request->all());
+
+// Redirection avec un sous-ensemble de données
+return redirect('/users')->withInput([
+    'name' => $request->name,
+    'email' => $request->email
+]);
 ```
 
-#### The `status` Method
+`withInput()` est particulièrement utile après l'échec d'une validation : la page cible peut repeupler le formulaire avec les valeurs précédemment saisies, sans obliger l'utilisateur à tout ressaisir.
 
-This method is used to set the response status. 
+### Redirection vers une Route Nommée
 
 ```php
-Route::get('/status', function() {
-    return response()->status(201)->send('Content');
-});
+// Vers une route nommée
+return redirect()->route('users.index');
+
+// Vers une route nommée avec paramètres
+return redirect()->route('posts.index', ['category' => 'tech']);
 ```
 
-#### The `json` Method
-
-To send a JSON response, you can use the `json` method. Here is an example:
+### Redirection Inertia
 
 ```php
-Route::get('/json', function() {
-    return response()->json([
-        'message' => 'Success',
-        'data' => [
-            'id' => 1,
-            'name' => 'Example'
-        ]
+// Redirection déclenchant une navigation complète du navigateur
+return Inertia::location('/login');
+```
+
+> **Point d'attention :** contrairement à `redirect()->route(...)`, qui reste dans le cycle de vie SPA d'Inertia, `Inertia::location()` provoque un rechargement complet de la page. Réservez cet appel aux cas où une sortie du contexte Inertia est réellement nécessaire — redirection vers un fournisseur d'authentification externe, par exemple.
+
+---
+
+## Fichiers
+
+### Téléchargement
+
+```php
+// Téléchargement simple
+return response()->sendFile(
+    storage_path('documents/report.pdf'),
+    'rapport.pdf'
+);
+
+// Avec type MIME explicite
+return response()->sendFile(
+    storage_path('documents/report.pdf'),
+    'rapport.pdf',
+    'application/pdf'
+);
+```
+
+### Streaming
+
+```php
+// Streaming d'une vidéo
+return response()->stream(
+    storage_path('videos/presentation.mp4')
+);
+
+// Streaming avec en-têtes personnalisés
+return response()->stream(
+    storage_path('videos/presentation.mp4'),
+    200,
+    ['Content-Disposition' => 'inline']
+);
+
+// Réponse partielle (contenu par plage, ex. lecture vidéo avec avance rapide)
+return response()->stream(
+    storage_path('videos/presentation.mp4')
+)->status(206);
+```
+
+Le code `206 Partial Content` signale au client que seule une plage d'octets du fichier est renvoyée (en-tête `Range` de la requête) — indispensable pour permettre à un lecteur vidéo HTML5 de se positionner à un instant donné sans retélécharger l'intégralité du fichier.
+
+---
+
+## Codes d'Erreur
+
+```php
+// 404 - Not Found
+return response()->notFound();
+
+// 403 - Forbidden
+return response()->forbidden();
+
+// 401 - Unauthorized
+return response()->unauthorized();
+
+// 500 - Internal Server Error
+return response()->internalServerError();
+
+// Code personnalisé
+return response()->status(429)->json([
+    'error' => 'Too many requests'
+]);
+
+// Via le helper abort
+abort(404);
+abort(403, 'Access denied');
+```
+
+Les méthodes nommées (`notFound()`, `forbidden()`...) sont des raccourcis lisibles pour les statuts les plus courants ; `status()` reste la voie générique pour tout code non couvert par un raccourci dédié.
+
+---
+
+## Cookies
+
+### Définir un Cookie
+
+```php
+// Via la réponse
+return response()
+    ->cookie('theme', 'dark', 60 * 24 * 30) // 30 jours
+    ->cookie('language', 'fr', 60 * 24)     // 24 heures
+    ->redirect('/settings');
+
+// Cookie sécurisé
+// Signature : name, value, minutes, path, domain, secure, httpOnly
+return response()
+    ->cookie('remember_token', $token, 60 * 24 * 365, '/', null, true, true)
+    ->redirect('/');
+```
+
+Pour un cookie porteur d'un jeton d'authentification persistant (`remember_token`), les drapeaux `secure` (envoi uniquement en HTTPS) et `httpOnly` (inaccessible depuis JavaScript) doivent systématiquement être activés — c'est votre principale défense contre le vol de jeton par XSS.
+
+### Supprimer un Cookie
+
+```php
+// Via la réponse
+return response()
+    ->deleteCookie('theme')
+    ->deleteCookie('remember_token')
+    ->redirect('/settings');
+```
+
+---
+
+## En-têtes HTTP
+
+### Ajouter des En-têtes
+
+```php
+// En-tête simple
+return response()->json($data)
+    ->header('X-Custom-Header', 'value');
+
+// En-têtes multiples, chaînés
+return response()->json($data)
+    ->header('X-Custom-Header', 'value')
+    ->header('X-Another-Header', 'another');
+
+// Via withHeaders, pour un ensemble d'en-têtes défini en une fois
+return response()->json($data)
+    ->withHeaders([
+        'X-Custom-Header' => 'value',
+        'X-Another-Header' => 'another',
+        'Cache-Control' => 'public, max-age=3600'
     ]);
-});
 ```
 
-You can use `success` and `error` methods to send a json status. Here is an exemple:
+---
+
+## Exemple Complet
 
 ```php
-Route::get('/json', function() {
-    return response()->success([
-            'id' => 1,
-            'name' => 'Example'
-        ]);
-});
+<?php
 
-Route::get('/json', function() {
-    return response()->error("Error message");
-});
-```
+namespace App\Http\Controllers;
 
-You can do the same by sending the following data:
+use App\Models\User;
+use Inertia\Inertia;
+use Clicalmani\Core\Http\RequestInterface;
 
-```php
-Route::get('/json', function() {
-    return response()->json([
-        'success' => true,
-        'data' => [
-            'id' => 1,
-            'name' => 'Example'
-        ]
-    ]);
-});
-
-Route::get('/json', function() {
-    return response()->error([
-        'success' => false,
-        'data' => 'Error message'
-    ]);
-});
-```
-
-#### The `view` Method
-
-To return a view as a response, you can use the `view` method. Here is an example:
-
-```php
-Route::get('/view', function() {
-    return response()->view('welcome', ['name' => 'Example']);
-});
-```
-
-#### The `cookie` Method
-
-To add a cookie to the response, you can use the `cookie` method. Here is an example:
-
-```php
-Route::get('/cookie', function() {
-    return response('Hello World', 200)
-                  ->cookie('name', 'value', 60)
-                  ->send();
-});
-```
-
-To expire a cookie before sending it with a response, you can call the `removeCookie` method. Here is an example:
-
-```php
-Route::get('/expire-cookie', function() {
-    return response('Cookie expired', 200)
-                  ->deleteCookie('name')
-                  ->send();
-});
-```
-
-### File Streaming
-
-To return a file as a response, you can use the `sendFile` method. Here is an example:
-
-```php
-Route::get('/download', function() {
-    return response()->sendFile(storage_path('/example.pdf'));
-});
-```
-
-You can also specify the file name that the user will see when downloading the file:
-
-```php
-Route::get('/download', function() {
-    return response()->sendFile(storage_path('/example.pdf'), 'custom_name.pdf');
-});
-```
-
-If you want to display the file inline in the browser instead of downloading it, you can use the `stream` method:
-
-```php
-Route::get('/file/:filename', function(string $filename) {
-    return response()
-            ->header('Content-Disposition', "inline; filename=$filename")
-            ->stream(storage_path('example.pdf'));
-});
-```
-
-By default the streaming is manage internally to avoid memory overwelming. The provided code snippet demonstrates how to stream a large file using **Tonka**. This approach helps to avoid overwhelming the server's memory by reading and sending the file in small chunks.
-
-> To manually manage the chunk size of a file being streamed, you can use the `Range` header. This allows you to specify the byte range of the file to be sent in the response.
-
-### Send Response Status
-
-To send a response status you can use the specific status method directly on the response object. Here is an example:
-
-```php
-Route::get('/status', function() {
-    return response()->notFound();
-});
-
-Route::get('/status', function() {
-    return response()->forbiden();
-});
-
-Route::get('/status', function() {
-    return response()->unauthorized();
-});
-
-Route::get('/status', function() {
-    return response()->internalServerError();
-});
-
-Route::get('/status', function() {
-    return response()->status(201);
-});
-```
-
-### Middleware Response
-
-To handle responses within middleware, you can manipulate the response before it is sent to the client. Here is an example of a middleware that adds a custom header to every response:
-
-```php
-namespace App\Http\Middleware;
-
-use Clicalmani\Foundation\Http\Middlewares\Middleware;
-use Clicalmani\Foundation\Http\RequestInterface as Request;
-use Clicalmani\Foundation\Http\ResponseInterface;
-use Clicalmani\Foundation\Http\RedirectInterface;
-
-class AddCustomHeader extends Middleware
+class UserController extends Controller
 {
     /**
-     * Handler
-     * 
-     * @param \Clicalmani\Foundation\Http\RequestInterface $request Request object
-     * @param \Clicalmani\Foundation\Http\ResponseInterface $response Response object
-     * @param \Closure $next Next middleware function
-     * @return \Clicalmani\Foundation\Http\ResponseInterface|\Clicalmani\Foundation\Http\RedirectInterface
+     * Liste des utilisateurs (Inertia)
      */
-    public function handle(RequestInterface $request, ResponseInterface $response, \Closure $next) : ResponseInterface|RedirectInterface
+    public function index(Request $request)
     {
-        $response->header('X-Custom-Header', 'CustomValue');
+        $users = User::paginate(
+            $request->input('page', 1),
+            $request->input('per_page', 10)
+        );
 
-        // ...
+        return Inertia::render('User/Index', [
+            'users' => $users,
+            'filters' => $request->only(['search', 'per_page'])
+        ]);
+    }
 
-        return $next($request);
+    /**
+     * API - Liste des utilisateurs (JSON)
+     */
+    public function apiIndex(Request $request)
+    {
+        $users = User::all();
+
+        return response()->json([
+            'success' => true,
+            'data' => $users,
+            'meta' => [
+                'total' => $users->count(),
+                'timestamp' => time()
+            ]
+        ]);
+    }
+
+    /**
+     * Création d'un utilisateur avec redirection
+     */
+    public function store(Request $request)
+    {
+        $user = User::create($request->validated());
+
+        return redirect('/users')
+            ->with('success', 'User created successfully!')
+            ->withInput($request->only(['name', 'email']));
+    }
+
+    /**
+     * Téléchargement d'un fichier
+     */
+    public function download($id)
+    {
+        $user = User::find($id);
+
+        if (!$user->avatar) {
+            return response()->notFound();
+        }
+
+        $path = storage_path('avatars/' . $user->avatar);
+
+        if (!file_exists($path)) {
+            return response()->notFound();
+        }
+
+        return response()->sendFile(
+            $path,
+            'avatar_' . $user->id . '.jpg'
+        );
+    }
+
+    /**
+     * API - Mise à jour (JSON)
+     */
+    public function apiUpdate(Request $request, int $id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->error('User not found');
+        }
+
+        $user->update($request->all());
+
+        return response()->success([
+            'user' => $user,
+            'message' => 'User updated successfully'
+        ]);
+    }
+
+    /**
+     * Suppression (JSON)
+     */
+    public function apiDestroy(int $id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->error('User not found');
+        }
+
+        $user->delete();
+
+        return response()->success('User deleted successfully');
+    }
+
+    /**
+     * Suppression avec redirection
+     */
+    public function destroy(int $id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            return back()->with('error', 'User not found');
+        }
+
+        $user->delete();
+
+        return redirect('/users')
+            ->with('success', 'User deleted successfully');
     }
 }
 ```
 
-This middleware will add the `X-Custom-Header` to every response sent by the application.
+---
 
-### Redirects
+## Prochaines Étapes
 
-To redirect a user to a different URL, you can use the `redirect` method. The `Clicalmani\Psr\Response` class contains proper response status to redirect the user to another URL.
+Maintenant que vous maîtrisez les réponses :
 
-```php
-Route::get('/home', function() {
-    return response()->redirect('/dashboard');
-});
-```
+1. **[Middlewares](middleware.md)** → Protéger vos routes
+2. **[Vues](views.md)** → Approfondir les vues Inertia
+3. **[Validation](validation.md)** → Valider les données
+4. **[Base de Données](database.md)** → Travailler avec les modèles
 
-You can also redirect to a named route:
+---
 
-```php
-Route::get('/home', function() {
-    return response()->redirect()->route('dashboard', $param1, $apram2, ...);
-});
-```
-
-To redirect with a flash message, you can use the `with` method:
-
-```php
-Route::get('/home', function() {
-    return redirect('/dashboard')->with('status', 'Profile updated!');
-});
-```
-
-To redirect back to the previous URL, you can use the `back` method:
-
-```php
-Route::get('/form', function() {
-    return redirect()->back();
-});
-```
-
-You can also use the `back` helpers to redirect back:
-
-```php
-Route::post('/form', function() {
-    return back();
-});
-```
+**Réponses comprises !** 🚀 → [Middlewares](middleware.md)

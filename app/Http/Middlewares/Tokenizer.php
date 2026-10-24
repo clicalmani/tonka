@@ -10,7 +10,7 @@ class Tokenizer extends JWTAuth
     /**
      * Handler
      * 
-     * @param \Clicalmani\Foundation\Http\Requests\RequestInterface $request Request object
+     * @param \Clicalmani\Foundation\Http\RequestInterface $request Request object
      * @param \Clicalmani\Foundation\Http\ResponseInterface $response Response object
      * @param \Closure $next Next middleware function
      * @return \Clicalmani\Foundation\Http\ResponseInterface|\Clicalmani\Foundation\Http\RedirectInterface

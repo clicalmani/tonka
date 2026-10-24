@@ -1,42 +1,62 @@
-- [Introduction](csrf.md?id=introduction)
-- [An Explanation of the Vulnerability](csrf.md?id=an-explanation-of-the-vulnerability)
-- [How CSRF Works](csrf.md?id=how-csrf-works)
-- [Example Scenario](csrf.md?id=example-scenario)
-- [Mitigation Strategies](csrf.md?id=mitigation-strategies)
+# Protection CSRF
+
+- [Protection CSRF](#protection-csrf)
+- [Introduction](#introduction)
+- [Explication de la Vulnérabilité](#explication-de-la-vulnerabilite)
+- [Fonctionnement d'une Attaque CSRF](#fonctionnement-d-39-une-attaque-csrf)
+- [Stratégies de Mitigation](#strategies-de-mitigation)
+
+---
 
 ## Introduction
 
-Cross-site request forgeries are a type of malicious exploit whereby unauthorized commands are performed on behalf of an authenticated user. Thankfully, **Tonka** makes it easy to protect your application from cross-site request forgery (CSRF) attacks.
+Le **Cross-Site Request Forgery (CSRF)** est une attaque par laquelle des commandes non autorisées sont transmises à une application web au nom d'un utilisateur en qui elle a confiance, sans que celui-ci en ait conscience. Les attaquants exploitent généralement pour cela les cookies de session que le navigateur joint automatiquement à chaque requête sortante vers le domaine concerné.
 
-## An Explanation of the Vulnerability
+---
 
-Cross-Site Request Forgery (CSRF) is a type of attack that occurs when a malicious actor tricks a user into performing actions on a web application in which they are authenticated. This can happen without the user's knowledge and can lead to unauthorized actions such as changing account details, making transactions, or other unwanted operations.
+## Explication de la Vulnérabilité
 
-### How CSRF Works
+Supposons que votre application soit un portail bancaire. Un utilisateur se connecte à son compte puis, sa session étant toujours active, ouvre un autre onglet pour consulter ses e-mails personnels. L'un de ces e-mails contient un lien malveillant.
 
-1. **User Authentication**: The user logs into a web application and receives an authentication token (e.g., a session cookie).
-2. **Malicious Request**: The attacker crafts a malicious request to the web application and embeds it in a link or form on a different website.
-3. **User Interaction**: The user, while still authenticated, visits the attacker's website and unknowingly triggers the malicious request.
-4. **Execution**: The web application processes the request as if it were made by the authenticated user, leading to unintended actions.
+Si l'utilisateur clique sur ce lien, le navigateur joindra automatiquement ses cookies de session — y compris ceux associés à l'application bancaire — à la requête sortante. Si la session de l'utilisateur repose sur un cookie persistant (par exemple parce qu'il a coché une option « Se souvenir de moi »), le site malveillant peut exploiter ce cookie pour détourner la session de l'utilisateur et exécuter des actions non autorisées en son nom.
 
-### Example Scenario
+---
 
-1. A user logs into their banking website and remains authenticated.
-2. The user visits a malicious website created by an attacker.
-3. The malicious website contains a hidden form that submits a request to transfer money from the user's account to the attacker's account.
-4. When the user visits the malicious website, the form is automatically submitted, and the banking website processes the transfer request using the user's authenticated session.
+## Fonctionnement d'une Attaque CSRF
 
-### Mitigation Strategies
+1. **Authentification de l'utilisateur** : l'utilisateur se connecte à une application web et reçoit un jeton d'authentification (généralement un cookie de session stocké dans le navigateur).
+2. **Élaboration de la requête malveillante** : un attaquant construit une requête ciblant l'application web et l'intègre dans un lien, un bouton ou un formulaire sur un site externe non fiable.
+3. **Interaction de l'utilisateur** : toujours authentifié sur l'application cible, l'utilisateur visite le site de l'attaquant et déclenche sans le savoir le lien ou le formulaire piégé.
+4. **Exécution** : le navigateur joint automatiquement les cookies de l'application cible à la requête. Cette dernière traite alors la requête comme si elle avait été volontairement initiée par l'utilisateur authentifié, provoquant des actions non désirées (virement de fonds, modification des informations du compte, etc.).
 
-**Tonka** automatically generates a CSRF “token” for each active user session managed by the application. This token makes it possible to verify that the authenticated user is indeed the person who is actually making the requests to the application. Since this token is stored in the user's session and changes each time user session refresh, a malicious application cannot access it.
+---
 
-We need then to include the generated token in forms to ensure the request is legitimate. Here is an example:
+## Stratégies de Mitigation
 
-```html
-<form method="post" action="/profile">
+**Tonka** génère automatiquement un jeton CSRF cryptographiquement sûr pour chaque session utilisateur active gérée par l'application. Ce jeton permet de vérifier que l'utilisateur authentifié est bien à l'origine de la requête entrante. Stocké côté serveur dans la session et renouvelé périodiquement, ce jeton ne peut être ni lu ni dérobé par une application tierce.
+
+Pour protéger votre application, ce jeton doit être inclus dans tout formulaire HTML déclenchant une modification d'état (`POST`, `PUT`, `PATCH`, `DELETE`), afin de garantir la légitimité de la requête soumise.
+
+Vous pouvez insérer ce jeton simplement, grâce à la directive de template `@csrf` :
+
+```twig
+<form method="POST" action="/profile">
     @csrf
-    ...
+    <!-- Champs du formulaire -->
 </form>
 ```
 
-By implementing these strategies, web applications can significantly reduce the risk of CSRF attacks.
+Sous le capot, la directive Twig `@csrf` s'appuie sur le helper `csrf_token()` pour générer automatiquement un champ caché dans le formulaire :
+
+```html
+<form method="POST" action="/profile">
+    <input type="hidden" name="csrf_token" value="089989098056565564644626654664646468906504498660103156" />
+    <!-- Champs du formulaire -->
+</form>
+```
+
+> **Pour les développeurs Laravel/Symfony :** la directive `@csrf` et le helper `csrf_token()` reprennent directement les conventions de Laravel (`@csrf` / `csrf_token()`) ; Symfony expose un mécanisme équivalent via la fonction Twig `csrf_token(id)`, à la différence près qu'elle nécessite de préciser un identifiant d'intention (`csrf_token('profile-update')`) plutôt qu'un jeton global par session.
+
+En imposant systématiquement la vérification de ce jeton sur vos routes sensibles, votre application réduit considérablement le risque d'actions non autorisées déclenchées depuis un site tiers.
+
+> **À distinguer de la prévention de manipulation de route :** la protection CSRF garantit que la requête émane bien de votre propre application (et non d'un site tiers exploitant la session active de l'utilisateur), tandis que le middleware [`PreventRouteTampering`](routing.md#prévention-de-la-manipulation-de-route) garantit l'intégrité de paramètres spécifiques transmis dans l'URI. Les deux mécanismes sont complémentaires et répondent à des menaces différentes : l'un protège contre une requête forgée depuis l'extérieur, l'autre contre la falsification de valeurs à l'intérieur d'une requête par ailleurs légitime.

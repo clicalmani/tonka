@@ -43,8 +43,7 @@ class UserEntity extends Entity
     public Date $birth_date;
 
     #[Property(
-        values: ['male', 'femail'],
-        default: 'male'
+        values: ['male', 'femail']
     )]
     public Enum|string $gender = 'male';
 }

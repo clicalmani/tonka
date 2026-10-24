@@ -1,7 +1,7 @@
 <?php
 namespace App\Providers;
 
-use Clicalmani\Foundation\Providers\ServiceProvider;
+use Clicalmani\Core\Providers\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,7 +20,9 @@ class AppServiceProvider extends ServiceProvider
      * 
      * @return void
      */
-    public function boot(): void
+    public function boot(
+        ?\Clicalmani\Core\Acme\Container $container = null
+    ): void
     {
         // ...
     }

@@ -1,16 +1,16 @@
 <?php 
 namespace App\Models;
 
-use Clicalmani\Foundation\Acme\Model as Elegant;
+use Clicalmani\Core\Acme\Model;
 
-class AuthAccess extends Elegant
+class AuthAccess extends Model
 {
     /**
      * Model database table 
      *
      * @var string $table Table name
      */
-    protected $table = "auth_access";
+    protected string $table = "auth_access";
 
     /**
      * Model entity
@@ -25,7 +25,7 @@ class AuthAccess extends Elegant
      *
      * @var string|array $primary_keys Table primary key.
      */
-    protected $primaryKey = "id";
+    protected string|array $primaryKey = "id";
 
     /**
      * Constructor 

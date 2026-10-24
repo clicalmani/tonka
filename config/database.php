@@ -3,6 +3,72 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Slow Query Threshold
+    |--------------------------------------------------------------------------
+    |
+    | Threshold in milliseconds above which a query is considered slow.
+    | Slow queries emit a `db.slow_query` metric and are logged.
+    | Set to 0 to disable.
+    |
+    */
+
+    'slow_query_threshold' => env('DB_SLOW_QUERY_THRESHOLD', 500),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Profiling
+    |--------------------------------------------------------------------------
+    |
+    | When enabled, `SET PROFILING = 1` is issued at boot and every query
+    | captures its profile. This is expensive — enable only in local
+    | development or targeted debugging.
+    |
+    | Note: `SHOW PROFILE` was deprecated in MySQL 5.7 and removed in 8.0.
+    | On MySQL 8+, use EXPLAIN ANALYZE instead.
+    |
+    */
+
+    'profiling_enabled' => env('DB_PROFILING_ENABLED', true),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Auto-profile Slow Queries
+    |--------------------------------------------------------------------------
+    |
+    | When enabled, a slow query is automatically re-executed under profile
+    | to capture its phase breakdown. Requires `profiling_enabled` or
+    | will toggle profiling for that single query.
+    |
+    */
+
+    'profile_slow_queries' => env('DB_PROFILE_SLOW_QUERIES', true),
+
+    /**
+     * |-----------------------------------------------------------------------
+     * | Enable Foreign Key Check
+     * |-----------------------------------------------------------------------
+     * 
+     * This option determines whether foreign key checks are enabled for the database connection.
+     * Enabling foreign key checks ensures that the integrity of your database is maintained by enforcing
+     * the relationships between tables. If you set this option to false, foreign key checks will be disabled, 
+     * which can lead to potential data integrity issues if not used carefully. It is generally recommended
+     */
+    'strict' => false,
+
+    /**
+     * |-----------------------------------------------------------------------
+     * | Enable Auto-Casting of Data Types
+     * |-----------------------------------------------------------------------
+     * 
+     * This option determines whether the database connection should automatically cast data types when retrieving data from the database.
+     * When enabled, the database connection will automatically convert data types to their appropriate PHP types based on the column definitions in the database schema. 
+     * This can help simplify data handling and reduce the need for manual type casting in your application code. However, it may also introduce some performance overhead, 
+     * so use this option judiciously based on your application's requirements.
+     */
+    'autoCast' => true,
+
+    /*
+    |--------------------------------------------------------------------------
     | Default Database Connection Name
     |--------------------------------------------------------------------------
     |
@@ -34,7 +100,7 @@ return [
 
         'sqlite' => [
             'driver' => 'sqlite',
-            'url' => env('DATABASE_URL'),
+            'url' => env('DB_URL'),
             'database' => env('DB_DATABASE', database_path('database.sqlite')),
             'prefix' => '',
             'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
@@ -55,7 +121,7 @@ return [
 
         'pgsql' => [
             'driver' => 'pgsql',
-            'url' => env('DATABASE_URL'),
+            'url' => env('DB_URL'),
             'host' => env('DB_HOST', '127.0.0.1'),
             'port' => env('DB_PORT', '5432'),
             'database' => env('DB_DATABASE', 'forge'),
@@ -72,7 +138,7 @@ return [
 
         'sqlsrv' => [
             'driver' => 'sqlsrv',
-            'url' => env('DATABASE_URL'),
+            'url' => env('DB_URL'),
             'host' => env('DB_HOST', 'localhost'),
             'port' => env('DB_PORT', '1433'),
             'database' => env('DB_DATABASE', 'forge'),

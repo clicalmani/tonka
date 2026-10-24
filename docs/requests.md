@@ -1,962 +1,677 @@
-- [Introduction](requests.md?id=introduction)
-- [Interacting With The Request](requests.md?id=interacting-with-the-request)
-    - [Accessing the Request](requests.md?id=accessing-the-request)
-    - [Dependency Injection and Route Parameters](requests.md?id=dependency-injection-and-route-parameters)
-    - [Request URI, Host, and Method](requests.md?id=request-uri,-host,-and-method)
-        - [Retrieving the Request URL](requests.md?id=retrieving-the-request-url)
-        - [Retrieving the Request Host](requests.md?id=retrieving-the-request-host)
-        - [Retrieving the Request Method](requests.md?id=retrieving-the-request-method)
-    - [Retrieving Request Headers](requests.md?id=retrieving-request-headers)
-    - [Retrieving the Client IP Address](requests.md?id=retrieving-the-client-ip-address)
-    - [Inspecting Requested Content Types](requests.md?id=inspecting-requested-content-types)
-- [Input](requests.md?id=input)
-    - [Retrieving Input](requests.md?id=retrieving-input)
-    - [Retrieving All Input Data](requests.md?id=retrieving-all-input-data)
-    - [Retrieving Input as a Collection](requests.md?id=retrieving-input-as-a-collection)
-    - [Retrieving a Specific Input Value](requests.md?id=retrieving-a-specific-input-value)
-    - [Retrieving Query Parameters](requests.md?id=retrieving-query-parameters)
-    - [Retrieving JSON Input](requests.md?id=retrieving-json-input)
-    - [Retrieving Input from a Nested Array](requests.md?id=retrieving-input-from-a-nested-array)
-    - [Checking for Input Presence](requests.md?id=checking-for-input-presence)
-- [Validating Requests](requests.md?id=validating-requests)
-- [Files](requests.md?id=files)
-    - [Retrieving Uploaded Files](requests.md?id=retrieving-uploaded-files)
-    - [Retrieving a Single File](requests.md?id=retrieving-a-single-file)
-    - [Checking if a File is Present](requests.md?id=checking-if-a-file-is-present)
-    - [Validating Uploaded Files](requests.md?id=validating-uploaded-files)
-    - [Storing Uploaded Files](requests.md?id=storing-uploaded-files)
-    - [Retrieving the Original Filename](requests.md?id=retrieving-the-original-filename)
-    - [Retrieving the File Extension](requests.md?id=retrieving-the-file-extension)
-    - [Validating Successful Uploads](requests.md?id=validating-successful-uploads)
-- [Configuring Trusted Proxies](requests.md?id=configuring-trusted-proxies)
-    - [Setting Trusted Proxies](requests.md?id=setting-trusted-proxies)
-    - [Configuring Trusted Headers](requests.md?id=configuring-trusted-headers)
-    - [Configuring Trusted Hosts](requests.md?id=configuring-trusted-hosts)
-    - [Setting Trusted Hosts](requests.md?id=setting-trusted-hosts)
+# Requêtes
 
-## Introduction
+L'objet `Request` centralise l'accès à tout ce que le client a transmis : données de formulaire, fichiers, session, cookies. Cette page détaille son API, ainsi que les différentes stratégies de validation proposées par Tonka.
 
-Requests are a fundamental part of web development and API interactions. They allow clients to communicate with servers, retrieve data, and perform various operations. Understanding how to make and handle requests is crucial for building robust and efficient applications. This documentation will guide you through the basics of making requests, handling responses, and troubleshooting common issues.
+- [Requêtes](#requetes)
+- [Accès aux Données](#acces-aux-donnees)
+  - [Récupérer une Entrée](#recuperer-une-entree)
+  - [Récupérer Toutes les Entrées](#recuperer-toutes-les-entrees)
+  - [Récupérer des Entrées Spécifiques](#recuperer-des-entrees-specifiques)
+  - [Vérifier l'Existence](#verifier-l-39-existence)
+  - [Accès aux Données JSON](#acces-aux-donnees-json)
+- [Validation des Requêtes](#validation-des-requetes)
+  - [Validation avec Form Request](#validation-avec-form-request)
+  - [Validation Directe](#validation-directe)
+  - [Validation avec Attributs](#validation-avec-attributs)
+  - [Validation dans les Entités](#validation-dans-les-entites)
+  - [Règles de Validation Disponibles](#regles-de-validation-disponibles)
+  - [Messages d'Erreur Personnalisés](#messages-d-39-erreur-personnalises)
+- [Upload de Fichiers](#upload-de-fichiers)
+  - [Récupérer un Fichier](#recuperer-un-fichier)
+  - [Valider un Fichier](#valider-un-fichier)
+  - [Déplacer un Fichier](#deplacer-un-fichier)
+  - [Fichiers Multiples](#fichiers-multiples)
+- [Sessions](#sessions)
+  - [Lire une Session](#lire-une-session)
+  - [Écrire une Session](#ecrire-une-session)
+  - [Messages Flash](#messages-flash)
+- [Cookies](#cookies)
+  - [Lire un Cookie](#lire-un-cookie)
+  - [Écrire un Cookie](#ecrire-un-cookie)
+  - [Supprimer un Cookie](#supprimer-un-cookie)
+- [Exemple Complet](#exemple-complet)
+- [Prochaines Étapes](#prochaines-etapes)
 
-## Interacting With The Request
+---
 
-### Accessing the Request
+## Accès aux Données
 
-To interact with a request, you need to understand its components and how to access them. Here are some key aspects:
-
-- **URL**: The endpoint to which the request is sent.
-- **Method**: The HTTP method (GET, POST, PUT, DELETE, etc.) used for the request.
-- **Headers**: Metadata sent with the request, such as content type and authorization tokens.
-- **Body**: The data sent with the request, typically used with POST and PUT methods.
-
-#### Example in JavaScript using `fetch`
-
-```javascript
-const url = 'https://api.example.com/data';
-const options = {
-    method: 'GET',
-    headers: {
-        'Authorization': 'Bearer YOUR_ACCESS_TOKEN'
-    }
-};
-
-fetch(url, options)
-    .then(response => response.json())
-    .then(data => console.log(data))
-    .catch(error => console.error('Error:', error));
-```
-
-In this JavaScript example the request will be sent to `api/data` route defined in your routes file:
+### Récupérer une Entrée
 
 ```php
-use App\Http\Controllers\DataController;
-
-Route::get('/data', DataController::class);
-```
-
-As your `DataController` is an invokable controller, the request will be send to the `__invoke` method:
-
-```php
-namespace App\Http\Controllers;
-
-use use Clicalmani\Foundation\Acme\Controller;
-use Clicalmani\Foundation\Http\RequestInterface as Request;
-use Clicalmani\Foundation\Resources\View;
-
-class DataController extends Controller
-{
-    /**
-     * Handle the incoming request.
-     *
-     * @param  \Clicalmani\Foundation\Http\RequestInterface  $request
-     * @return \Clicalmani\Foundation\Resources\ViewInterface
-     */
-    public function __invoke(Request $request) : ViewInterface
-    {
-        // Logic of your code
-
-        return new View('');
-    }
-}
-```
-
-In this exemple we type-hint the `Clicalmani\Foundation\Http\Request` class on the `__invoke` method to make it possible to receive the request object. **Tonka** [Service Container](container.md) will automatically inject the request object to the metod.
-
-You may also type-hint the `Clicalmani\Foundation\Http\Request` class on a route closure. The service container will automatically inject the incoming request into the closure when it is executed:
-
-```php
-use Clicalmani\Foundation\Http\RequestInterface as Request;
- 
-Route::get('/', function (Request $request) {
-    // ...
-});
-```
-
-### Dependency Injection and Route Parameters
-
-If your controller method is also expecting input from a route parameter you should list your route parameters after your other dependencies. For example, if your route is defined like so:
-
-```php
-Route::get('/users/:id', [UserController::class, 'show']);
-```
-
-You can define your controller method to accept the route parameter:
-
-```php
-namespace App\Http\Controllers;
-
-use Clicalmani\Foundation\Http\RequestInterface as Request;
-use Clicalmani\Foundation\Resources\View;
-
 class UserController extends Controller
 {
-    /**
-     * Show the profile for a given user.
-     *
-     * @param  \Clicalmani\Foundation\Http\RequestInterface  $request
-     * @param  int  $id
-     * @return \Clicalmani\Foundation\Resources\ViewInterface
-     */
-    public function show(Request $request, int $id) : ViewInterface
+    public function store(Request $request)
     {
-        // Logic to retrieve user by $id
+        // Récupération simple
+        $name = $request->input('name');
 
-        return new View('user.profile', ['user' => User::find($id)]);
+        // Avec valeur par défaut
+        $role = $request->input('role', 'user');
+
+        // Récupération via méthode magique
+        $email = $request->email;
+
+        // Récupération via helper
+        $name = request()->input('name');
+
+        // Récupération avec valeur par défaut via helper
+        $role = request()->input('role', 'user');
     }
 }
 ```
 
-In this example, the `show` method will receive both the request object and the `id` route parameter. The service container will automatically inject the request object and the route parameter into the method.
-
-### Request URI, Host, and Method
-
-To access the request URI, host, and method, you can use the following methods provided by the `Request` class:
-
-- **URI**: To get the full URI of the request, use the `fullUrl` method.
-- **Host**: To get the host of the request, use the `getHost` method.
-- **Method**: To get the HTTP method of the request, use the `getMethod` method.
-
-Here is an example of how to use these methods in a controller:
+### Récupérer Toutes les Entrées
 
 ```php
-namespace App\Http\Controllers;
+// Toutes les données
+$all = $request->all();
 
-use Clicalmani\Foundation\Http\RequestInterface as Request;
-use Clicalmani\Foundation\Resources\View;
-
-class ExampleController extends Controller
-{
-    /**
-     * Handle the incoming request.
-     *
-     * @param  \Clicalmani\Foundation\Http\RequestInterface  $request
-     * @return \Clicalmani\Foundation\Resources\ViewInterface
-     */
-    public function handle(Request $request) : ViewInterface
-    {
-        $uri = $request->fullUrl();
-        $host = $request->getHost();
-        $method = $request->getMethod();
-
-        // Logic to handle the request
-
-        return new View('example.view', compact('uri', 'host', 'method'));
-    }
-}
+// Toutes les données, via le helper
+$all = request()->all();
 ```
 
-In this example, the `handle` method retrieves the full URI, host, and HTTP method of the incoming request and passes them to the view.
-
-### Verifying Request Path
-
-The `route` method called on the request object return the current route the user visited. You may use the `named` method or the `is` method to verify if the incomming request has matched a named route or a given pattern:
+### Récupérer des Entrées Spécifiques
 
 ```php
-namespace App\Http\Controllers;
+// Uniquement certaines clés
+$data = $request->only(['name', 'email', 'role']);
 
-use Clicalmani\Foundation\Http\RequestInterface as Request;
-use Clicalmani\Foundation\Resources\View;
-
-class PathController extends Controller
-{
-    /**
-     * Handle the incoming request.
-     *
-     * @param  \Clicalmani\Foundation\Http\RequestInterface  $request
-     * @return \Clicalmani\Foundation\Resources\ViewInterface
-     */
-    public function checkPath(Request $request) : ViewInterface
-    {
-        if ($request->route()->is('admin/.*')) {
-            // Logic for admin routes
-        }
-
-        if ($request->route()->named('named.*')) {
-            // Logic for named routes
-        }
-
-        // Other logic
-
-        return new View('path.view');
-    }
-}
+// Toutes sauf certaines clés
+$data = $request->except(['password', 'password_confirmation']);
 ```
 
-In this example, the `checkPath` method checks if the request path starts with `admin/`. If it does, it executes the logic for admin routes. It also checks if the request matches a [named route](routing.md?id=named-routes) using the `named` method. If it does, it executes the logic for named routes.
+`except()` est particulièrement utile pour réinjecter les données d'un formulaire en cas d'échec de validation, sans jamais renvoyer les champs sensibles (mot de passe, jeton) au client.
 
-### Retrieving the Request URL
-
-To retrieve the URL of the incoming request, you can use the `url` method provided by the `Request` class. This method returns the URL without the query string. If you need the full URL including the query string, you can use the `fullUrl` method.
-
-Here is an example of how to use these methods in a controller:
+### Vérifier l'Existence
 
 ```php
-namespace App\Http\Controllers;
-
-use Clicalmani\Foundation\Http\RequestInterface as Request;
-use Clicalmani\Foundation\Resources\View;
-
-class UrlController extends Controller
-{
-    /**
-     * Handle the incoming request.
-     *
-     * @param  \Clicalmani\Foundation\Http\RequestInterface  $request
-     * @return \Clicalmani\Foundation\Resources\ViewInterface
-     */
-    public function showUrl(Request $request) : ViewInterface
-    {
-        $url = $request->url();
-        $uri = $request->route()->uri(); // The URI of the route as defined in the route file.
-        $fullUrl = $request->fullUrl();
-
-        // Logic to handle the request
-
-        return new View('url.view', compact('url', 'uri', 'fullUrl'));
-    }
-}
-```
-
-In this example, the `showUrl` method retrieves both the URL and the full URL of the incoming request and passes them to the view.
-
-If you would like to append query string data to the current URL, you may call the fullUrlWithQuery method. This method merges the given array of query string variables with the current query string:
-
-```php
-$request->fullUrlWithQuery(['type' => 'phone']);
-```
-
-If you would like to get the current URL without a given query string parameter, you may utilize the fullUrlWithoutQuery method:
-
-```php
-$request->fullUrlWithoutQuery(['type']);
-```
-
-### Retrieving the Request Host
-
-You may retrieve the "host" of the incoming request via the `host`, `httpHost`, and `schemeAndHttpHost` methods:
-
-```php
-namespace App\Http\Controllers;
-
-use Clicalmani\Foundation\Http\RequestInterface as Request;
-use Clicalmani\Foundation\Resources\View;
-
-class HostController extends Controller
-{
-    /**
-     * Handle the incoming request.
-     *
-     * @param  \Clicalmani\Foundation\Http\RequestInterface  $request
-     * @return \Clicalmani\Foundation\Resources\ViewInterface
-     */
-    public function showHost(Request $request) : ViewInterface
-    {
-        $host = $request->getHost();
-        $httpHost = $request->getHttpHost();
-        $schemeAndHttpHost = $request->getSchemeAndHttpHost();
-
-        // Logic to handle the request
-
-        return new View('host.view', compact('host', 'httpHost', 'schemeAndHttpHost'));
-    }
-}
-```
-
-In this example, the `showHost` method retrieves the host, HTTP host, and scheme and HTTP host of the incoming request and passes them to the view.
-
-### Retrieving the Request Method
-
-To retrieve the HTTP method of the incoming request, you can use the `getMethod` method provided by the `Request` class. This method returns the HTTP method used for the request, such as GET, POST, PUT, DELETE, etc. You may use the isMethod method to verify that the HTTP verb matches a given string:
-
-Here is an example of how to use this method in a controller:
-
-```php
-namespace App\Http\Controllers;
-
-use Clicalmani\Foundation\Http\RequestInterface as Request;
-use Clicalmani\Foundation\Resources\View;
-
-class MethodController extends Controller
-{
-    /**
-     * Handle the incoming request.
-     *
-     * @param  \Clicalmani\Foundation\Http\RequestInterface  $request
-     * @return \Clicalmani\Foundation\Resources\ViewInterface
-     */
-    public function showMethod(Request $request) : ViewInterface
-    {
-        $method = $request->getMethod();
-        $is_method = $request->isMethod('get|post');
-
-        // Logic to handle the request
-
-        return new View('method.view', compact('method', 'is_method'));
-    }
-}
-```
-
-In this example, the `showMethod` method retrieves the HTTP method of the incoming request and passes it to the view.
-
-### Retrieving Request Headers
-
-You may retrieve a request header from the `Request` instance using the `header` method. If the header is not present on the request, `null` will be returned. However, the `header` method accepts an optional second argument that will be returned if the header is not present on the request:
-
-```php
-namespace App\Http\Controllers;
-
-use Clicalmani\Foundation\Http\RequestInterface as Request;
-use Clicalmani\Foundation\Resources\View;
-
-class HeaderController extends Controller
-{
-    /**
-     * Handle the incoming request.
-     *
-     * @param  \Clicalmani\Foundation\Http\RequestInterface  $request
-     * @return \Clicalmani\Foundation\Resources\ViewInterface
-     */
-    public function showHeader(Request $request) : ViewInterface
-    {
-        $header = $request->header('X-Custom-Header', 'default_value');
-
-        // Logic to handle the request
-
-        return new View('header.view', compact('header'));
-    }
-}
-```
-
-In this example, the `showHeader` method retrieves the value of the `X-Custom-Header` header from the incoming request. If the header is not present, it returns `'default_value'`.
-
-For convenience, the `bearerToken` method may be used to retrieve a bearer token from the Authorization header. If no such header is present, an empty string will be returned:
-
-```php
-namespace App\Http\Controllers;
-
-use Clicalmani\Foundation\Http\RequestInterface as Request;
-use Clicalmani\Foundation\Resources\View;
-
-class TokenController extends Controller
-{
-    /**
-     * Handle the incoming request.
-     *
-     * @param  \Clicalmani\Foundation\Http\RequestInterface  $request
-     * @return \Clicalmani\Foundation\Resources\ViewInterface
-     */
-    public function showToken(Request $request) : ViewInterface
-    {
-        $token = $request->bearerToken();
-
-        // Logic to handle the request
-
-        return new View('token.view', compact('token'));
-    }
-}
-```
-
-In this example, the `showToken` method retrieves the bearer token from the Authorization header of the incoming request and passes it to the view.
-
-### Retrieving the Client IP Address
-
-The `ip` method may be used to retrieve the IP address of the client that made the request to your application. This can be useful for logging, analytics, or security purposes.
-
-Here is an example of how to use the `ip` method in a controller:
-
-```php
-namespace App\Http\Controllers;
-
-use Clicalmani\Foundation\Http\RequestInterface as Request;
-use Clicalmani\Foundation\Resources\View;
-
-class IpController extends Controller
-{
-    /**
-     * Handle the incoming request.
-     *
-     * @param  \Clicalmani\Foundation\Http\RequestInterface  $request
-     * @return \Clicalmani\Foundation\Resources\ViewInterface
-     */
-    public function showIp(Request $request) : ViewInterface
-    {
-        $ipAddress = $request->ip();
-
-        // Logic to handle the request
-
-        return new View('ip.view', compact('ipAddress'));
-    }
-}
-```
-
-In this example, the `showIp` method retrieves the IP address of the client that made the request and passes it to the view.
-
-### Inspecting Requested Content Types
-
-**Tonka** provides several methods for inspecting the incoming request's requested content types via the `Accept` header. First, the `getAcceptableContentTypes` method will return an array containing all of the content types accepted by the request:
-
-```php
-namespace App\Http\Controllers;
-
-use Clicalmani\Foundation\Http\RequestInterface as Request;
-use Clicalmani\Foundation\Resources\View;
-
-class ContentTypeController extends Controller
-{
-    /**
-     * Handle the incoming request.
-     *
-     * @param  \Clicalmani\Foundation\Http\RequestInterface  $request
-     * @return \Clicalmani\Foundation\Resources\ViewInterface
-     */
-    public function showContentTypes(Request $request) : ViewInterface
-    {
-        $acceptableContentTypes = $request->getAcceptableContentTypes();
-
-        // Logic to handle the request
-
-        return new View('content_types.view', compact('acceptableContentTypes'));
-    }
-}
-```
-
-In this example, the `showContentTypes` method retrieves the acceptable content types from the `Accept` header of the incoming request and passes them to the view.
-
-If you would like to determine if the request accepts a given content type, you may use the `accepts` method:
-
-```php
-if ($request->accepts('application/json')) {
-    // Logic for handling JSON requests
-}
-```
-
-To determine if the request prefers a given content type out of a list of content types, you may use the `prefers` method:
-
-```php
-$contentType = $request->prefers(['text/html', 'application/json']);
-```
-
-The `prefers` method will return the content type that is most preferred by the request based on the `Accept` header.
-
-Since many applications only serve HTML or JSON, you may use the `expectsJson` method to quickly determine if the incoming request expects a JSON response:
-
-```php
-if ($request->expectsJson()) {
-    // Logic for handling requests that expect a JSON response
-}
-```
-
-## Input
-
-### Retrieving Input
-
-To retrieve input from the request, you can use various methods provided by the `Request` class. These methods allow you to access query parameters, form data, and JSON payloads.
-
-#### Retrieving All Input Data
-
-To retrieve all input data from the request, use the `all` method:
-
-```php
-$input = $request->all();
-```
-
-#### Retrieving Input as a Collection
-
-Using the `collect` method, you may retrieve all of the incoming request's input data as a [collection](collection.md):
-
-```php
-$input = $request->collect();
-```
-
-The `collect` method also allows you to retrieve a subset of the incoming request's input as a collection:
-
-```php
-$subset = $request->collect('users');
-```
-
-In this example, the `collect` method retrieves only the `users` input values from the request and returns them as a collection.
-
-#### Retrieving a Specific Input Value
-
-To retrieve a specific input value, use the `input` method:
-
-```php
-$name = $request->input('name');
-```
-
-You can also provide a default value if the input is not present:
-
-```php
-$name = $request->input('name', 'default_name');
-```
-
-#### Retrieving Query Parameters
-
-To retrieve query parameters from the URL, use the `query` method:
-
-```php
-$page = $request->query('page');
-```
-
-#### Retrieving JSON Input
-
-If the incoming request contains JSON data, you can use the `json` method to retrieve it:
-
-```php
-$data = $request->json()->all();
-```
-
-#### Retrieving Input from a Nested Array
-
-To retrieve input from a nested array, use "dot" notation:
-
-```php
-$city = $request->input('address.city');
-```
-
-#### Checking for Input Presence
-
-To check if a specific input value is present, use the `has` method:
-
-```php
+// Une seule clé
 if ($request->has('name')) {
-    // Logic if 'name' is present
+    // ...
 }
-```
 
-When given an array, the has method will determine if all of the specified values are present:
-
-```php
+// Plusieurs clés (toutes présentes)
 if ($request->has(['name', 'email'])) {
-    // Logic if both 'name' and 'email' are present
+    // ...
+}
+
+// Au moins une clé présente
+if ($request->hasAny(['name', 'email'])) {
+    // ...
+}
+
+// Champ rempli (non vide)
+if ($request->filled('name')) {
+    // ...
+}
+
+// Au moins un champ rempli
+if ($request->anyFilled(['name', 'email'])) {
+    // ...
 }
 ```
 
-## Validating Requests
+`has()` vérifie uniquement la **présence** de la clé (une chaîne vide `''` est donc considérée comme présente), tandis que `filled()` exige en plus que la valeur ne soit ni vide ni `null` — une distinction à connaître avant de valider manuellement un champ optionnel.
 
-To ensure that incoming requests contain valid data, you can use the `validate` method provided by the `Request` class. This method allows you to define validation rules for the request data.
-
-Here is an example of how to validate a request in a controller:
+### Accès aux Données JSON
 
 ```php
-namespace App\Http\Controllers;
+// Récupération en tant que collection
+$data = $request->collect('users');
 
-use Clicalmani\Foundation\Http\RequestInterface as Request;
-use Clicalmani\Foundation\Resources\View;
-
-class ValidationController extends Controller
-{
-    /**
-     * Handle the incoming request.
-     *
-     * @param  \Clicalmani\Foundation\Http\RequestInterface  $request
-     * @return \Clicalmani\Foundation\Resources\ViewInterface
-     */
-    public function validateRequest(Request $request) : ViewInterface
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'age' => 'nullable|integer|min:18',
-        ]);
-
-        // Logic to handle the validated data
-
-        return new View('validation.view');
-    }
-}
+// Récupération en tant qu'objet JSON brut
+$json = $request->json();
 ```
 
-In this example, the `validateRequest` method defines validation rules for the `name`, `email`, and `age` fields. If the validation fails, a `ValidationException` will be throw with an error message.
+---
 
-You can also customize the error messages by implementing the `message` method of your [custom validator](validation.md?id=customizing-error-message):
+## Validation des Requêtes
 
-```php
-<?php
+Tonka propose plusieurs stratégies de validation, à choisir selon le niveau de réutilisation et de complexité souhaité : Form Request pour une validation réutilisable et testable isolément, validation directe pour les cas simples, validation par attribut pour une déclaration au plus près de l'action, et validation au niveau de l'entité pour une contrainte appliquée systématiquement, indépendamment du point d'entrée HTTP.
 
-namespace App\Validators;
+### Validation avec Form Request
 
-use Clicalmani\Validation\Validator;
+#### Création du Form Request
 
-class CustomValidator extends Validator
-{
-    /**
-     * Validator argument
-     * 
-     * @var string
-     */
-    protected string $argument = 'custom';
-
-    /**
-     * Get the validation error message.
-     *
-     * @return string
-     */
-    public function message(): string
-    {
-        return sprintf("The %s field must be a valid custom name.", $this->parameter);
-    }
-}
+```bash
+php tonka make:request UserRequest
 ```
 
-This allows you to provide custom error messages for each validation rule.
-
-For more complex validation logic, you can create a custom request class by extending the `Clicalmani\Foundation\Http\Request` class. This approach allows you to encapsulate the validation logic in a dedicated class.
-
-Here is an example of a custom request class:
+#### Définition du Form Request
 
 ```php
 namespace App\Http\Requests;
 
-use Clicalmani\Foundation\Http\Request;
+use Clicalmani\Core\Http\RequestInterface;
 
-class StoreUserRequest extends Request
+class UserRequest extends Request
 {
     /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
+     * Autorisation
      */
-    public function authorize() : bool
+    public function authorize(): bool
     {
         return true;
     }
 
     /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return void
+     * Préparation des données avant validation
      */
-    public function signatures() : void
+    public function prepareForValidation(): void
     {
-        $this->merge([
+        $this->make([
+            'email' => strtolower($this->email),
+            'name' => trim($this->name)
+        ]);
+    }
+
+    /**
+     * Règles de validation
+     */
+    public function signatures(): array
+    {
+        return [
             'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'age' => 'nullable|integer|min:18',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|password|min:8|uppercase:1|number:1|symbols:1|strength:medium|common:no|noSpace:yes',
+            'age' => 'nullable|int|min:18',
+            'role' => 'required|in:admin,user,moderator',
+            'is_active' => 'boolean|nullable'
+        ];
+    }
+}
+```
+
+#### Utilisation dans le Contrôleur
+
+```php
+class UserController extends Controller
+{
+    public function store(UserRequest $request)
+    {
+        // La validation s'exécute automatiquement à la résolution
+        // du type-hint UserRequest — les données sont déjà validées
+        // au moment où le corps de la méthode s'exécute.
+
+        // Récupération des données validées
+        $validated = $request->validated();
+
+        $user = User::create($validated);
+        return redirect('/users');
+    }
+}
+```
+
+### Validation Directe
+
+```php
+use Clicalmani\Validation\Validator;
+
+class UserController extends Controller
+{
+    public function store(Request $request)
+    {
+        $validator = Validator::make([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|password|min:8',
+            'age' => 'nullable|integer|min:18'
+        ], $request->all());
+
+        if ($validator->hasErrors()) {
+            // ...
+        }
+
+        $validated = $validator->validated();
+
+        $user = User::create($validated);
+        return redirect('/users');
+    }
+}
+```
+
+> **Pour les développeurs Laravel :** `Validator::make()` reprend l'esprit de la façade `Validator` de Laravel — utile pour valider un jeu de données en dehors du cycle habituel requête/Form Request (import CSV, appel de service interne, etc.).
+
+### Validation avec Attributs
+
+```php
+use Clicalmani\Validation\AsValidator;
+
+class UserController extends Controller
+{
+    #[AsValidator([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users',
+        'password' => 'required|password|min:8'
+    ])]
+    public function store(Request $request)
+    {
+        $validated = $request->validated();
+        $user = User::create($validated);
+        return response()->json($user);
+    }
+}
+```
+
+### Validation dans les Entités
+
+```php
+// database/entities/UserEntity.php
+use Clicalmani\Database\Factory\Validate;
+
+class UserEntity extends Entity
+{
+    #[Validate('required|email|max:255')]
+    public VarChar $email;
+
+    #[Validate('required|password|hash|min:8')]
+    public VarChar $password;
+
+    #[Validate('required|in:M,F,O')]
+    public Enum|string|null $gender = 'M';
+}
+```
+
+> **Pour les développeurs Symfony :** cette approche rappelle les contraintes `#[Assert\...]` posées directement sur les propriétés d'une entité Doctrine. La différence de fond est le périmètre : ici, la contrainte est rattachée à l'entité de persistance elle-même, ce qui garantit son application quel que soit le point d'entrée (contrôleur HTTP, commande console, seeder) — contrairement à une règle définie uniquement dans un Form Request, qui ne s'applique qu'au contexte HTTP dans lequel elle est invoquée.
+
+### Règles de Validation Disponibles
+
+| Règle | Description | Exemple |
+|-------|-------------|---------|
+| `required` | Champ obligatoire | `required` |
+| `nullable` | Peut être `null` | `nullable` |
+| `string` | Chaîne de caractères | `string` |
+| `integer` | Nombre entier | `integer` |
+| `numeric` | Nombre (entier ou flottant) | `numeric` |
+| `boolean` | Booléen | `boolean` |
+| `email` | Adresse e-mail valide | `email` |
+| `url` | URL valide | `url` |
+| `uuid` | UUID valide | `uuid` |
+| `date` | Date valide | `date` |
+| `datetime` | Date et heure valides | `datetime` |
+| `min:18` | Valeur minimale | `min:18` |
+| `max:100` | Valeur maximale | `max:100` |
+| `between:1,100` | Comprise entre deux valeurs | `between:1,100` |
+| `in:1,2,3` | Dans une liste de valeurs | `in:1,2,3` |
+| `not_in:4,5,6` | Absente d'une liste de valeurs | `not_in:4,5,6` |
+| `password` | Règles de robustesse d'un mot de passe | `password` |
+| `confirmed` | Doit avoir un champ `_confirmation` correspondant | `confirmed` |
+| `hash` | Hache la valeur avant stockage | `hash` |
+| `id` | Identifiant existant en base | `id\|model:user` |
+| `file` | Fichier | `file\|max:2048` |
+| `image` | Image | `image\|ext:jpg,png` |
+| `regexp` | Expression régulière | `regexp\|pattern:/^[a-z]+$/` |
+
+### Messages d'Erreur Personnalisés
+
+```php
+class UserRequest extends Request
+{
+    public function signatures(): array
+    {
+        return [
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'name' => 'Le nom est obligatoire',
+            'email' => 'L\'email est obligatoire',
+            'email' => 'L\'email n\'est pas valide',
+            'email' => 'Cet email est déjà utilisé',
+        ];
+    }
+}
+```
+
+---
+
+## Upload de Fichiers
+
+### Récupérer un Fichier
+
+```php
+class UserController extends Controller
+{
+    public function upload(Request $request)
+    {
+        // Vérifier qu'un fichier a bien été transmis
+        if (!$request->hasFile('avatar')) {
+            return response()->error('No file uploaded');
+        }
+
+        // Récupérer le fichier
+        $file = $request->file('avatar');
+
+        // Récupérer ses métadonnées
+        $name = $file->getClientFilename();
+        $extension = $file->getClientExtension();
+        $size = $file->getSize();
+        $mimeType = $file->getClientMediaType();
+    }
+}
+```
+
+### Valider un Fichier
+
+```php
+class UserRequest extends Request
+{
+    public function signatures(): array
+    {
+        return [
+            'avatar' => 'required|image|max:2048|ext:jpg,png,gif',
+            'document' => 'required|file|max:10240|ext:pdf,doc,docx',
+        ];
+    }
+}
+```
+
+### Déplacer un Fichier
+
+```php
+class UserController extends Controller
+{
+    public function upload(Request $request)
+    {
+        $file = $request->file('avatar');
+
+        // Déplacement bas niveau (API PSR-7 UploadedFileInterface)
+        $path = storage_path('avatars/' . uniqid() . '.' . $file->getClientExtension());
+        $file->moveTo($path, 'public'); // Public disk
+    }
+}
+```
+
+> **Pour les développeurs Laravel :** `moveTo()` correspond à l'API bas niveau standard PSR-7 (`UploadedFileInterface`).
+
+### Fichiers Multiples
+
+```php
+class UserController extends Controller
+{
+    public function uploadMultiple(Request $request)
+    {
+        $files = $request->file('documents');
+
+        if ($files instanceof CollectionInterface) {
+            for ($i = 0; $i < $files->count(); $i++) {
+                $file = $filesget($i);
+                if ($file->isValid()) {
+                    $file->moveTo(storage_path('documents/' . uniqid()));
+                }
+            }
+        }
+    }
+}
+```
+
+Vérifier `isValid()` sur chaque fichier avant de le déplacer permet d'écarter individuellement un fichier corrompu ou incomplet au sein d'un lot, sans faire échouer l'ensemble de l'upload.
+
+---
+
+## Sessions
+
+### Lire une Session
+
+```php
+class UserController extends Controller
+{
+    public function profile(Request $request)
+    {
+        // Via la requête
+        $userId = $request->session()->get('user_id');
+        $name = $request->session()->get('name', 'Guest');
+
+        // Via le helper
+        $userId = session()->get('user_id');
+        $name = session()->get('name', 'Guest');
+
+        // Via l'instance de session
+        $session = $request->session();
+        $userId = $session->user_id;
+    }
+}
+```
+
+### Écrire une Session
+
+```php
+class UserController extends Controller
+{
+    public function login(Request $request)
+    {
+        // Via la requête
+        $request->session()->set('user_id', auth()->id());
+        $request->session()->set('user_name', auth()->name());
+
+        // Via le helper
+        session()->set('user_id', auth()->id());
+
+        // Via l'instance de session
+        $session = $request->session();
+        $session->user_id = auth()->id();
+    }
+}
+```
+
+### Messages
+
+```php
+// Définir un message lors d'une redirection
+return redirect('/users')->with('success', 'Utilisateur créé avec succès !');
+
+// Définir un message de succes lors d'une redirection
+return redirect('/users')->withSuccess('Utilisateur créé avec succès !');
+
+// Définir un message d'erreur lors d'une redirection
+return redirect('/users')->withError('Impossible de créer l\'utilisateur !');
+```
+
+```php
+// Le lire au chargement de la page suivante
+class UserController extends Controller
+{
+    public function index(Request $request)
+    {
+        $successMessage = session()->get('success');
+
+        return Inertia::render('User/Index', [
+            'flash' => ['success' => $successMessage]
         ]);
     }
 }
 ```
 
-You can then use this custom request class in your controller:
+> **Point d'attention :** contrairement à une donnée de session classique, un message flash est automatiquement purgé après avoir été lu une première fois. Évitez de vous y fier pour une information devant persister au-delà de la requête qui suit immédiatement la redirection.
+
+---
+
+## Cookies
+
+### Lire un Cookie
+
+```php
+class UserController extends Controller
+{
+    public function index(Request $request)
+    {
+        // Via la requête
+        $theme = $request->cookie()->get('theme', 'light');
+
+        // Via le helper
+        $theme = cookie()->get('theme', 'light');
+
+        // Vérifier l'existence
+        if ($request->hasCookie('theme')) {
+            // ...
+        }
+    }
+}
+```
+
+### Écrire un Cookie
+
+```php
+class UserController extends Controller
+{
+    public function settings(Request $request)
+    {
+        // Via la requête (durée exprimée en minutes)
+        $request->cookie('theme', 'dark', 60 * 24 * 30)->set();
+
+        // Via le helper
+        cookie('theme', 'dark', 60 * 24 * 30)->set();
+
+        // Via la réponse (attaché directement à la redirection)
+        return response()
+            ->cookie('theme', 'dark', 60 * 24 * 30)
+            ->redirect('/settings');
+    }
+}
+```
+
+### Supprimer un Cookie
+
+```php
+class UserController extends Controller
+{
+    public function logout(Request $request)
+    {
+        // Via la requête
+        $request->cookie('remember_token')->delete();
+
+        // Via la réponse
+        return response()
+            ->deleteCookie('remember_token')
+            ->redirect('/login');
+    }
+}
+```
+
+---
+
+## Exemple Complet
 
 ```php
 namespace App\Http\Controllers;
 
-use Clicalmani\Foundation\Acme\Controller;
-use App\Http\Requests\StoreUserRequest;
-use Clicalmani\Foundation\Resources\View;
+use App\Http\Requests\UserRequest;
+use App\Models\User;
+use Clicalmani\Core\Http\RequestInterface;
+use Clicalmani\Core\Support\Facades\DB;
 
 class UserController extends Controller
 {
     /**
-     * Store a new user.
-     *
-     * @param  \App\Http\Requests\StoreUserRequest  $request
-     * @return \Clicalmani\Foundation\Resources\ViewInterface
+     * Liste des utilisateurs
      */
-    public function store(StoreUserRequest $request) : ViewInterface
+    public function index(Request $request)
     {
-        return new View('user.store');
-    }
-}
-```
+        $page = $request->input('page', 1);
+        $perPage = $request->input('per_page', 10);
+        $search = $request->input('search', '');
 
-In this example, the `store` method uses the `StoreUserRequest` class to validate the incoming request data. The validated data is then available for further processing.
+        $users = User::where('active = ?', [1]);
 
-You can create a custom request class by running the `make:request` command in the console. Here is an example:
-
-```sh
-php tonka make:request StoreUserRequest
-```
-
-After running this command the `StoreUserRequest.php` file will be available in the `app/Http/Requests` directory.
-
-!> Once a custom request class is used in a controller method, the **Tonka** service container automatically invoke the `validate` method after automatically injecting the class.
-
-## Files
-
-### Retrieving Uploaded Files
-
-To retrieve uploaded files from the request, you can use the `file` method provided by the `Request` class. This method allows you to access files that were uploaded via a form.
-
-#### Retrieving a Single File
-
-To retrieve a single file, use the `file` method with the name of the file input:
-
-```php
-$file = $request->file('photo');
-```
-
-#### Checking if a File is Present
-
-To check if a file is present in the request, use the `hasFile` method:
-
-```php
-if ($request->hasFile('photo')) {
-    // Logic if 'photo' file is present
-}
-```
-
-#### Validating Uploaded Files
-
-You can validate uploaded files using the `validate` method. For example, to ensure that an uploaded file is an image and does not exceed a certain size:
-
-```php
-$request->validate([
-    'photo' => 'required|image|max:2048',
-]);
-```
-
-#### Storing Uploaded Files
-
-To store an uploaded file, use the `store` method. This method stores the file on the default disk and returns the path to the file:
-
-```php
-$file = $request->file('photo');
-$file->store('photo.jpeg');
-$file->moveTo(storage_path('/public/uploads/photo.jpeg'));
-```
-
-You can also specify a disk to store the file on:
-
-```php
-$path = $file->store('photo.jpg', 's3');
-```
-
-#### Retrieving the Original Filename
-
-To retrieve the original filename of the uploaded file, use the `getClientFilename` method:
-
-```php
-$originalName = $file->getClientFilename();
-```
-
-#### Retrieving the File Extension
-
-To retrieve the file extension of the uploaded file, use the `getClientExtension` method:
-
-```php
-$extension = $file->getClientExtension();
-```
-
-#### Retrieving the File Type
-
-To retrieve the MIME type of the uploaded file, use the `getClientMediaType` method:
-
-```php
-$mimeType = $file->getClientMediaType();
-```
-
-This method returns the MIME type provided by the client, such as `image/jpeg` or `application/pdf`.
-
-These methods provide a convenient way to handle file uploads in your application, ensuring that you can easily access, validate, and store uploaded files.
-
-### Validating Successful Uploads
-
-You may want to verify if the uploaded is valid. You can do this by calling the `isValid` method. 
-
-Here is an example of how to validate a successful upload:
-
-```php
-if ($request->file('photo')?->isValid()) {
-    // Logic if the file was successfully uploaded
-} else {
-    // Logic if the file upload failed
-}
-```
-
-## Configuring Trusted Proxies
-
-When your application is behind a proxy, you may need to configure trusted proxies to ensure that the request information is correctly interpreted. This is particularly important for applications that rely on the client's IP address or HTTPS detection.
-
-### Setting Trusted Proxies
-
-To configure trusted proxies, you can use the `setTrustedProxies` method provided by the `Request` class. This method allows you to specify which proxies are trusted and how to handle forwarded headers.
-
-Here is an example of how to set trusted proxies in the `AppServiceProvider` class:
-
-```php
-<?php
-namespace App\Providers;
-
-use Clicalmani\Foundation\Http\RequestInterface as Request;
-use Clicalmani\Foundation\Providers\ServiceProvider;
-
-class AppServiceProvider extends ServiceProvider
-{
-    /**
-     * Bootstrap
-     * 
-     * @return void
-     */
-    public function boot(): void
-    {
-        Request::setTrustedProxies(
-            ['192.168.1.1', '192.168.1.2'], // List of trusted proxy IP addresses
-            Request::HEADER_X_FORWARDED_ALL // Headers to trust
-        );
-    }
-}
-```
-
-In this example, the `setTrustedProxies` method is used to specify that the proxies with IP addresses `192.168.1.1` and `192.168.1.2` are trusted. The `HEADER_X_FORWARDED_ALL` constant indicates that all `X-Forwarded-*` headers should be trusted.
-
-### Configuring Trusted Headers
-
-You can also configure which headers should be trusted by the application. This is useful if your proxy uses custom headers for forwarding information.
-
-Here is an example of how to configure trusted headers:
-
-```php
-use Clicalmani\Foundation\Http\RequestInterface as Request;
-
-Request::setTrustedHeaderNames([
-    Request::HEADER_FORWARDED => 'X-Forwarded-For',
-    Request::HEADER_CLIENT_IP => 'X-Forwarded-Client-IP',
-    Request::HEADER_CLIENT_HOST => 'X-Forwarded-Host',
-    Request::HEADER_CLIENT_PROTO => 'X-Forwarded-Proto',
-    Request::HEADER_CLIENT_PORT => 'X-Forwarded-Port',
-]);
-```
-
-In this example, the `setTrustedHeaderNames` method is used to specify custom headers for forwarding information. The application will trust these headers when determining the client's IP address, host, protocol, and port.
-
-Now that trusted proxies and headers are set, we can use a middleware to ensure that the incoming request is trustworthy.
-
-Here is an example of middleware that verify trusted proxies and headers:
-
-```php
-namespace App\Http\Middleware;
-
-use Clicalmani\Foundation\Http\RequestInterface as Request;
-use Clicalmani\Foundation\Http\ResponseInterface;
-use Clicalmani\Foundation\Http\RedirectInterface;
-
-class TrustProxies
-{
-    /**
-     * Handler
-     * 
-     * @param \Clicalmani\Foundation\Http\RequestInterface $request Request object
-     * @param \Clicalmani\Foundation\Http\ResponseInterface $response Response object
-     * @param \Closure $next Next middleware function
-     * @return \Clicalmani\Foundation\Http\ResponseInterface|\Clicalmani\Foundation\Http\RedirectInterface
-     */
-    public function handle(RequestInterface $request, ResponseInterface $response, \Closure $next) : ResponseInterface|RedirectInterface
-    {
-        if (FALSE === $request->isTrustworthy()) {
-            return $response->setStatus(403); // 403 Forbiden to indicate the request is not trustworthy
+        if ($search) {
+            $users->where('name LIKE ? OR email LIKE ?', [
+                "%$search%",
+                "%$search%"
+            ]);
         }
 
-        return $next($request, $response);
-    }
-}
-```
-
-## Configuring Trusted Hosts
-
-When your application is behind a proxy or load balancer, you may need to configure trusted hosts to ensure that the request information is correctly interpreted. This is particularly important for applications that rely on the client's host information for security or routing purposes.
-
-### Setting Trusted Hosts
-
-To configure trusted hosts, you can use the `setTrustedHosts` method provided by the `Request` class. This method allows you to specify which hosts are trusted.
-
-Here is an example of how to set trusted hosts in your application:
-
-```php
-<?php
-<?php
-namespace App\Providers;
-
-use Clicalmani\Foundation\Http\RequestInterface as Request;
-use Clicalmani\Foundation\Providers\ServiceProvider;
-
-class AppServiceProvider extends ServiceProvider
-{
-    /**
-     * Bootstrap
-     * 
-     * @return void
-     */
-    public function boot(): void
-    {
-        Request::setTrustedHosts([
-            'example.com',
-            'subdomain.example.com',
+        return Inertia::render('User/Index', [
+            'users' => $users->paginate($page, $perPage),
+            'filters' => compact('search', 'perPage')
         ]);
     }
-}
-```
 
-In this example, we use the `setTrustedHosts` method in the `AppServiceProvider` to specify that the hosts `example.com` and `subdomain.example.com` are trusted.
-
-Now that trusted hosts are defined, we can use a middleware to ensure that the incoming request is trusted.
-
-Here is an example of middleware that verify trusted hosts:
-
-```php
-namespace App\Http\Middleware;
-
-use Clicalmani\Foundation\Http\RequestInterface as Request;
-use Clicalmani\Foundation\Http\ResponseInterface;
-use Clicalmani\Foundation\Http\RedirectInterface;
-
-class TrustHosts
-{
     /**
-     * Handler
-     * 
-     * @param \Clicalmani\Foundation\Http\RequestInterface $request Request object
-     * @param \Clicalmani\Foundation\Http\ResponseInterface $response Response object
-     * @param \Closure $next Next middleware function
-     * @return \Clicalmani\Foundation\Http\ResponseInterface|\Clicalmani\Foundation\Http\RedirectInterface
+     * Création d'un utilisateur
      */
-    public function handle(RequestInterface $request, ResponseInterface $response, \Closure $next) : ResponseInterface|RedirectInterface
+    public function store(UserRequest $request)
     {
-        if (FALSE === $request->isTrustworthy()) return $response->forbiden();
+        $user = DB::transaction(function() use ($request) {
+            $user = User::create($request->validated());
 
-        return $next($request, $response);
+            if ($user) {
+                Profile::create([
+                    'bio' => $request->input('bio'),
+                    'avatar' => $request->file('avatar')
+                ]);
+                return $user;
+            }
+            return false;
+        });
+
+        if ($user) return redirect('/users')->withSuccess('User created successfully!');
+
+        return redirect('/users')->withError('Failed to create user');
+    }
+
+    /**
+     * Upload d'avatar
+     */
+    public function uploadAvatar(Request $request)
+    {
+        if (!$request->hasFile('avatar')) {
+            return response()->error('No file uploaded');
+        }
+
+        $file = $request->file('avatar');
+
+        if (!$file->isValid()) {
+            return response()->error('Invalid file');
+        }
+
+        $path = storage('public')->move(
+            $file->getName(),
+            'user_' . auth()->id() . '.png'
+        );
+
+        auth()->user()->update(['avatar' => $path]);
+
+        return response()->success([
+            'path' => $path,
+            'url' => storage('public')->url($path)
+        ]);
+    }
+
+    /**
+     * Mise à jour de l'utilisateur
+     */
+    public function update(UserRequest $request, int $id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->notFound();
+        }
+
+        $user->update($request->validated());
+
+        return redirect('/users/' . $id)
+            ->with('success', 'User updated successfully!');
     }
 }
 ```
+
+---
+
+## Prochaines Étapes
+
+Maintenant que vous maîtrisez les requêtes :
+
+1. **[Réponses](responses.md)** → Retourner différentes réponses
+2. **[Validation](validation.md)** → Approfondir la validation
+3. **[Base de Données](database.md)** → Travailler avec les modèles
+4. **[Vues](views.md)** → Créer l'interface utilisateur
+
+---
+
+**Requêtes comprises !** 🚀 → [Réponses](responses.md)

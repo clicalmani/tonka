@@ -1,1450 +1,350 @@
-# Getting Started
+# Elegant ORM
 
-- [Introduction](orm.md?id=introduction)
-- [Model Class](orm.md?id=model-class)
-- [Retrieving Models](orm.md?id=retrieving-models)
-- [Building Queries](orm.md?id=building-queries)
-- [Collections](orm.md?id=collections)
-- [Database Connections](orm.md?id=database-connections)
-- [Default Attribute Values](orm.md?id=default-attribute-values)
-- [Refreshing Models](orm.md?id=refreshing-models)
-- [The `fetch` Method](orm.md?id=the-fetch-method)
-- [The `filter` Method](orm.md?id=the-filter-method)
-- [The `swap` Method](orm.md?id=the-swap-method)
-- [Retrieving a Single Model](orm.md?id=retrieving-a-single-model)
-- [Not Found Exceptions](orm.md?id=not-found-exceptions)
-- [Retrieving Aggregates](orm.md?id=retrieving-aggregates)
-    - [Count](orm.md?id=count)
-    - [Max](orm.md?id=max)
-    - [Min](orm.md?id=min)
-    - [AVG](orm.md?id=avg)
-    - [Sum](orm.md?id=sum)
-- [Inserting and Updating Models](orm.md?id=inserting-and-updating-models)
-    - [Inserting Models](orm.md?id=inserting-models)
-    - [Updating Models](orm.md?id=updating-models)
-    - [Mass Assignment](orm.md?id=mass-assignment)
-    - [Guarding Attributes](orm.md?id=guarding-attributes)
-    - [Fillable Attributes](orm.md?id=fillable-attributes)
-    - [Bulk Updates](orm.md?id=bulk-updates)
-- [Deleting Models](orm.md?id=deleting-models)
-    - [Deleting a Single Instance](orm.md?id=deleting-a-single-instance)
-    - [Deleting Multiple Instances](orm.md?id=deleting-multiple-instances)
-    - [Soft Deleting Models](orm.md?id=soft-deleting-models)
-        - [Enabling Soft Deletes](orm.md?id=enabling-soft-deletes)
-        - [Querying Soft Deleted Models](orm.md?id=querying-soft-deleted-models)
-        - [Restoring Soft Deleted Models](orm.md?id=restoring-soft-deleted-models)
-        - [Permanently Deleting Models](orm.md?id=permanently-deleting-models)
-- [Examining Model State](orm.md?id=examining-model-state)
-    - [`isDirty` Method](orm.md?id=isdirty-method)
-    - [`isClean` Method](orm.md?id=isclean-method)
-    - [`wasChanged` Method](orm.md?id=waschanged-method)
-- [Mass Assignment Exceptions](orm.md?id=mass-assignment-exceptions)
-- [Events](orm.md?id=events)
-    - [Registering Events](orm.md?id=registering-events)
-    - [Available Events](orm.md?id=available-events)
-    - [Example: Logging Model Events](orm.md?id=example:-logging-model-events)
-    - [Custom Events](orm.md?id=custom-events)
-    - [Event Observers](orm.md?id=event-observers)
-        - [Creating an Observer](orm.md?id=creating-an-observer)
-        - [Registering an Observer](orm.md?id=registering-an-observer)
-        - [Observers and Database Transactions](orm.md?id=observers-and-database-transactions)
-    - [Muting Events](orm.md?id=muting-events)
-    - [Saving a Single Model Without Events](orm.md?id=saving-a-single-model-without-events)
-- [Relationships](orm.md?id=relationships)
-    - [Key Conventions](#key-conventions)
-    - [Defining Relationships](orm.md?id=defining-relationships)
-        - [One-to-One](orm.md?id=one-to-one)
-        - [One-to-Many](orm.md?id=one-to-many)
-        - [Many-to-Many](orm.md?id=many-to-many)
-        - [Has One-Through](orm.md?id=has-one-through)
-        - [Has Many-Through](orm.md?id=has-many-through)
-        - [One-to-One (Polymorphic)](orm.md?id=one-to-one-polymorphic)
-        - [One-to-Many (Polymorphic)](orm.md?id=one-to-many-polymorphic)
-        - [Many-to-Many (Polymorphic)](orm.md?id=many-to-many-polymorphic)
-        - [Custom Polymorphic Types](orm.md?id=custom-polymorphic-types)
-    - [Querying Related Models](orm.md?id=querying-related-models)
-        - [Model Joins](orm.md?id=model-joins)
-        - [The `fetch` Method on Joins](orm.md?id=the-fetch-method-on-joins)
-        - [Related Tables Key Convention](#related-tables-key-convention)
-        - [Table Alias](orm.md?id=table-alias)
-    - [Model Attributes Validation](orm.md?id=model-attributes-validation)
-        - [Defining Validation Rules](orm.md.md?id=defining-validation-rules)
-        - [Available Validators](orm.md?id=available-validators)
-        - [Validating Model Instances](orm.md?id=validating-model-instances)
-        - [Creating a Custom Validator](orm.md?id=creating-a-custom-validator)
-            - [Defining a Custom Validator](orm.md?id=defining-a-custom-validator)
-            - [Register the Custom Validator](orm.md?id=register-the-custom-validator)
-            - [Using the Custom Validator](orm.md?id=using-the-custom-validator)
+- [Elegant ORM](#elegant-orm)
+- [Introduction](#introduction)
+- [Définition d'un Modèle](#definition-d-39-un-modele)
+  - [Création d'un Modèle](#creation-d-39-un-modele)
+  - [Propriétés](#proprietes)
+  - [Attributs Personnalisés](#attributs-personnalises)
+- [Requêtes](#requetes)
+  - [Récupération de Données](#recuperation-de-donnees)
+  - [Filtrage](#filtrage)
+  - [Pagination](#pagination)
+  - [Agrégations](#agregations)
+- [Relations](#relations)
+  - [BelongsTo (Appartient à)](#belongsto-appartient-a-)
+  - [HasMany (A plusieurs)](#hasmany-a-plusieurs-)
+  - [HasOne (A un)](#hasone-a-un-)
+  - [BelongsToMany (Appartient à plusieurs)](#belongstomany-appartient-a-plusieurs-)
+  - [MorphOne (A un polymorphique)](#morphone-a-un-polymorphique-)
+  - [MorphMany (A plusieurs polymorphiques)](#morphmany-a-plusieurs-polymorphiques-)
+  - [MorphTo (Appartient à polymorphique)](#morphto-appartient-a-polymorphique-)
+  - [MorphToMany (Appartient à plusieurs polymorphiques)](#morphtomany-appartient-a-plusieurs-polymorphiques-)
+  - [HasOneThrough](#hasonethrough)
+  - [HasManyThrough](#hasmanythrough)
+  - [Relations Polymorphiques](#relations-polymorphiques)
+- [Eager Loading](#eager-loading)
+  - [Chargement de Base](#chargement-de-base)
+  - [Chargement Imbriqué](#chargement-imbrique)
+  - [Chargement Conditionnel](#chargement-conditionnel)
+  - [Lazy Eager Loading](#lazy-eager-loading)
+  - [With Exists](#with-exists)
+- [Événements](#evenements)
+  - [Définition](#definition)
+  - [Cycle de Vie](#cycle-de-vie)
+  - [Observers](#observers)
+- [Auto-casting](#auto-casting)
+  - [Activation par Défaut](#activation-par-defaut)
+  - [Désactivation](#desactivation)
+  - [Formatter Personnalisé](#formatter-personnalise)
+- [Soft Delete](#soft-delete)
+  - [Activation](#activation)
+  - [Utilisation](#utilisation)
+- [Jointures](#jointures)
+  - [Jointures Simples](#jointures-simples)
+  - [Jointures avec Clés Personnalisées](#jointures-avec-cles-personnalisees)
+  - [Jointures Avancées avec Conditions](#jointures-avancees-avec-conditions)
+  - [Jointures Multiples](#jointures-multiples)
+  - [Jointures avec Alias](#jointures-avec-alias)
+  - [Sous-Requêtes dans les Jointures](#sous-requetes-dans-les-jointures)
+  - [Jointures Polymorphiques](#jointures-polymorphiques)
+  - [Méthodes de Jointure Disponibles](#methodes-de-jointure-disponibles)
+- [Scopes](#scopes)
+- [Mutations](#mutations)
+- [Query Scopes Dynamiques](#query-scopes-dynamiques)
+- [Chunking](#chunking)
+- [Transactions](#transactions)
+  - [Transaction Simple](#transaction-simple)
+  - [Gestion des Deadlocks](#gestion-des-deadlocks)
+  - [Isolation des Transactions](#isolation-des-transactions)
+  - [Bonnes Pratiques](#bonnes-pratiques)
+- [Raw Queries](#raw-queries)
+- [Référence](#reference)
+- [Prochaines Étapes](#prochaines-etapes)
+
+---
 
 ## Introduction
 
-**Elegant ORM** is a powerful and flexible Object-Relational Mapping tool designed to simplify database interactions in your applications. By abstracting the complexities of SQL queries, **Elegant ORM** allows developers to work with database records as if they were regular PHP objects. This not only speeds up development time but also ensures that your codebase remains clean and maintainable. Whether you are building a small project or a large-scale enterprise application, **Elegant ORM** provides the tools and features necessary to manage your data efficiently and effectively.
+**Elegant** est l'**ORM** (**O**bject-**R**elational **M**apping) de Tonka. Il fournit une interface expressive et puissante pour interagir avec votre base de données.
 
-## Model Class
+Elegant s'inspire d'Eloquent (Laravel) mais avec des fonctionnalités supplémentaires :
+- ✅ **Auto-casting** : conversion automatique des types
+- ✅ **Auto-formatting** : formatage automatique des valeurs
+- ✅ **Entités** : définition séparée de la structure des tables
+- ✅ **Relations avancées** : support complet des relations polymorphiques
+- ✅ **Événements** : cycle de vie complet du modèle
+- ✅ **Soft Delete** : suppression réversible intégrée
+- ✅ **Scopes** : requêtes réutilisables
 
-An **Elegant ORM** model class is a representation of a database table within your application. Each model class maps to a specific table in the database, and each instance of the model represents a row within that table. By defining model classes, you can interact with your database using object-oriented principles, making your code more intuitive and easier to manage.
+---
 
-**Elegant ORM** provides a convenient command-line tool to generate model classes quickly. You can use the `make:entity` command to create a new model class and its underlying entity. This command will generate a boilerplate model class file in your project, saving you time and effort.
+## Définition d'un Modèle
 
-To create a new model class, run the following command in your terminal:
-
-```sh
-php tonka make:entity <ModelName> <table-name> <primary key, primary key,...>
-```
-
-Replace `ModelName` with the desired name of your model. For example, to create a `Product` model, you would run:
-
-```sh
-php tonka make:entity Product products id
-```
-
-This command will generate a new file named `Product.php` with a basic structure for your model class. You can then customize this file by adding fields and methods as needed.
-
-By using the `make:entity` command, you can streamline the process of creating new models and ensure consistency across your project.
-
-Here is an example of a simple model class in **Elegant ORM**:
-
-```php
-<?php
-use Clicalmani\Database\Factory\Models\Elegant;
-
-class Product extends Elegant
-{
-    /**
-     * Model database table 
-     *
-     * @var string $table Table name
-     */
-    protected $table = "products";
-
-    /**
-     * Model entity
-     * 
-     * @var string
-     */
-    protected string $entity = \Database\Entities\ProductEntity::class;
-
-    /**
-     * Table primary key(s)
-     * Use an array if the key is composed with more than one attributes.
-     *
-     * @var string|array $primary_keys Table primary key.
-     */
-    protected $primaryKey = "id";
-
-    public function __construct($id = null)
-    {
-        parent::__construct($id);
-    }
-}
-```
-
-With this model class, you can perform various database operations such as creating, reading, updating, and deleting records without writing raw SQL queries.
-
-## Retrieving Models
-
-Once you have created a model and its associated database table, you are ready to start retrieving data from your database. The model's `all` method will retrieve all of the records from the model's associated database table:
-
-```php
-use App\Models\Flight;
- 
-foreach (Flight::all() as $flight) {
-    echo $flight->name;
-}
-```
-
-### Building Queries
-
-To build queries based on a model in **Elegant ORM**, you can use the built-in query builder methods provided by the framework. These methods allow you to construct complex SQL queries using a fluent, object-oriented interface.
-
-Here is an example of how to build a query using the `Flight` model class:
-
-```php
-<?php
-use App\Models\Flight;
-
-$flights = Flight::where('active = ?', [1])
-               ->orderBy('name')
-               ->top(10)
-               ->get();
-```
-
-### Collections
-
-As we have seen, methods like `all` and `get` retrieve multiple records from the database. However, these methods don't return a plain PHP array. Instead, an instance of [Collection](collection.md) class is returned.
-
-```php
-$flights = Flight::where('destination = ?', ['Paris'])->fetch();
- 
-$flights->filter(function (Flight $flight) {
-    return $flight->cancelled;
-});
-```
-
-Since all of **Tonka**'s collection implement PHP's iterable interface, you may loop over collections as if they were an array:
-
-```php
-foreach ($flights as $flight) {
-    echo $flight->name;
-}
-```
-
-## Database Connections
-
-**Elegant ORM** makes it easy to manage database connections in your application. You can configure multiple database connections and switch between them as needed. The configuration for database connections is typically stored in  `config/database.php` configuration file.
-
-Here is the content of `database.php` database configuration file:
-
-```php
-return [
-    'default' => 'mysql',
-
-    'connections' => [
-        'mysql' => [
-            'driver' => 'mysql',
-            'host' => env('DB_HOST', '127.0.0.1'),
-            'port' => env('DB_PORT', '3306'),
-            'database' => env('DB_DATABASE', 'forge'),
-            'username' => env('DB_USERNAME', 'forge'),
-            'password' => env('DB_PASSWORD', ''),
-            'charset' => 'utf8mb4',
-            'collation' => 'utf8mb4_unicode_ci',
-            'prefix' => '',
-            'strict' => true,
-            'engine' => null,
-        ],
-
-        'sqlite' => [
-            'driver' => 'sqlite',
-            'database' => env('DB_DATABASE', database_path('database.sqlite')),
-            'prefix' => '',
-        ],
-
-        // Add other database connections here
-    ],
-];
-```
-
-To use a specific database connection in your model, you can set the `$connection` property:
-
-```php
-<?php
-use Clicalmani\Database\Factory\Models\Elegant;
-
-class User extends Elegant
-{
-    protected $table = "users";
-    protected $connection = "mysql"; // Specify the connection name
-
-    // Other model properties and methods
-}
-```
-
-You can also switch the database connection dynamically at runtime:
-
-```php
-User::on('sqlite')->get();
-```
-
-When you already holding a model instance and still want to switch the connection, you can call the `setConnection` method:
-
-```php
-$user = new User;
-$user->setConnection('sqlite');
-```
-
-## Default Attribute Values
-
-**Elegant ORM** allows you to define default values for your model attributes. This can be useful when you want to ensure that certain fields always have a specific value when a new model instance is created.
-
-To define default attribute values, you can use the `$attributes` property in your model class. This property should be an associative array where the keys are the attribute names and the values are the default values.
-
-Here is an example of how to define default attribute values in a model class:
-
-```php
-<?php
-use Clicalmani\Database\Factory\Models\Elegant;
-
-class User extends Elegant
-{
-    protected $table = "users";
-
-    /**
-     * The model's default values for attributes.
-     *
-     * @var array
-     */
-    protected $attributes = [
-        'status' => 'active',
-        'role' => 'user',
-    ];
-
-    public function __construct($id = null)
-    {
-        parent::__construct($id);
-    }
-}
-```
-
-In this example, the `status` attribute will default to `active` and the `role` attribute will default to `user` when a new `User` model instance is created.
-
-You can override these default values by explicitly setting the attribute values when creating a new model instance:
-
-```php
-$user = new User;
-$user->status = 'inactive';
-$user->role = 'admin';
-```
-
-> If those attributes are not explicitly specified when inserting a new record, default values will be used.
-
-## Refreshing Models
-
-**Elegant ORM** provides a convenient way to refresh model instances with the latest data from the database. This can be useful when you want to ensure that your model instance reflects the most current state of the corresponding database record.
-
-To refresh a model instance, you can use the `refresh` method. This method will reload the model's attributes from the database, discarding any changes that have not been saved.
-
-Here is an example of how to use the `refresh` method:
-
-```php
-$user = User::find(1);
-
-// Make some changes to the model
-$user->name = 'New Name';
-
-// Refresh the model instance with the latest data from the database
-$user->refresh();
-```
-
-After calling the `refresh` method, the `$user` instance will be updated with the latest data from the database, and any unsaved changes will be discarded.
-
-This feature is particularly useful in scenarios where multiple processes or users may be updating the same database records concurrently, ensuring that your model instances always reflect the most current state of the data.
-
-## The `fetch` Method
-
-The `fetch` method in **Elegant ORM** allows you to retrieve records from the database as the model objects. This method is useful when you are planning to use some model properties or method on each record. The fetch method returns a [collection](collection.md) to allows you to easily manage the records.
-
-Here is an example of how to use the `fetch` method:
-
-```php
-use App\Models\User;
-
-$admin_users = User::where()
-                ->fetch()
-                ->filter(fn(User $user) => $user->isAdmin());
-```
-
-You can pass a model class to the `fetch` method when using joins:
-
-```php
-$user = User::where('status = ?', ['active'])
-            ->joinLeft(Order::class)
-            ->fetch(Order::class)
-            ->filter(fn(Order $order) => $order->shipped());
-```
-
-This query retrieves the orders of all active users. By default if none is specified the users will be returned.
-
-## The `swap` Method
-
-It retrieves the request parameters and treat them as the underlying table attributes. However, the parameters will be sanitize to eliminate any uncertainty before being checked in the table. Ultimately, the swap() method is the safest way to insert or modify table data from query parameters. This would reduce a few keyboard strokes altogether.
-
-Let's take an exemple of a user registration form submission.
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <h1>User Registration Form</h1>
-    <form action="/register" method="post">
-        <label for="given_name">Given name:</label>
-        <p><input type="text" name="given_name" placeholder="Given name"/>
-        <label for="family_name">Family name:</label>
-        <p><input type="text" name="family_name" placeholder="Family name"/>
-        <label for="email">Email:</label>
-        <p><input type="email" name="email" placeholder="Email address"/>
-        <label for="phone">Phone:</label>
-        <p><input type="tel" name="phone" placeholder="Phone number"/>
-        <p><input type="submit" value="Create User"/></p>
-    </form>
-</body>
-</html>
-```
-
-```php
-<?php
-# UserController.php
-
-public function store(Post $post)
-{
-    $post->swap();
-    $post->save();
-}
-?>
-```
-
-The call to the `swap()` method will retrieve the form parameters and create a new record in the underlying post table with those parameters as table attributs. Therefore we are not required to use the exact attributs names as form fields. To do this we must use `swap()` in conjonction with a custom [request](request.md) as the second argument of the store method.
-
-```php
-<?php
-# UserController.php
-
-public function store(Post $post, StoreUserRequest $request)
-{
-    $post->swap();
-    $post->save();
-}
-?>
-```
-
-After calling the `save` method, all the values will be saved to the database.
-
-This method simplifies the process of specifing the attribute values when creating or updating a record.
-
-> The `swap` method is safe, as it sanitize the request parameters before checking them against the table. Each parameter value can be validated with attribute validator specified on the method.
-
-## The `filter` Method
-
-The `filter()` method works in the same manner as `swap()` method by reading request parameters. But this time, parameters are used to filter the query result. Let's say we want to retrieve posts published by a given user by making a request on a [route](routing.md) like `/post?user_id=1` which use `PostController@index()` action:
-
-Here is an example of how to use the `filter` method:
-
-```php
-<?php
-
-namespace App\Http\Controllers;
-
-use Clicalmani\Foundation\Support\Facades\Response;
-use App\Models\User;
-
-class UserController extends Controller
-{
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Clicalmani\Foundation\Http\Response\JsonResponseInterface
-     */
-    public function index()
-    {
-        return Response::json(
-            User::filter()
-        );
-    }
-}
-```
-
-The call to `filter()` method will retrieve the `user_id` parameter and make a SQL statement using this user as its condition. Therefore parameters will be sanitize and check against post table attributs.
-
-The `filter()` method accepts two (2) optional parameters. The first parameter is an array that indicates the list of query parameters to exclude. The second parameter is a table which contains options for the SQL statement which will be generated following this query:
-
-```
-- order_by allows you to order the result of the SQL command
-- limit allows you to limit the size of the result
-- offset indicates the index where to start reading
-```
-
-```php
-<?php
-
-namespace App\Http\Controllers;
-
-use Clicalmani\Foundation\Http\Response;
-use App\Models\User;
-
-class UserController extends Controller
-{
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Clicalmani\Foundation\Http\Response\JsonResponseInterface
-     */
-    public function index()
-    {
-        return response()->json(
-            User::filter(['password'], [
-                'order_by' => 'name',
-                'offset' => 0,
-                'limit' => 10
-            ])
-        );
-    }
-}
-```
-
-> As is the case for the `swap()` method, the parameters can be subprocessed by a custom [request](request.md) before being passed to the `filter()` method.
-
-## Retrieving a Single Model
-
-The `find()` method takes a single parameter which is the primary key and returns the record corresponding to that key. It accepts a string when dealing with a single key and a non-association array when dealing with a composit key. `NULL` (empty object) will be returned when no record is associated to the specified key.
-
-```php
-<?php
-$post = Post::find(1);
-print $post->post_title; // Get post title
-$post->publish_date = now(); // Set publish date
-?>
-```
-
-> Technically speaking, in the absence of a record, `find()` returns an empty record which will be considered as `NULL`.
-
-You can also use the `first` method to retrieve the first record that matches a given query:
-
-```php
-$user = User::where('email = ?', ['example@example.com'])->first();
-```
-
-If no record is found, the `first` method returns an explicit `null`.
-
-Both `find` and `first` methods allow you to quickly retrieve single model instances based on specific criteria.
-
-## Handling Missing Models
-
-Sometimes you may wish to perform some other action if no results are found. The `findOr` and `firstOr` methods will return a single model instance or, if no results are found, execute the given closure. The value returned by the closure will be considered the result of the method:
-
-```php
-$user = User::findOr(1, function () {
-    $user = new User;
-    $user->email = 'exemple@example.com';
-    // ...
-    $user->save();
-    return $user;
-});
-```
-
-In this example, if no user with the primary key value of `1` is found, a new `User` instance with the email `example@example.com` will be returned.
-
-Similarly, you can use the `firstOr` method to handle missing models when querying based on specific criteria:
-
-```php
-$user = User::where('email = ?', ['example@example.com'])->firstOr(function () {
-    $user = new User;
-    $user->email = 'example@example.com';
-    // ...
-    $user->save();
-    return $user;
-});
-```
-
-If no user with the specified email is found, a new `User` instance will be returned.
-
-## Not Found Exceptions
-
-**Elegant ORM** provides a way to handle cases where a model is not found by throwing exceptions. This can be useful when you want to ensure that your application handles missing records gracefully.
-
-To throw an exception when a model is not found, you can use the `findOrFail` and `firstOrFail` methods. These methods will retrieve a model instance or throw a `ModelNotFoundException` if no record is found.
-
-Here is an example of how to use the `findOrFail` method:
-
-```php
-use Clicalmani\Foundation\Exceptions\ModelNotFoundException;
-
-try {
-    $user = User::findOrFail(1);
-} catch (ModelNotFoundException $e) {
-    // Handle the exception, e.g., return a 404 response
-    echo 'User not found';
-}
-```
-
-In this example, if no user with the primary key value of `1` is found, a `ModelNotFoundException` will be thrown, and you can handle the exception accordingly.
-
-Similarly, you can use the `firstOrFail` method to throw an exception when querying based on specific criteria:
-
-```php
-use Clicalmani\Foundation\Exceptions\ModelNotFoundException;
-
-try {
-    $user = User::where('email = ?', ['example@example.com'])->firstOrFail();
-} catch (ModelNotFoundException $e) {
-    // Handle the exception, e.g., return a 404 response
-    echo 'User not found';
-}
-```
-
-## Retrieving Aggregates
-
-**Elegant ORM** provides several methods to retrieve aggregate values from your database, such as `count`, `max`, `min`, `avg`, and `sum`. These methods allow you to perform calculations on your data without retrieving all the records.
-
-### Count
-
-The `count` method returns the total number of records that match a given query:
-
-```php
-$activeUserCount = User::where('status = ?', ['active'])->count();
-```
-
-### Max
-
-The `max` method returns the maximum value of a given column:
-
-```php
-$maxAge = User::where('status = ?', ['active'])->max('age');
-```
-
-### Min
-
-The `min` method returns the minimum value of a given column:
-
-```php
-$minAge = User::where('status = ?', ['active'])->min('age');
-```
-
-### Avg
-
-The `avg` method returns the average value of a given column:
-
-```php
-$averageAge = User::where('status = ?', ['active'])->avg('age');
-```
-
-### Sum
-
-The `sum` method returns the sum of a given column:
-
-```php
-$totalPoints = User::where('status = ?', ['active'])->sum('points');
-```
-
-These aggregate methods provide a convenient way to perform calculations on your data without having to retrieve and process all the records manually.
-
-## Inserting and Updating Models
-
-**Elegant ORM** makes it easy to insert new records into the database and update existing ones. You can use the `save` method to persist model instances to the database.
-
-### Inserting Models
-
-To insert a new record into the database, you can create a new instance of the model, set its attributes, and call the `save` method:
-
-```php
-$user = new User;
-$user->name = 'John Doe';
-$user->email = 'john.doe@example.com';
-$user->save();
-```
-
-This will insert a new record into the `users` table with the specified attributes.
-
-### Updating Models
-
-To update an existing record, you can retrieve the model instance, modify its attributes, and call the `save` method:
-
-```php
-$user = User::find(1);
-$user->name = 'Jane Doe';
-$user->save();
-```
-
-This will update the `name` attribute of the user with the primary key value of `1`.
-
-### Mass Assignment
-
-**Elegant ORM** also supports mass assignment, allowing you to set multiple attributes at once using an associative array:
-
-```php
-$user = new User;
-$user->fill([
-    'name' => 'John Doe',
-    'email' => 'john.doe@example.com',
-]);
-$user->save();
-```
-
-Alternatively, you may use the `create` method to "save" a new model using a single PHP statement. The inserted model instance will be returned to you by the create method:
-
-```php
-use App\Models\User;
- 
-$user = User::create([
-    'name' => 'John Doe',
-]);
-```
-
-You can also use mass assignment when updating an existing model:
-
-```php
-$user = User::find(1);
-$user->fill([
-    'name' => 'Jane Doe',
-    'email' => 'jane.doe@example.com',
-]);
-$user->save();
-```
-
-### Guarding Attributes
-
-To protect against mass assignment vulnerabilities, you can define a `$guarded` property in your model class. This property should be an array of attribute names that you do not want to be mass assignable.
-
-Here is an example of how to define guarded attributes in a model class:
-
-```php
-<?php
-use Clicalmani\Database\Factory\Models\Elegant;
-
-class User extends Elegant
-{
-    protected $table = "users";
-
-    /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array
-     */
-    protected $guarded = ['password', 'is_admin'];
-
-    public function __construct($id = null)
-    {
-        parent::__construct($id);
-    }
-}
-```
-
-In this example, the `password` and `is_admin` attributes are guarded and cannot be mass assigned.
-
-### Fillable Attributes
-
-Alternatively, you can define a `$fillable` property to specify which attributes should be mass assignable. This property should be an array of attribute names that you want to allow for mass assignment.
-
-Here is an example of how to define fillable attributes in a model class:
-
-```php
-<?php
-use Clicalmani\Database\Factory\Models\Elegant;
-
-class User extends Elegant
-{
-    protected $table = "users";
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = ['name', 'email'];
-
-    public function __construct($id = null)
-    {
-        parent::__construct($id);
-    }
-}
-```
-
-In this example, only the `name` and `email` attributes are mass assignable.
-
-By using the `$guarded` or `$fillable` properties, you can control which attributes can be mass assigned, helping to prevent mass assignment vulnerabilities in your application.
-
-### Bulk Updates
-
-To update multiple records at once, you can use the `update` method with a query:
-
-```php
-User::where('status', 'inactive')->update(['status' => 'active']);
-```
-
-This will update the `status` attribute of all inactive users to `active`.
-
-### Deleting Models
-
-#### Deleting a Single Instance
-
-To delete a model instance from the database, you can use the `delete` method:
-
-```php
-$user = User::find(1);
-$user->delete();
-```
-
-#### Deleting Multiple Instance
-
-You can also delete multiple records using a query:
-
-```php
-User::where('status = ?', ['inactive'])->forceDelete();
-```
-
-You can truncate the model table by calling the destroy method:
-
-```php
-User::Destroy();
-```
-
-!> The `forceDelete` and the `Destroy` methods do not trigger any model event and will also delete soft deleted records.
-
-#### Soft Deleting Models
-
-In addition to actually removing records from your database, **Elegant ORM** can also "soft delete" models. When models are soft deleted, they are not actually removed from your database. Instead, a `deleted_at` attribute is set on the model indicating the date and time at which the model was "deleted". To enable soft deletes for a model, add the `SoftDelete` trait to the model:
-
-##### Enabling Soft Deletes
-
-To enable soft deletes for a model, use the `SoftDelete` trait in your model and add a `deleted_at` column to your table:
-
-```php
-<?php
-
-namespace App\Models;
-
-use Clicalmani\Foundation\Database\Eloquent\Model;
-use Clicalmani\Database\Traits\SoftDelete;
-
-class User extends Elegant
-{
-    use SoftDelete;
-
-    /**
-     * Date attributes
-     * 
-     * @var string[]
-     */
-    protected $dates = ['deleted_at'];
-}
-```
-
-Next, add the `deleted_at` column to your table by implementing the `alter` method in `UserEntity`:
-
-```php
-use Clicalmani\Database\Factory\Entity;
-use Clicalmani\Database\Factory\AlterOption;
-
-#[AlterOption] // Notice here AlterOption attribute!
-class UserEntity extends Entity
-{
-    public function alter(AlterOption $table) : string
-    {
-        $table->addColumn('deleted_at')->dateTime()->nullable()->after('email');
-        return $table->render();
-    }
-}
-```
-
-After defining the `UserEntity` class with the `alter` method, you need to run the migration to apply the changes to your database. You can do this by running the `migrate:entity` console command:
+### Création d'un Modèle
 
 ```bash
-php tonka migrate:entity User
+php tonka make:model User users id
 ```
 
-This command will execute the migration and add the `deleted_at` column to the `users` table, enabling soft deletes for the `User` model.
+Vous pouvez aussi créer un modèle avec son [entité](entities.md) en même temps :
 
-##### Querying Soft Deleted Models
-
-When querying a model that uses soft deletes, the `deleted_at` column will be automatically checked to exclude soft deleted models. To include soft deleted models in your query, use the `withTrashed` method:
-
-```php
-$users = User::withTrashed()->get();
+```bash
+php tonka make:entity User users id
 ```
 
-To only retrieve soft deleted models, use the `onlyTrashed` method:
+### Propriétés
 
 ```php
-$trashedUsers = User::onlyTrashed()->get();
-```
-
-##### Restoring Soft Deleted Models
-
-To restore a soft deleted model, use the `restore` method:
-
-```php
-$user = User::withTrashed()->fetch()
-            ->each(fn(User $user) => $user->restore());
-```
-
-##### Permanently Deleting Models
-
-To permanently delete a soft deleted model, use the `forceDelete` method:
-
-```php
-$user = User::withTrashed()->find($id);
-$user->forceDelete();
-```
-
-By using the `SoftDelete` trait, you can easily manage soft deleted models and customize their behavior in your application.
-
-## Examining Model State
-
-**Elegant ORM** provides several methods to examine the internal state of your model and determine how its attributes have changed from when the model was originally retrieved. These methods are `isDirty`, `isClean`, and `wasChanged`.
-
-### `isDirty` Method
-
-The `isDirty` method checks if any attributes have been changed since the model was retrieved or last saved. It returns `true` if any attributes have been modified, otherwise `false`.
-
-Here is an example of how to use the `isDirty` method:
-
-```php
-$user = User::find(1);
-$user->name = 'New Name';
-
-if ($user->isDirty()) {
-    echo 'The user model has been modified.';
-}
-```
-
-You can also check if specific attributes have been changed by passing the attribute names as arguments:
-
-```php
-if ($user->isDirty('name')) {
-    echo 'The name attribute has been modified.';
-}
-```
-
-### `isClean` Method
-
-The `isClean` method is the opposite of `isDirty`. It checks if no attributes have been changed since the model was retrieved or last saved. It returns `true` if no attributes have been modified, otherwise `false`.
-
-Here is an example of how to use the `isClean` method:
-
-```php
-$user = User::find(1);
-
-if ($user->isClean()) {
-    echo 'The user model has not been modified.';
-}
-```
-
-You can also check if specific attributes have not been changed by passing the attribute names as arguments:
-
-```php
-if ($user->isClean('name')) {
-    echo 'The name attribute has not been modified.';
-}
-```
-
-### `wasChanged` Method
-
-The `wasChanged` method checks if any attributes were changed when the model was last saved. It returns `true` if any attributes were modified, otherwise `false`.
-
-Here is an example of how to use the `wasChanged` method:
-
-```php
-$user = User::find(1);
-$user->name = 'New Name';
-$user->save();
-
-if ($user->wasChanged()) {
-    echo 'The user model was modified when it was last saved.';
-}
-```
-
-You can also check if specific attributes were changed by passing the attribute names as arguments:
-
-```php
-if ($user->wasChanged('name')) {
-    echo 'The name attribute was modified when the user was last saved.';
-}
-```
-
-These methods provide a convenient way to track changes to your model's attributes and ensure that your application logic can respond appropriately to those changes.
-
-The `getOriginal` method returns an array containing the original attributes of the model regardless of any changes to the model since it was retrieved. If needed, you may pass a specific attribute name to get the original value of a particular attribute:
-
-```php
-$user = User::find(1);
-$user->name = 'New Name';
-
-// Get all original attributes
-$originalAttributes = $user->getOriginal();
-
-// Get the original value of the 'name' attribute
-$originalName = $user->getOriginal('name');
-```
-
-In this example, the `$originalAttributes` variable will contain an array of the user's original attributes, and the `$originalName` variable will contain the original value of the `name` attribute before it was changed to 'New Name'.
-
-## Mass Assignment Exceptions
-
-By default, attributes that are not included in the `$fillable` array are silently discarded when performing mass-assignment operations. In production, this is expected behavior; however, during local development it can lead to confusion as to why model changes are not taking effect.
-
-If you wish, you may instruct **Tonka** to throw an exception when attempting to fill an unfillable attribute by invoking the `preventSilentlyDiscardingAttributes` method. Typically, this method should be invoked in the boot method of your application's AppServiceProvider class:
-.
-```php
-use Clicalmani\Database\Exceptions\MassAssignmentException;
-use Clicalmani\Database\Factory\Models\Elegant;
-
-class AppServiceProvider extends ServiceProvider
-{
-    public function boot()
-    {
-        Model::preventSilentlyDiscardingAttributes();
-    }
-}
-```
-
-When a mass assignment attempt is made with attributes that are not specified in the `$fillable` property or are listed in the `$guarded` property, a `MassAssignmentException` will be thrown.
-
-Here is an example of how to handle mass assignment exceptions:
-
-```php
-use Clicalmani\Foundation\Exceptions\MassAssignmentException;
-
-try {
-    $user = new User;
-    $user->fill([
-        'name' => 'John Doe',
-        'email' => 'john.doe@example.com',
-        'password' => 'secret', // Assuming 'password' is guarded
-    ]);
-    $user->save();
-} catch (MassAssignmentException $e) {
-    // Handle the exception, e.g., log the error or return a response
-    echo 'Mass assignment error: ' . $e->getMessage();
-}
-```
-
-In this example, if the `password` attribute is guarded, a `MassAssignmentException` will be thrown, and you can handle the exception accordingly.
-
-## Events
-
-**Elegant ORM** provides a powerful event system that allows you to hook into various points in the model's lifecycle. This can be useful for performing actions when certain events occur, such as creating, updating, or deleting a model.
-
-### Registering Events
-
-To register an event listener, you can implement the `booted` method on your model.
-
-Here is an example of how to register an event listener for the `creating` event:
-
-```php
-<?php 
 namespace App\Models;
 
-use Clicalmani\Database\Factory\Models\Elegant;
+use Clicalmani\Core\Acme\Model as Elegant;
 
 class User extends Elegant
 {
-    /**
-     * Model database table 
-     *
-     * @var string $table Table name
-     */
-    protected $table = "users";
+    // Table et alias
+    protected string $table = "users u";
 
-    protected function booted(): void
-    {
-        $this->creating(function(User $user) {
-            // The logic of your code
-        });
-    }
-}
-```
+    // Entité associée
+    protected string $entity = \Database\Entities\UserEntity::class;
 
-### Available Events
+    // Clé primaire (peut être un tableau pour une clé composite)
+    protected string|array $primaryKey = "u.id";
 
-**Elegant ORM** provides several events that you can listen for:
+    // Attributs assignables en masse
+    protected $fillable = [
+        'name', 'email', 'password', 'role', 'is_active'
+    ];
 
-- `retrieved`: Triggered after a model is retrieved from the database.
-- `creating`: Triggered before a model is created.
-- `created`: Triggered after a model is created.
-- `updating`: Triggered before a model is updated.
-- `updated`: Triggered after a model is updated.
-- `saving`: Triggered before a model is saved (either creating or updating).
-- `saved`: Triggered after a model is saved (either creating or updating).
-- `deleting`: Triggered before a model is deleted.
-- `deleted`: Triggered after a model is deleted.
-- `restoring`: Triggered before a soft-deleted model is restored.
-- `restored`: Triggered after a soft-deleted model is restored.
+    // Attributs protégés contre l'assignation en masse
+    protected $guarded = ['id', 'created_at', 'updated_at'];
 
-### Example: Logging Model Events
+    // Attributs masqués lors de la sérialisation
+    protected $hidden = [
+        'password',
+        'remember_token',
+        'deleted_at'
+    ];
 
-Here is an example of how to log model events using the `booted` method:
+    // Auto-Cast
+    protected bool $autoCast = true;
 
-```php
-<?php 
-namespace App\Models;
+    // Attributs à récupérer avec un préfixe
+    protected $asFresh = [
+        'birthdate'
+    ];
 
-use Clicalmani\Database\Factory\Models\Elegant;
-use Clicalmani\Foundation\Support\Facades\Log;
+    // Préfixe à utiliser
+    protected string $asFreshPrefix = 'fresh_';
 
-class User extends Elegant
-{
-    /**
-     * Model database table 
-     *
-     * @var string $table Table name
-     */
-    protected $table = "users";
+    // Relations à charger par défaut
+    protected $with = ['profile'];
 
-    protected function booted(): void
-    {
-        $this->creating(function(User $user) {
-            Log::info('Creating user: ' . $user->email);
-        });
-
-        $this->updating(function(User $user) {
-            Log::info('Updating user: ' . $user->email);
-        });
-
-        $this->deleting(function(User $user) {
-            Log::info('Deleting user: ' . $user->email);
-        });
-    }
-}
-```
-
-### Custom Events
-
-In addition to the built-in events, you can also define custom events for your models. To define a custom event, use the `make:model-event` console command:
-
-```sh
-php tonka make:model-event-listener ActivateUser
-```
-
-After running this command a file `ActivateUser.php` will be created in the `app/Events` directory.
-
-```php
-<?php
-namespace App\Events;
-
-use Clicalmani\Database\Factory\Models\Events\Event;
-use Clicalmani\Database\Events\EventListener;
-
-class ActivateUser extends EventListener
-{
-    /**
-     * Handle event
-     * 
-     * @param mixed $data Event data
-     * @return void
-     */
-    public function handle(mixed $data) : void
-    {
-        /** @var \App\Models\User */
-        $user = $this->target;
-
-        $user->status = $status;
-        $user->save();
-
-        // Fire another custom event
-        $user->emit('activated');
-    }
-}
-```
-
-### Dispatching Custom Events
-
-To handle custom events, you may specify a `$dispatchesEvents` property on your model. This property maps event listener classes.
-
-Here is how you can dispatch the `ActivateUser` event from the `User` model:
-
-```php
-<?php
-
-namespace App\Models;
-
-use Clicalmani\Database\Factory\Models\Elegant;
-
-class User extends Elegant
-{
-    /**
-     * The event map for the model.
-     *
-     * @var array
-     */
-    protected $dispatchesEvents = [
-        \App\Events\ActivateUser::class,
+    // Observers
+    protected $observers = [
+        \App\Observers\UserObserver::class
     ];
 }
 ```
 
-With this configuration, when you call `$user->emit('activated')`, the `ActivateUser` event listener will be triggered for the `User` instance.
-
-## Event Observers
-
-Observers are classes that group event handling logic for a model, making it easier to manage and maintain.
-
-### Creating an Observer
-
-To create an observer, define a class with methods corresponding to the events you want to handle. Each method should accept the model instance as its parameter.
-
-Here is an example of a `UserObserver` class:
+### Attributs Personnalisés
 
 ```php
-<?php
+// database/entities/UserEntity.php
+namespace Database\Entities;
 
-namespace App\Observers;
+use Clicalmani\Database\Factory\Entity;
 
-use App\Models\User;
-use Clicalmani\Database\Events\EventObserver;
-
-class UserObserver extends EventObserver
-{
-    public function creating(User $user)
-    {
-        // Perform some action before creating the user
-        $user->created_at = now();
+class UserEntity extends Entity
+{ 
+    // Accesseur pour full_name
+    public string $full_name {
+        get => $this->model->first_name . ' ' . $this->model->last_name;
     }
 
-    public function updating(User $user)
+    // Accesseur pour avatar_url
+    public string $avatar_url
     {
-        // Perform some action before updating the user
-        $user->updated_at = now();
+        get {
+            return $this->avatar 
+                ? assets('storage/' . $this->avatar) 
+                : assets('images/default-avatar.png');
+        }
     }
 
-    public function deleting(User $user)
-    {
-        // Perform some action before deleting the user
-        Log::info('Deleting user: ' . $user->email);
+    // Accesseur pour role_label
+    public string $role_label {
+        get {
+            $roles = [
+                'admin' => 'Administrateur',
+                'user' => 'Utilisateur',
+                'moderator' => 'Modérateur'
+            ];
+            return $roles[$this->role] ?? $this->role;
+        }
     }
 }
 ```
 
-### Registering an Observer
+---
 
-To register an observer, `$observers` property must be defined in the model class:
+## Requêtes
 
-```php
-<?php
-
-namespace App\Models\User;
-
-use Clicalmani\Database\Factory\Models\Elegant;
-
-class User extends Elegant
-{
-    protected $observers = [
-        \App\Observers\UserObserver::class
-    ]
-}
-```
-
-By using observers, you can keep your event handling logic organized and maintainable, making it easier to manage complex event-driven behavior in your application.
-
-### Observers and Database Transactions
-
-When working with observers and database transactions, it's important to ensure that your event handling logic is consistent and reliable. **Elegant ORM** provides a way to handle model events within the context of a database transaction, ensuring that your events are only triggered if the transaction is successful.
-
-Here is an example of how to use observers with database transactions:
+### Récupération de Données
 
 ```php
-use Clicalmani\Foundation\Support\Facades\DB;
-use App\Models\User;
+// Tous les enregistrements
+$users = User::all();
 
-DB::transaction(function () {
-    $user = new User;
-    $user->name = 'John Doe';
-    $user->email = 'john.doe@example.com';
-    $user->save();
+// Avec pagination
+$users = User::paginate(1, 10);
+
+// Récupération avec conditions
+$users = User::where('active = ?', [1])->get();
+
+// Premier enregistrement
+$user = User::where('email = ?', ['john@example.com'])->first();
+
+// Trouver par ID
+$user = User::find(1);
+$user = User::findOrFail(1);
+
+// Trouver plusieurs IDs
+$users = User::findMany([1, 2, 3]);
+
+// Récupération de colonnes spécifiques
+$users = User::select('id, name, email')->get();
+
+// Pluck (une colonne)
+$emails = User::pluck('email', 'id');
+
+// Valeur unique
+$name = User::where('id = ?', [1])->value('name');
+
+// Chunking
+User::chunk(100, function($users) {
+    foreach ($users as $user) {
+        // Traitement par lots
+    }
+});
+
+// Chunking par ID
+User::chunkById(100, function($users) {
+    foreach ($users as $user) {
+        // Traitement par lots
+    }
+});
+
+// Streaming lazy
+User::lazy()->each(function($user) {
+    // Traitement en flux
 });
 ```
 
-In this example, the `creating` and `created` events will only be triggered if the transaction is successful. If the transaction fails, the events will not be triggered, ensuring that your event handling logic remains consistent.
-
-## Muting Events
-
-Sometimes you would like to temporarily mute one or more model events, which can be useful when you need to perform operations without triggering event listeners. This can be achieved using the `muteEvents` method.
-
-Here is an example of how to mute events while creating a new user:
+### Filtrage
 
 ```php
-use App\Models\User;
+// Conditions simples
+$users = User::where('active = ?', [1])
+    ->where('role = ?', ['admin'])
+    ->get();
 
-$user = new User;
-$user->muteEvents(['creating'])
-    ->fill([
-        'name' => 'John Doe',
-        'email' => 'john.doe@example.com'
-    ]);
-$user->save();
+// Or Where
+$users = User::where('role = ?', ['admin'])
+    ->orWhere('role = ?', ['moderator'])
+    ->get();
+
+// Where In
+$users = User::whereIn('role', ['admin', 'moderator'])->get();
+
+// Where Not In
+$users = User::whereNotIn('role', ['guest'])->get();
+
+// Where Null
+$users = User::whereNull('deleted_at')->get();
+
+// Where Not Null
+$users = User::whereNotNull('deleted_at')->get();
+
+// Where Exists
+$users = User::whereExists(function($query) {
+    $query->from('posts')
+          ->where('posts.user_id = users.id');
+})->get();
+
+// Where Has (relation)
+$users = User::whereHas('posts', function($query) {
+    $query->where('published', true);
+})->get();
+
+// Where Doesnt Have
+$users = User::whereDoesntHave('posts')->get();
+
+// Or Where Has
+$users = User::orWhereHas('posts', function($query) {
+    $query->where('published', true);
+})->get();
 ```
 
-In this example, the `creating` event will not be triggered, but `created`, `saving` and `saved` will.
-
-## Saving a Single Model Without Events
-
-**Elegant ORM** allows you to save a single model instance without triggering any events. This can be useful when you need to perform operations without invoking event listeners.
-
-To save a model without triggering events, you can use the `saveQuietly` method:
+### Pagination
 
 ```php
-$user = User::find(1);
-$user->name = 'Jane Doe';
-$user->saveQuietly();
+// Pagination simple
+$users = User::paginate(1, 10);
+
+// Pagination sans calcul du total (plus performante sur de grandes tables)
+$users = User::simplePaginate(1, 10);
+
+// Pagination avec conditions
+$users = User::where('active = ?', [1])
+    ->paginate(1, 10);
 ```
 
-In this example, the `saving` and `saved` events will not be triggered when the user is saved.
-
-## Relationships
-
-Database tables are often related to one another. For example, a blog post may have many comments or an order could be related to the user who placed it. **Elegant ORM** makes managing and working with these relationships easy, and supports a variety of common relationships:
-
-- [**One-to-One**](#one-to-one): A single model is associated with one other model.
-- [**One-to-Many**](#one-to-many): A single model is associated with multiple models.
-- [**Many-to-Many**](#many-to-many): Multiple models are associated with multiple other models.
-- [**Has One-through**](#has-one-through): This relationship indicates that a model is related to another model through a third model. It is typically used to define a one-to-one relationship that is connected via an intermediary model.
-- [**Has-Many-Through**](#has-many-through): This relationship type is used to define a many-to-many relationship that is accessed through an intermediate model. It is useful when you need to work with a relationship that involves three models. For example, if you have a `User` model, a `Role` model, and a `Permission` model, and you want to define a relationship where users have many permissions through roles, you would use a "Has-Many-Through" relationship.
-- [**One-to-One (Polymorphic)**](#one-to-one-polymorphic-): This type of relationship allows an entity to belong to more than one other entity on a single association. For example, a `Photo` model might belong to either a `User` model or an `Article` model. This is useful when you have a single model that can be associated with multiple other models in a one-to-one relationship.
-- [**One-to-Many (Polymorphic)**](#one-to-many-polymorphic-): This relationship type allows a single model to be associated with multiple models. For example, a comment model can belong to both a post model and a video model. This is useful when you want to reuse the same relationship logic for different models.
-- [**Many-to-Many (Polymorphic)**](#many-to-many-polymorphic-): In a many-to-many polymorphic relationship, a model can belong to more than one type of model on a single association. This is useful for scenarios where a model needs to be associated with multiple other models using a single relationship.
-
-## Key Conventions
-
-**Tonka** enforces and uses certain conventions for database consistency. It is important to adhere to these conventions to ensure that relationships and key management are handled automatically.
-
-### 1. Primary Keys
-
-The primary keys of the tables are named id.
-
-*   **Rule :**
-    *   The name of the primary key column must be `id`.
-    *   Prioritize primary keys of integer type (`int`).
-    *   If your primary key is not `id`, you will need to explicitly declare it in the model with `protected $primaryKey = 'your_id';`.
-
-### 2. Foreign Keys
-
-To establish a relationship, foreign keys must follow this naming rule, which is crucial for **Tonka** to automatically deduce the nature of the relationship:
-
-*   **Format :** `{parent_table_name_singular}_{id}`.
-*   **Eg,** If a `posts` table depends on the `users` table, the foreign key in the `posts` table must be named `user_id`.
-
-The relationship in the Post model is established as:
+### Agrégations
 
 ```php
-public function user()
-{
-    return $this->belongsTo(User::class);
-}
+// Compter
+$count = User::count();
+$count = User::where('active = ?', [1])->count();
+
+// Somme
+$total = Order::sum('amount');
+
+// Moyenne
+$average = Order::avg('amount');
+
+// Minimum
+$min = Product::min('price');
+
+// Maximum
+$max = Product::max('price');
 ```
 
-!> The name must be in the **singular** (`user_id` and not `users_id`) because the relationship is a single entity.
+---
 
-### 3. Singularization
+## Relations
 
-Tonka has internal logic that allows determining the singular form of the table name.
+Les tables d'une base de données sont rarement isolées : un article de blog possède plusieurs commentaires, une commande est liée à l'utilisateur qui l'a passée. **Elegant ORM** rend la gestion de ces relations simple et expressive, avec un support natif des cas les plus courants :
 
-*   If your table is named `posts`, **Tonka** will automatically deduce its singular form `post`.
-*   This deduction is essential in relationships like `belongsTo` for example.
-*   If you do not follow this convention, you will have to specify the keys manually.
+- **BelongsTo** : un modèle appartient à un autre (l'inverse d'une relation `HasOne`/`HasMany`).
+- **HasOne** : un modèle est associé à exactement un autre modèle.
+- **HasMany** : un modèle est associé à plusieurs autres modèles.
+- **BelongsToMany** : plusieurs modèles sont associés à plusieurs autres modèles, via une table pivot.
+- **HasOneThrough** : un modèle est lié à un autre via un modèle intermédiaire, dans une relation à un seul enregistrement.
+- **HasManyThrough** : variante à plusieurs enregistrements de la relation précédente — utile lorsqu'une relation implique trois modèles (par exemple, un `Country` a plusieurs `Post` via ses `User`).
+- **MorphOne / MorphMany / MorphTo** : relations polymorphiques, où un modèle peut appartenir à plusieurs types de modèles différents via une seule association (par exemple, une `Photo` peut appartenir à un `User` ou à un `Article`).
+- **MorphToMany** : variante many-to-many des relations polymorphiques.
 
-Then, The relationship in the Post model must be established as:
+> **Pour les développeurs Laravel :** ces noms de méthodes (`belongsTo`, `hasMany`, `morphToMany`...) sont directement repris d'Eloquent — vos réflexes s'appliquent presque intégralement ici.
 
-```php
-public function user()
-{
-    return $this->belongsTo(User::class, 'my_id', 'user_id');
-}
-```
+### BelongsTo (Appartient à)
 
-## Defining Relationships
-
-**Elegant ORM** relationships are defined as methods on your model classes. Since relationships also serve as powerful query builders, defining relationships as methods provides powerful method chaining and querying capabilities. For example, we may chain additional query constraints on this posts relationship:
+`belongsTo` définit le côté « inverse » d'une relation `HasOne` ou `HasMany` : le modèle courant porte la clé étrangère et appartient à l'autre modèle.
 
 ```php
-$user = User::find(1);
-$posts = $user->posts()->where('published = ?', [true])->get();
-```
-
-### One-to-One
-
-A one-to-one relationship is used to define a single association between two models. For example, a `User` model might be associated with a `Profile` model.
-
-### Example
-
-Here is an example of how to define a one-to-one relationship in **Elegant ORM**:
-
-```php
-<?php
-
 namespace App\Models;
 
-use Clicalmani\Database\Factory\Models\Elegant;
-
-class User extends Elegant
-{
-    public function profile()
-    {
-        return $this->hasOne(Profile::class);
-    }
-}
-```
-
-> **Elegant ORM** uses a key logic that gives the table name the suffix `id` for foreign keys and `id` for parent keys. You can use custom key logic by passing the foreign key as the second argument of the `hasOne` method and parent key as the third argument. You may omit the parent key if it is the same as the foreign key.
-
-#### Database Schema
-
-To implement this relationship in your database, you would typically have a foreign key in the `Profile` table that references the `User` table:
-
-```php
-<?php
-namespace Database\Entities;
-
-use Clicalmani\Database\DataTypes\Integer;
-use Clicalmani\Database\DataTypes\VarChar;
-use Clicalmani\Database\Factory\Entity;
-use Clicalmani\Database\Factory\PrimaryKey;
-use Clicalmani\Database\Factory\Property;
-
-class UserEntity extends Entity
-{
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false,
-        autoIncrement: true
-    ), PrimaryKey]
-    public Integer $id;
-
-    #[Property(
-        length: 255,
-        nullable: false
-    )]
-    public VarChar $name;
-}
-```
-
-```php
-<?php
-namespace Database\Entities;
-
-use Clicalmani\Database\DataTypes\Integer;
-use Clicalmani\Database\DataTypes\Text;
-use Clicalmani\Database\Factory\Entity;
-use Clicalmani\Database\Factory\Index;
-use Clicalmani\Database\Factory\PrimaryKey;
-use Clicalmani\Database\Factory\Property;
-use Clicalmani\Database\Factory\Index;
-
-#[Index(
-    name: 'fk_profiles_users1_idx',
-    key: 'user_id',
-    constraint: 'fk_profiles_users1',
-    references: \App\Models\User::class
-)]
-class ProfileEntity extends Entity
-{
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false,
-        autoIncrement: true
-    ), PrimaryKey]
-    public Integer $id;
-
-    #[Property(
-        nullable: true
-    )]
-    public Text $bio;
-
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false
-    )]
-    public Integer $user_id;
-}
-```
-
-This schema ensures that each profile is linked to a specific user, enforcing the one-to-one relationship at the database level.
-
-#### Defining the Inverse of the Relationship
-
-You may need to define the inverse of the relationship, to do it you can use the `belongsTo` method:
-
-```php
-<?php
-
-namespace App\Models;
-
-use Clicalmani\Database\Factory\Models\Elegant;
+use Clicalmani\Core\Acme\Model as Elegant;
 
 class Profile extends Elegant
 {
@@ -1455,20 +355,26 @@ class Profile extends Elegant
 }
 ```
 
-### One-to-Many
-
-A one-to-many relationship is used to define a single model that is associated with multiple models. For example, a `Post` model might have many `Comment` models.
-
-#### Example
-
-Here is an example of how to define a one-to-many relationship in **Elegant ORM**:
-
 ```php
-<?php
-
 namespace App\Models;
 
-use Clicalmani\Database\Factory\Models\Elegant;
+use Clicalmani\Core\Acme\Model as Elegant;
+
+class Comment extends Elegant
+{
+    public function post()
+    {
+        return $this->belongsTo(Post::class);
+    }
+}
+```
+
+### HasMany (A plusieurs)
+
+```php
+namespace App\Models;
+
+use Clicalmani\Core\Acme\Model as Elegant;
 
 class Post extends Elegant
 {
@@ -1479,12 +385,9 @@ class Post extends Elegant
 }
 ```
 
-#### Database Schema
-
-To implement this relationship in your database, you would typically have a foreign key in the `Comment` table that references the `Post` table:
+#### Schéma de Base de Données
 
 ```php
-<?php
 namespace Database\Entities;
 
 use Clicalmani\Database\DataTypes\Integer;
@@ -1499,26 +402,21 @@ class PostEntity extends Entity
     #[Property(
         length: 10,
         unsigned: true,
-        nullable: true,
         autoIncrement: true
     ), PrimaryKey]
     public Integer $id;
 
     #[Property(
-        length: 255,
-        nullable: false
+        length: 255
     )]
     public VarChar $title;
 
-    #[Property(
-        length: 255,
-        nullable: false
-    )]
-    public Text $content;
+    #[Property]
+    public ?Text $content;
 }
 ```
+
 ```php
-<?php
 namespace Database\Entities;
 
 use Clicalmani\Database\DataTypes\Integer;
@@ -1533,269 +431,56 @@ use Clicalmani\Database\Factory\Index;
     name: 'fk_comments_posts1_idx',
     key: 'post_id',
     constraint: 'fk_comments_posts1',
-    references: \App\Models\Post::class
+    references: \App\Models\Post::class,
+    onDelete: Index::ON_DELETE_CASCADE,
+    onUpdate: Index::ON_UPDATE_CASCADE
 )]
 class CommentEntity extends Entity
 {
     #[Property(
         length: 10,
         unsigned: true,
-        nullable: true,
         autoIncrement: true
     ), PrimaryKey]
     public Integer $id;
 
-    #[Property(
-        length: 255,
-        nullable: false
-    )]
-    public Text $content;
+    #[Property]
+    public ?Text $content;
 
     #[Property(
         length: 10,
-        unsigned: true,
-        nullable: false
+        unsigned: true
     )]
     public Integer $post_id;
 }
 ```
 
-This schema ensures that each comment is linked to a specific post, enforcing the one-to-many relationship at the database level.
-
-#### Defining the Inverse of the Relationship
-
-In a one-to-many relationship, you may need to define the inverse of the relationship to access the parent model from the child model. This is done using the `belongsTo` method.
-
-Here is an example:
+#### Accès à la Relation
 
 ```php
-<?php
-
-namespace App\Models;
-
-use Clicalmani\Database\Factory\Models\Elegant;
-
-class Comment extends Elegant
-{
-    public function posts()
-    {
-        return $this->belongsTo(Post::class);
-    }
-}
+$post = Post::find(1);
+$comments = $post->comments; // Collection de Comment
 ```
 
-### Many-to-Many
-
-A many-to-many relationship is used to define multiple models that are associated with multiple other models. For example, a `User` model might belong to many `Role` models, and a `Role` model might belong to many `User` models.
-
-Here is an example of how to define a many-to-many relationship in **Elegant ORM**:
+### HasOne (A un)
 
 ```php
-<?php
-
 namespace App\Models;
 
-use Clicalmani\Database\Factory\Models\Elegant;
+use Clicalmani\Core\Acme\Model as Elegant;
 
 class User extends Elegant
 {
-    public function roles()
-    {
-        return $this->belongsToMany(Role::class);
-    }
-}
-```
-
-```php
-<?php
-
-namespace App\Models;
-
-use Clicalmani\Database\Factory\Models\Elegant;
-
-class Role extends Elegant
-{
-    public function users()
-    {
-        return $this->belongsToMany(User::class);
-    }
-}
-```
-
-#### Database Schema
-
-To implement this relationship in your database, you would typically have a pivot table that references both the `User` and `Role` tables:
-
-```php
-<?php
-namespace Database\Entities;
-
-use Clicalmani\Database\DataTypes\Integer;
-use Clicalmani\Database\DataTypes\VarChar;
-use Clicalmani\Database\Factory\Entity;
-use Clicalmani\Database\Factory\PrimaryKey;
-use Clicalmani\Database\Factory\Property;
-
-class UserEntity extends Entity
-{
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false,
-        autoIncrement: true
-    ), PrimaryKey]
-    public Integer $id;
-
-    #[Property(
-        length: 255,
-        nullable: false
-    )]
-    public VarChar $name;
-}
-```
-```php
-<?php
-namespace Database\Entities;
-
-use Clicalmani\Database\DataTypes\Integer;
-use Clicalmani\Database\DataTypes\VarChar;
-use Clicalmani\Database\Factory\Entity;
-use Clicalmani\Database\Factory\PrimaryKey;
-use Clicalmani\Database\Factory\Property;
-
-class RoleEntity extends Entity
-{
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false,
-        autoIncrement: true
-    ), PrimaryKey]
-    public Integer $id;
-
-    #[Property(
-        length: 255,
-        nullable: false
-    )]
-    public VarChar $name;
-}
-```
-```php
-<?php
-namespace Database\Entities;
-
-use Clicalmani\Database\DataTypes\Integer;
-use Clicalmani\Database\Factory\Entity;
-use Clicalmani\Database\Factory\PrimaryKey;
-use Clicalmani\Database\Factory\Property;
-use Clicalmani\Database\Factory\Index;
-
-#[PrmaryKey(['user_id', 'role_id']), Index(
-    name: 'fk_role_user_users1_idx',
-    key: 'user_id',
-    constraint: 'fk_role_user_users1',
-    references: \App\Models\User::class
-), Index(
-    name: 'fk_role_user_roles1_idx',
-    key: 'role_id',
-    constraint: 'fk_role_user_roles1',
-    references: \App\Models\Role::class
-)]
-class RoleUserEntity extends Entity
-{
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false
-    )]
-    public Integer $user_id;
-
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false
-    )]
-    public Integer $role_id;
-}
-```
-
-This schema ensures that each user can be linked to multiple roles and each role can be linked to multiple users, enforcing the many-to-many relationship at the database level.
-
-#### Accessing the Relationship
-
-In your code to access a Many-to-Many relationship, you must establish a join on the table by calling one of the pivot method `pivotLeft`, `pivotRight`, `pivotInner`, `pivotOuter`, `pivotCross`:
-
-Here is an example of how to access users on a role instance:
-
-```php
-$role = Role::find(1);
-$role->pivotLeft(RoleUser::class)->users();
-```
-
-In this example we pivot the role instance to the left to get users instances. We may do the same by pivoting a user instance to the right to get roles instances and vis-versa.
-
-```php
-$user = User::find(1);
-$user->pivotRight(RoleUser::clas)->roles();
-```
-
-### Has One-Through
-
-A has one-through relationship is used to define a one-to-one relationship that is connected via an intermediary model. For example, a `Supplier` model might be related to a `User` model through a `Profile` model.
-
-#### Example
-
-Here is an example of how to define a has one-through relationship:
-
-```php
-<?php
-
-namespace App\Models;
-
-use Clicalmani\Database\Factory\Models\Elegant;
-
-class Supplier extends Elegant
-{
     public function profile()
     {
-        return $this->hasOneThrough(Profile::class, User::class);
+        return $this->hasOne(Profile::class);
     }
 }
 ```
 
-#### Database Schema
-
-To implement this relationship in your database, you would typically have foreign keys in the `User` and `Profile` tables that reference the `Supplier` and `User` tables, respectively:
+#### Schéma de Base de Données
 
 ```php
-<?php
-namespace Database\Entities;
-
-use Clicalmani\Database\DataTypes\Integer;
-use Clicalmani\Database\DataTypes\VarChar;
-use Clicalmani\Database\Factory\Entity;
-use Clicalmani\Database\Factory\PrimaryKey;
-use Clicalmani\Database\Factory\Property;
-
-class SupplierEntity extends Entity
-{
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false,
-        autoIncrement: true
-    ), PrimaryKey]
-    public Integer $id;
-
-    #[Property(
-        length: 255,
-        nullable: false
-    )]
-    public VarChar $name;
-}
-```
-```php
-<?php
 namespace Database\Entities;
 
 use Clicalmani\Database\DataTypes\Integer;
@@ -1806,45 +491,40 @@ use Clicalmani\Database\Factory\Property;
 use Clicalmani\Database\Factory\Index;
 
 #[Index(
-    name: 'fk_users_suppliers1_idx',
-    key: 'supplier_id',
-    constraint: 'fk_users_suppliers1',
-    references: \App\Models\Supplier::class
+    name: 'emailUNIQUE',
+    key: 'email',
+    unique: true
 )]
 class UserEntity extends Entity
 {
     #[Property(
         length: 10,
         unsigned: true,
-        nullable: false,
         autoIncrement: true
     ), PrimaryKey]
     public Integer $id;
 
     #[Property(
-        length: 255,
-        nullable: false
+        length: 255
     )]
     public VarChar $name;
 
     #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: true
+        length: 191
     )]
-    public Integer $supplier_id;
+    public VarChar $email;
 }
 ```
+
 ```php
-<?php
 namespace Database\Entities;
 
 use Clicalmani\Database\DataTypes\Integer;
 use Clicalmani\Database\DataTypes\Text;
 use Clicalmani\Database\Factory\Entity;
+use Clicalmani\Database\Factory\Index;
 use Clicalmani\Database\Factory\PrimaryKey;
 use Clicalmani\Database\Factory\Property;
-use Clicalmani\Database\Factory\Index;
 
 #[Index(
     name: 'fk_profiles_users1_idx',
@@ -1857,62 +537,61 @@ class ProfileEntity extends Entity
     #[Property(
         length: 10,
         unsigned: true,
-        nullable: false,
         autoIncrement: true
     ), PrimaryKey]
     public Integer $id;
 
     #[Property]
-    public Text $bio;
+    public ?Text $bio;
 
     #[Property(
         length: 10,
-        unsigned: true,
-        nullable: false
+        unsigned: true
     )]
     public Integer $user_id;
 }
 ```
 
-This schema ensures that each profile is linked to a specific user, and each user is linked to a specific supplier, enforcing the "has one through" relationship at the database level.
-
-#### Accessing the Relationship
-
-To access the relationship, you can use the defined relationship methods on your models. Here is an example of how to access the profile of a supplier through the user model:
+#### Accès à la Relation
 
 ```php
-$supplier = Supplier::find(1);
-$profile = $supplier->profile();
+$user = User::find(1);
+$profile = $user->profile; // Instance unique de Profile
 ```
 
-### Has Many-Through
-
-A has many-through relationship is used to define a many-to-many relationship that is accessed through an intermediate model. For example, a `User` model might have many `Permission` models through a `Role` model.
-
-Here is an example of how to define a has many-through relationship in **Elegant ORM**:
+### BelongsToMany (Appartient à plusieurs)
 
 ```php
-<?php
-
 namespace App\Models;
 
-use Clicalmani\Database\Factory\Models\Elegant;
+use Clicalmani\Core\Acme\Model as Elegant;
 
 class User extends Elegant
 {
-    public function permissions()
+    public function roles()
     {
-        return $this->hasManyThrough(Permission::class, Role::class);
+        return $this->belongsToMany(Role::class, UserRole::class);
     }
 }
 ```
 
-#### Database Schema
+```php
+namespace App\Models;
 
-To implement this relationship in your database, you would typically have foreign keys in the `Role` and `Permission` tables that reference the `User` and `Role` tables, respectively:
+use Clicalmani\Core\Acme\Model as Elegant;
+
+class Role extends Elegant
+{
+    public function users()
+    {
+        return $this->belongsToMany(User::class, UserRole::class);
+    }
+}
+```
+
+#### Schéma de Base de Données
 
 ```php
-<?php
 namespace Database\Entities;
 
 use Clicalmani\Database\DataTypes\Integer;
@@ -1926,149 +605,101 @@ class UserEntity extends Entity
     #[Property(
         length: 10,
         unsigned: true,
-        nullable: false,
         autoIncrement: true
     ), PrimaryKey]
     public Integer $id;
 
     #[Property(
-        length: 255,
-        nullable: false
+        length: 255
     )]
     public VarChar $name;
 }
 ```
+
 ```php
-<?php
 namespace Database\Entities;
 
 use Clicalmani\Database\DataTypes\Integer;
 use Clicalmani\Database\DataTypes\VarChar;
+use Clicalmani\Database\DataTypes\Boolean;
 use Clicalmani\Database\Factory\Entity;
 use Clicalmani\Database\Factory\PrimaryKey;
 use Clicalmani\Database\Factory\Property;
 use Clicalmani\Database\Factory\Index;
 
 #[Index(
-    name: 'fk_roles_users1_idx',
-    key: 'user_id',
-    constraint: 'fk_roles_users1',
-    references: \App\Models\User::class
+    name: 'nameUNIQUE',
+    key: 'name',
+    unique: true
 )]
 class RoleEntity extends Entity
 {
     #[Property(
         length: 10,
         unsigned: true,
-        nullable: false,
         autoIncrement: true
     ), PrimaryKey]
     public Integer $id;
 
     #[Property(
-        length: 255,
-        nullable: false
+        length: 255
     )]
     public VarChar $name;
 
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false
-    )]
-    public Integer $user_id;
+    #[Property]
+    public Boolean|false $isCore = false;
 }
 ```
+
 ```php
-<?php
 namespace Database\Entities;
 
 use Clicalmani\Database\DataTypes\Integer;
-use Clicalmani\Database\DataTypes\VarChar;
-use Clicalmani\Database\DataTypes\Text;
 use Clicalmani\Database\Factory\Entity;
 use Clicalmani\Database\Factory\PrimaryKey;
 use Clicalmani\Database\Factory\Property;
 use Clicalmani\Database\Factory\Index;
 
-#[Index(
-    name: 'fk_permissions_roles1_idx',
+#[PrimaryKey(['user_id', 'role_id']), Index(
+    name: 'fk_user_role_users1_idx',
+    key: 'user_id',
+    constraint: 'fk_user_role_users1',
+    references: \App\Models\User::class
+), Index(
+    name: 'fk_user_role_roles1_idx',
     key: 'role_id',
-    constraint: 'fk_permissions_roles1',
+    constraint: 'fk_user_role_roles1',
     references: \App\Models\Role::class
 )]
-class PermissionEntity extends Entity
+class UserRoleEntity extends Entity
 {
     #[Property(
         length: 10,
-        unsigned: true,
-        nullable: false,
-        autoIncrement: true
-    ), PrimaryKey]
-    public Integer $id;
-
-    #[Property(
-        length: 255,
-        nullable: false
+        unsigned: true
     )]
-    public VarChar $title;
-
-    #[Property(
-        length: 255,
-        nullable: true
-    )]
-    public Text $content;
+    public Integer $user_id;
 
     #[Property(
         length: 10,
-        unsigned: true,
-        nullable: false
+        unsigned: true
     )]
     public Integer $role_id;
 }
 ```
 
-This schema ensures that each permission is linked to a specific role, and each role is linked to a specific user, enforcing the "has many through" relationship at the database level.
-
-#### Accessing the Relationship
-
-To access the relationship, you can use the defined relationship methods on your models. Here is an example of how to access the permissions of a user through the role model:
+#### Accès à la Relation
 
 ```php
 $user = User::find(1);
-$permissions = $user->permissions();
+$roles = $user->roles; // Collection de Role, via la table pivot user_role
 ```
 
-In this example, the `permissions` method on the `User` model will retrieve all the permissions associated with the user through the role.
-
-### One-to-One (Polymorphic)
-
-A one-to-one polymorphic relationship allows an entity to belong to more than one other entity on a single association. For example, a `Tag` model might belong to either a `Post` model or a `Video` model.
-
-Here is an example of how to define a one-to-one polymorphic relationship in **Elegant ORM**:
+### MorphOne (A un polymorphique)
 
 ```php
-<?php
-
 namespace App\Models;
 
-use Clicalmani\Database\Factory\Models\Elegant;
-
-class Tag extends Elegant
-{
-    public function taggable()
-    {
-        return $this->morphTo();
-    }
-}
-```
-
-```php
-<?php
-
-namespace App\Models;
-
-use Clicalmani\Database\Factory\Models\Elegant;
+use Clicalmani\Core\Acme\Model as Elegant;
 
 class Post extends Elegant
 {
@@ -2080,11 +711,9 @@ class Post extends Elegant
 ```
 
 ```php
-<?php
-
 namespace App\Models;
 
-use Clicalmani\Database\Factory\Models\Elegant;
+use Clicalmani\Core\Acme\Model as Elegant;
 
 class Video extends Elegant
 {
@@ -2095,12 +724,9 @@ class Video extends Elegant
 }
 ```
 
-#### Database Schema
-
-To implement this relationship in your database, you would typically have a polymorphic association with a type and id column:
+#### Schéma de Base de Données
 
 ```php
-<?php
 namespace Database\Entities;
 
 use Clicalmani\Database\DataTypes\Integer;
@@ -2114,20 +740,18 @@ class PostEntity extends Entity
     #[Property(
         length: 10,
         unsigned: true,
-        nullable: false,
         autoIncrement: true
     ), PrimaryKey]
     public Integer $id;
 
     #[Property(
-        length: 255,
-        nullable: false
+        length: 255
     )]
     public VarChar $title;
 }
 ```
+
 ```php
-<?php
 namespace Database\Entities;
 
 use Clicalmani\Database\DataTypes\Integer;
@@ -2141,14 +765,12 @@ class VideoEntity extends Entity
     #[Property(
         length: 10,
         unsigned: true,
-        nullable: false,
         autoIncrement: true
     ), PrimaryKey]
     public Integer $id;
 
     #[Property(
-        length: 255,
-        nullable: false
+        length: 255
     )]
     public VarChar $title;
 
@@ -2158,8 +780,8 @@ class VideoEntity extends Entity
     public VarChar $url;
 }
 ```
+
 ```php
-<?php
 namespace Database\Entities;
 
 use Clicalmani\Database\DataTypes\Integer;
@@ -2173,21 +795,18 @@ class TagEntity extends Entity
     #[Property(
         length: 10,
         unsigned: true,
-        nullable: false,
         autoIncrement: true
     ), PrimaryKey]
     public Integer $id;
 
     #[Property(
-        length: 255,
-        nullable: false
+        length: 255
     )]
     public VarChar $name;
 
     #[Property(
         length: 10,
-        unsigned: true,
-        nullable: false
+        unsigned: true
     )]
     public Integer $taggable_id;
 
@@ -2198,52 +817,19 @@ class TagEntity extends Entity
 }
 ```
 
-This schema ensures that each tag can be linked to either a post or a video, enforcing the one-to-one polymorphic relationship at the database level.
-
-#### Accessing the Relationship
-
-To access the relationship, you can use the defined relationship methods on your models. Here is an example of how to access the tag of a post or video:
+#### Accès à la Relation
 
 ```php
 $post = Post::find(1);
-$tag = $post->tag();
-
-$video = Video::find(1);
-$tag = $video->tag();
+$tag = $post->tag; // Le Tag associé à ce post, s'il existe
 ```
 
-In this example, the `tag` method on the `Post` and `Video` models will retrieve the associated tag for the post or video.
-
-### One-to-Many (Polymorphic)
-
-A one-to-many polymorphic relationship allows a model to belong to more than one other model on a single association. This is useful when a model can be associated with more than one type of model, and multiple instances at a time.
-
-Consider a `Comment` model that can belong to either a `Post` or a `Video` model. To define this relationship, you would use the `morphTo` and `morphMany` methods:
-
-Here is an example of how to define a one-to-many polymorphic relationship in **Elegant ORM**:
+### MorphMany (A plusieurs polymorphiques)
 
 ```php
-<?php
-
 namespace App\Models;
 
-use Clicalmani\Database\Factory\Models\Elegant;
-
-class Comment extends Elegant
-{
-    public function commentable()
-    {
-        return $this->morphTo();
-    }
-}
-```
-
-```php
-<?php
-
-namespace App\Models;
-
-use Clicalmani\Database\Factory\Models\Elegant;
+use Clicalmani\Core\Acme\Model as Elegant;
 
 class Post extends Elegant
 {
@@ -2255,11 +841,9 @@ class Post extends Elegant
 ```
 
 ```php
-<?php
-
 namespace App\Models;
 
-use Clicalmani\Database\Factory\Models\Elegant;
+use Clicalmani\Core\Acme\Model as Elegant;
 
 class Video extends Elegant
 {
@@ -2270,14 +854,9 @@ class Video extends Elegant
 }
 ```
 
-In this example, the `Comment` model can belong to either a `Post` or a `Video`. The `Post` and `Video` models can have many `Comment` instances.
-
-#### Database Schema
-
-To implement this relationship in your database, you would typically have a polymorphic association with a type and id column:
+#### Schéma de Base de Données
 
 ```php
-<?php
 namespace Database\Entities;
 
 use Clicalmani\Database\DataTypes\Integer;
@@ -2292,14 +871,12 @@ class PostEntity extends Entity
     #[Property(
         length: 10,
         unsigned: true,
-        nullable: false,
         autoIncrement: true
     ), PrimaryKey]
     public Integer $id;
 
     #[Property(
-        length: 255,
-        nullable: false
+        length: 255
     )]
     public VarChar $title;
 
@@ -2307,40 +884,8 @@ class PostEntity extends Entity
     public Text $content;
 }
 ```
+
 ```php
-<?php
-namespace Database\Entities;
-
-use Clicalmani\Database\DataTypes\Integer;
-use Clicalmani\Database\DataTypes\VarChar;
-use Clicalmani\Database\Factory\Entity;
-use Clicalmani\Database\Factory\PrimaryKey;
-use Clicalmani\Database\Factory\Property;
-
-class VideoEntity extends Entity
-{
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false,
-        autoIncrement: true
-    ), PrimaryKey]
-    public Integer $id;
-
-    #[Property(
-        length: 255,
-        nullable: false
-    )]
-    public VarChar $title;
-
-    #[Property(
-        length: 255
-    )]
-    public VarChar $url;
-}
-```
-```php
-<?php
 namespace Database\Entities;
 
 use Clicalmani\Database\DataTypes\Integer;
@@ -2355,7 +900,6 @@ class CommentEntity extends Entity
     #[Property(
         length: 10,
         unsigned: true,
-        nullable: false,
         autoIncrement: true
     ), PrimaryKey]
     public Integer $id;
@@ -2365,8 +909,7 @@ class CommentEntity extends Entity
 
     #[Property(
         length: 10,
-        unsigned: true,
-        nullable: false
+        unsigned: true
     )]
     public Integer $commentable_id;
 
@@ -2377,34 +920,58 @@ class CommentEntity extends Entity
 }
 ```
 
-This schema ensures that each comment can be linked to either a post or a video, enforcing the one-to-many polymorphic relationship at the database level.
-
-#### Accessing the Relationship
-
-To access the relationship, you can use the defined relationship methods on your models. Here is an example of how to access the comments of a post or video:
+#### Accès à la Relation
 
 ```php
 $post = Post::find(1);
-$comments = $post->comments();
-
-$video = Video::find(1);
-$comments = $video->comments();
+$comments = $post->comments; // Tous les commentaires de ce post, quel que soit leur type d'origine
 ```
 
-In this example, the `comments` method on the `Post` and `Video` models will retrieve the associated comments for the post or video.
+### MorphTo (Appartient à polymorphique)
 
-### Many-to-Many (Polymorphic)
-
-A many-to-many polymorphic relationship allows a model to belong to more than one type of model on a single association. For example, a `Tag` model might be associated with both `Post` and `Video` models.
-
-Consider a `Tag` model that can belong to either a `Post` or a `Video` model. To define this relationship, you would use the `morphToMany` and `morphedByMany` methods:
+`morphTo` définit le côté inverse d'une relation `morphOne`/`morphMany` : le modèle porte les deux colonnes polymorphiques (`_id` et `_type`) et détermine dynamiquement à quel modèle parent il appartient.
 
 ```php
-<?php
-
 namespace App\Models;
 
-use Clicalmani\Database\Factory\Models\Elegant;
+use Clicalmani\Core\Acme\Model as Elegant;
+
+class Tag extends Elegant
+{
+    public function taggable()
+    {
+        return $this->morphTo();
+    }
+}
+```
+
+```php
+namespace App\Models;
+
+use Clicalmani\Core\Acme\Model as Elegant;
+
+class Comment extends Elegant
+{
+    public function commentable()
+    {
+        return $this->morphTo();
+    }
+}
+```
+
+#### Accès à la Relation
+
+```php
+$tag = Tag::find(1);
+$owner = $tag->taggable; // Instance de Post ou de Video, selon taggable_type
+```
+
+### MorphToMany (Appartient à plusieurs polymorphiques)
+
+```php
+namespace App\Models;
+
+use Clicalmani\Core\Acme\Model as Elegant;
 
 class Tag extends Elegant
 {
@@ -2421,11 +988,9 @@ class Tag extends Elegant
 ```
 
 ```php
-<?php
-
 namespace App\Models;
 
-use Clicalmani\Database\Factory\Models\Elegant;
+use Clicalmani\Core\Acme\Model as Elegant;
 
 class Post extends Elegant
 {
@@ -2437,11 +1002,9 @@ class Post extends Elegant
 ```
 
 ```php
-<?php
-
 namespace App\Models;
 
-use Clicalmani\Database\Factory\Models\Elegant;
+use Clicalmani\Core\Acme\Model as Elegant;
 
 class Video extends Elegant
 {
@@ -2452,12 +1015,9 @@ class Video extends Elegant
 }
 ```
 
-#### Database Schema
-
-To implement this relationship in your database, you would typically have a polymorphic association with a type and id column, along with a pivot table:
+#### Schéma de Base de Données
 
 ```php
-<?php
 namespace Database\Entities;
 
 use Clicalmani\Database\DataTypes\Integer;
@@ -2472,14 +1032,12 @@ class PostEntity extends Entity
     #[Property(
         length: 10,
         unsigned: true,
-        nullable: false,
         autoIncrement: true
     ), PrimaryKey]
     public Integer $id;
 
     #[Property(
-        length: 255,
-        nullable: false
+        length: 255
     )]
     public VarChar $title;
 
@@ -2487,8 +1045,8 @@ class PostEntity extends Entity
     public Text $content;
 }
 ```
+
 ```php
-<?php
 namespace Database\Entities;
 
 use Clicalmani\Database\DataTypes\Integer;
@@ -2502,14 +1060,12 @@ class VideoEntity extends Entity
     #[Property(
         length: 10,
         unsigned: true,
-        nullable: false,
         autoIncrement: true
     ), PrimaryKey]
     public Integer $id;
 
     #[Property(
-        length: 255,
-        nullable: false
+        length: 255
     )]
     public VarChar $title;
 
@@ -2517,8 +1073,8 @@ class VideoEntity extends Entity
     public VarChar $url;
 }
 ```
+
 ```php
-<?php
 namespace Database\Entities;
 
 use Clicalmani\Database\DataTypes\Integer;
@@ -2532,20 +1088,18 @@ class TagEntity extends Entity
     #[Property(
         length: 10,
         unsigned: true,
-        nullable: false,
         autoIncrement: true
     ), PrimaryKey]
     public Integer $id;
 
     #[Property(
-        length: 255,
-        nullable: false
+        length: 255
     )]
     public VarChar $name;
 }
 ```
+
 ```php
-<?php
 namespace Database\Entities;
 
 use Clicalmani\Database\DataTypes\Integer;
@@ -2565,15 +1119,13 @@ class TaggableEntity extends Entity
 {
     #[Property(
         length: 10,
-        unsigned: true,
-        nullable: false
+        unsigned: true
     )]
     public Integer $tag_id;
 
     #[Property(
         length: 10,
-        unsigned: true,
-        nullable: false
+        unsigned: true
     )]
     public Integer $taggable_id;
 
@@ -2584,130 +1136,197 @@ class TaggableEntity extends Entity
 }
 ```
 
-This schema ensures that each tag can be linked to either a post or a video, enforcing the many-to-many polymorphic relationship at the database level.
-
-#### Accessing the Relationship
-To access the relationship, you can use the defined relationship methods on your models. Here is an example of how to access the tags of a post or video:
+#### Accès à la Relation
 
 ```php
 $post = Post::find(1);
-$tags = $post->tags();
-
-$video = Video::find(1);
-$tags = $video->tags();
+$tags = $post->tags; // Collection de Tag, partagée avec d'autres types de modèles (Video, etc.)
 ```
 
-In this example, the `tags` method on the `Post` and `Video` models will retrieve the associated tags for the post or video.
-
-### Custom Polymorphic Types
-
-In some cases, you may need to define custom polymorphic types to handle more complex relationships. **Elegant ORM** allows you to customize the polymorphic type column to suit your application's needs.
-
-Consider a scenario where a `Like` model can belong to either a `Post`, `Comment`, or `Photo` model. To define this relationship with custom polymorphic types, you would use the `morphTo` and `morphMany` methods:
+### HasOneThrough
 
 ```php
-<?php
-
 namespace App\Models;
 
-use Clicalmani\Database\Factory\Models\Elegant;
+use Clicalmani\Core\Acme\Model as Elegant;
 
-class Like extends Elegant
+class Supplier extends Elegant
 {
-    public function likeable()
+    public function profile()
     {
-        return $this->morphTo();
+        return $this->hasOneThrough(Profile::class, User::class);
     }
 }
 ```
 
-```php
-<?php
+Ici, `Supplier` accède au `Profile` d'un `User` sans relation directe entre `Supplier` et `Profile` — Elegant traverse `User` comme modèle intermédiaire.
 
-namespace App\Models;
-
-use Clicalmani\Database\Factory\Models\Elegant;
-
-class Post extends Elegant
-{
-    public function likes()
-    {
-        return $this->morphMany(Like::class, 'likeable');
-    }
-}
-```
+#### Schéma de Base de Données
 
 ```php
-<?php
-
-namespace App\Models;
-
-use Clicalmani\Database\Factory\Models\Elegant;
-
-class Comment extends Elegant
-{
-    public function likes()
-    {
-        return $this->morphMany(Like::class, 'likeable');
-    }
-}
-```
-
-```php
-<?php
-
-namespace App\Models;
-
-use Clicalmani\Database\Factory\Models\Elegant;
-
-class Photo extends Elegant
-{
-    public function likes()
-    {
-        return $this->morphMany(Like::class, 'likeable');
-    }
-}
-```
-
-In this example, the `Like` model can belong to a `Post`, `Comment`, or `Photo`. The `Post`, `Comment`, and `Photo` models can have many `Like` instances.
-
-#### Database Schema
-
-To implement this relationship in your database, you would typically have a polymorphic association with a type and id column:
-
-```php
-<?php
 namespace Database\Entities;
 
 use Clicalmani\Database\DataTypes\Integer;
 use Clicalmani\Database\DataTypes\VarChar;
-use Clicalmani\Database\DataTypes\Text;
 use Clicalmani\Database\Factory\Entity;
 use Clicalmani\Database\Factory\PrimaryKey;
 use Clicalmani\Database\Factory\Property;
 
-class PostEntity extends Entity
+class SupplierEntity extends Entity
 {
     #[Property(
         length: 10,
         unsigned: true,
-        nullable: false,
         autoIncrement: true
     ), PrimaryKey]
     public Integer $id;
 
     #[Property(
-        length: 255,
-        nullable: false
+        length: 255
     )]
-    public VarChar $title;
-
-    #[Property]
-    public Text $content;
+    public VarChar $name;
 }
 ```
+
 ```php
-<?php
+namespace Database\Entities;
+
+use Clicalmani\Database\DataTypes\Integer;
+use Clicalmani\Database\DataTypes\VarChar;
+use Clicalmani\Database\Factory\Entity;
+use Clicalmani\Database\Factory\PrimaryKey;
+use Clicalmani\Database\Factory\Property;
+use Clicalmani\Database\Factory\Index;
+
+#[Index(
+    name: 'fk_users_suppliers1_idx',
+    key: 'supplier_id',
+    constraint: 'fk_users_suppliers1',
+    references: \App\Models\Supplier::class,
+    onDelete: Index::ON_DELETE_SETNULL
+)]
+class UserEntity extends Entity
+{
+    #[Property(
+        length: 10,
+        unsigned: true,
+        autoIncrement: true
+    ), PrimaryKey]
+    public Integer $id;
+
+    #[Property(
+        length: 255
+    )]
+    public VarChar $name;
+
+    #[Property(
+        length: 10,
+        unsigned: true
+    )]
+    public ?Integer $supplier_id;
+}
+```
+
+```php
+namespace Database\Entities;
+
+use Clicalmani\Database\DataTypes\Integer;
+use Clicalmani\Database\DataTypes\Text;
+use Clicalmani\Database\Factory\Entity;
+use Clicalmani\Database\Factory\PrimaryKey;
+use Clicalmani\Database\Factory\Property;
+use Clicalmani\Database\Factory\Index;
+
+#[Index(
+    name: 'fk_profiles_users1_idx',
+    key: 'user_id',
+    constraint: 'fk_profiles_users1',
+    references: \App\Models\User::class
+)]
+class ProfileEntity extends Entity
+{
+    #[Property(
+        length: 10,
+        unsigned: true,
+        autoIncrement: true
+    ), PrimaryKey]
+    public Integer $id;
+
+    #[Property]
+    public ?Text $bio;
+
+    #[Property(
+        length: 10,
+        unsigned: true
+    )]
+    public Integer $user_id;
+}
+```
+
+#### Accès à la Relation
+
+```php
+$supplier = Supplier::find(1);
+$profile = $supplier->profile; // Profile de l'utilisateur associé à ce fournisseur
+```
+
+### HasManyThrough
+
+```php
+namespace App\Models;
+
+use Clicalmani\Core\Acme\Model as Elegant;
+
+class Country extends Elegant
+{
+    public function posts()
+    {
+        return $this->hasManyThrough(Post::class, User::class);
+    }
+}
+```
+
+#### Schéma de Base de Données
+
+```php
+namespace Database\Entities;
+
+use Clicalmani\Database\DataTypes\Integer;
+use Clicalmani\Database\DataTypes\VarChar;
+use Clicalmani\Database\Factory\Entity;
+use Clicalmani\Database\Factory\PrimaryKey;
+use Clicalmani\Database\Factory\Property;
+use Clicalmani\Database\Factory\Index;
+
+#[Index(
+    name: 'fk_users_countries1_idx',
+    key: 'country_id',
+    constraint: 'fk_users_countries1',
+    references: \App\Models\Country::class
+)]
+class UserEntity extends Entity
+{
+    #[Property(
+        length: 10,
+        unsigned: true,
+        autoIncrement: true
+    ), PrimaryKey]
+    public Integer $id;
+
+    #[Property(
+        length: 255
+    )]
+    public VarChar $name;
+
+    #[Property(
+        length: 10,
+        unsigned: true
+    )]
+    public Integer $country_id;
+}
+```
+
+```php
 namespace Database\Entities;
 
 use Clicalmani\Database\DataTypes\Integer;
@@ -2719,278 +1338,282 @@ use Clicalmani\Database\Factory\Property;
 use Clicalmani\Database\Factory\Index;
 
 #[Index(
-    name: 'fk_comments_posts1_idx',
-    key: 'post_id',
-    constraint: 'fk_comments_posts1',
-    references: \App\Models\Post::class
+    name: 'fk_posts_users1_idx',
+    key: 'user_id',
+    constraint: 'fk_posts_users1',
+    references: \App\Models\User::class
 )]
-class CommentEntity extends Entity
+class PostEntity extends Entity
 {
     #[Property(
         length: 10,
         unsigned: true,
-        nullable: false,
-        autoIncrement: true
-    ), PrimaryKey]
-    public Integer $id;
-
-    #[Property]
-    public Text $content;
-
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false
-    )]
-    public Integer $post_id;
-}
-```
-```php
-<?php
-namespace Database\Entities;
-
-use Clicalmani\Database\DataTypes\Integer;
-use Clicalmani\Database\DataTypes\VarChar;
-use Clicalmani\Database\Factory\Entity;
-use Clicalmani\Database\Factory\PrimaryKey;
-use Clicalmani\Database\Factory\Property;
-
-class PhotoEntity extends Entity
-{
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false,
         autoIncrement: true
     ), PrimaryKey]
     public Integer $id;
 
     #[Property(
-        length: 255,
-        nullable: false
+        length: 255
     )]
-    public VarChar $url;
-}
-```
-```php
-<?php
-namespace Database\Entities;
+    public VarChar $title;
 
-use Clicalmani\Database\DataTypes\Integer;
-use Clicalmani\Database\DataTypes\VarChar;
-use Clicalmani\Database\Factory\Entity;
-use Clicalmani\Database\Factory\Property;
+    #[Property(
+        length: 255
+    )]
+    public ?Text $content;
 
-class LikeEntity extends Entity
-{
     #[Property(
         length: 10,
-        unsigned: true,
-        nullable: false
-    )]
-    public Integer $likeable_id;
-
-    #[Property(
-        length: 255,
-        nullable: false
-    )]
-    public VarChar $likeable_type;
-}
-```
-
-This schema ensures that each like can be linked to a post, comment, or photo, enforcing the custom polymorphic relationship at the database level.
-
-### Querying Related Models
-
-With **Elegant ORM**, you can query related models outside models class.
-
-#### Model Joins
-
-As we have seen joins in the [Query Builder](query_builder.md?id=joins) section, you can also use joins on models to query related models.
-
-Here is an example on how to get all comments from a post:
-
-```php
-$comments = Post::where('id = ?', [1])
-                ->joinLeft(Comment::class)
-                ->fetch(Comment::class);
-```
-
-In this example, we query a post's comments by using a "left join" on the post model. 
-
-#### The `fetch` Method on Joins
-
-The `fetch` method in **Elegant ORM** allows you to retrieve records from the database as model objects. This method is useful when you plan to use model properties or methods on each record. The `fetch` method returns a [collection](collection.md), allowing you to easily manage the records.
-
-Here is an example of how to use the `fetch` method:
-
-```php
-use App\Models\User;
-
-$admin_users = User::where('is_admin = ?', [true])
-                ->fetch()
-                ->filter(fn(User $user) => $user->isActive());
-```
-
-You can pass a model class to the `fetch` method when using joins:
-
-```php
-$orders = User::where('status = ?', ['active'])
-            ->joinLeft(Order::class)
-            ->fetch(Order::class)
-            ->filter(fn(Order $order) => $order->isShipped());
-```
-
-This query retrieves the orders of all active users. By default, if none is specified, the users will be returned.
-
-## Related Tables Key Convention
-
-When defining relationships between tables in **Elegant ORM**, it is important to follow a consistent key naming convention to ensure smooth operation and automatic relationship resolution.
-
-- The **parent table's primary key** must always be named `id`.
-- The **foreign key** in the related (child) table should be named using the singular form of the parent table name, followed by `_id`.
-
-**Example:**
-
-If you have a `users` table and a `profiles` table:
-
-- The `users` table should have a primary key named `id`.
-- The `profiles` table should have a foreign key named `user_id` that references the `users.id` column.
-
-```php
-// users table
-class UserEntity extends Entity
-{
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false,
-        autoIncrement: true
-    ), PrimaryKey]
-    public Integer $id;
-    // ...
-}
-
-// profiles table
-class ProfileEntity extends Entity
-{
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false
+        unsigned: true
     )]
     public Integer $user_id;
-    // ...
-}
-```
-
-This convention applies to all relationships, including one-to-one, one-to-many, and many-to-many (where pivot tables should use `user_id`, `role_id`, etc.).
-
-Following this convention ensures that **Elegant ORM** can automatically detect and manage relationships between your models without requiring additional configuration.
-
-> **Note:** To ensure correct relationship resolution, you must specify the singular name of the table in the model class using the protected property `table_singular`. For example:
->
-> ```php
-> class User extends Elegant
-> {
->     protected $table = 'users';
->     protected $table_singular = 'user';
-> }
-> ```
->
-> This helps **Elegant ORM** automatically detect foreign key names such as `user_id` in related tables.
-
-### Table Alias
-
-When working with joins, you may want to use table aliases to make your queries more readable and to avoid conflicts with column names. **Elegant ORM** allows you to specify table aliases in your join queries.
-
-Here is an example of how to use table aliases in a join:
-
-```php
-use App\Models\User;
-use App\Models\Order;
-
-$orders = User::where('is_admin = ?', [true])
-            ->joinLeft(Order::class, 'o.user_id', 'u.id')
-            ->fetch(Order::class)
-            ->filter(fn(Order $order) => $order->isShipped());
-```
-
-In this example the `u` alias is assigned to the `User` table, and the `o` alias is assigned to the `Order` table. Table alias is specified in the model class:
-
-```php
-<?php
-namespace App\Models;
-
-use Clicalmani\Database\Factory\Models\Elegant;
-
-class User extends Elegant
-{
-    protected $table = 'users u';
 }
 ```
 
 ```php
-<?php
-namespace App\Models;
-
-use Clicalmani\Database\Factory\Models\Elegant;
-
-class Order extends Elegant
-{
-    protected $table = 'orders o';
-}
-```
-
-You can also use table aliases in more complex queries involving multiple joins:
-
-```php
-use App\Models\User;
-use App\Models\Order;
-use App\Models\Product;
-
-$products = User::where('o.status = ?', ['shipped'])
-            ->joinLeft(Order::class, 'u.id', 'user_id')
-            ->joinLeft(Product::class, 'o.product_id', 'p.id')
-            ->fetch(Product::class);
-```
-
-When dealing with model relationships, especially in complex queries involving multiple joins, it's essential to use table aliases to avoid conflicts with primary key column names. This ensures that your queries remain clear and unambiguous.
-
-Here is an example of how to use table aliases on primary keys in a join query:
-
-```php
-use App\Models\User;
-use App\Models\Order;
-
-$user = User::find(1);
-$orders = $user->orders();
-```
-
-Here is `users` and `orders` database scheman:
-
-```php
-<?php
 namespace Database\Entities;
 
 use Clicalmani\Database\DataTypes\Integer;
+use Clicalmani\Database\DataTypes\VarChar;
 use Clicalmani\Database\Factory\Entity;
 use Clicalmani\Database\Factory\PrimaryKey;
 use Clicalmani\Database\Factory\Property;
 
-class UserEntity extends Entity
+class CountryEntity extends Entity
 {
     #[Property(
         length: 10,
         unsigned: true,
-        nullable: false,
         autoIncrement: true
     ), PrimaryKey]
     public Integer $id;
+
+    #[Property(
+        length: 255
+    )]
+    public VarChar $name;
 }
 ```
+
+#### Accès à la Relation
+
 ```php
-<?php
+$country = Country::find(1);
+$posts = $country->posts; // Tous les posts des utilisateurs de ce pays
+```
+
+### Relations Polymorphiques
+
+Les quatre relations `morphOne`, `morphMany`, `morphTo` et `morphToMany` permettent à un même modèle (`Tag`, `Comment`...) d'être associé à **plusieurs types de modèles différents** via une seule et même association, plutôt que de dupliquer une relation par type de modèle cible. En pratique :
+
+| Cardinalité côté « propriétaire » | Relation à utiliser sur le modèle cible | Relation inverse sur le modèle polymorphique |
+|---|---|---|
+| Un seul enregistrement associé (ex : un post a un seul tag) | `morphOne` | `morphTo` |
+| Plusieurs enregistrements associés (ex : un post a plusieurs commentaires) | `morphMany` | `morphTo` |
+| Association plusieurs-à-plusieurs (ex : un tag peut s'appliquer à plusieurs posts et vidéos) | `morphToMany` | `morphByMany` |
+
+Le modèle polymorphique (`Tag`, `Comment`) porte toujours les deux colonnes `*_id` et `*_type` (`taggable_id`/`taggable_type`, `commentable_id`/`commentable_type`) qui l'identifient et le typent ; c'est cette paire de colonnes que `morphTo()` interroge pour résoudre dynamiquement le bon modèle parent à l'exécution.
+
+---
+
+## Eager Loading
+
+### Chargement de Base
+
+```php
+// Chargement simple
+$users = User::with(['posts', 'profile'])->get();
+
+// Chargement avec filtre sur la relation
+$users = User::with('posts', function($query) {
+    $query->where('published = ?', [true]);
+})->get();
+```
+
+### Chargement Imbriqué
+
+```php
+// Relations imbriquées
+$users = User::with('posts.comments')->get();
+
+// Niveau 3
+$users = User::with('posts.comments.user')->get();
+```
+
+### Lazy Eager Loading
+
+Contrairement à `with()`, qui précharge une relation *au moment de la requête initiale*, `load()` charge une relation *a posteriori*, sur une collection ou un modèle déjà récupéré :
+
+```php
+$users = User::all();
+
+// Plus tard dans le code, une fois qu'on sait qu'on aura besoin de 'posts'
+$users->load('posts');
+```
+
+Utile lorsque la nécessité de charger une relation ne se décide qu'après la récupération initiale des modèles — évitant de précharger systématiquement une relation qui ne sera pas toujours utilisée.
+
+### With Exists
+
+```php
+// Ajoute une colonne indiquant si la relation existe
+$users = User::withExists('posts', function($query) {
+    $query->where('published = ?', [true]);
+})->get();
+```
+
+---
+
+## Événements
+
+### Définition
+
+```php
+class User extends Elegant
+{
+    protected function booted(): void
+    {
+        $this->creating(function(self $model) {
+            $model->created_at = now();
+            $model->updated_at = now();
+        });
+
+        $this->created(function(self $model) {
+            Log::info('User created: ' . $model->id);
+            $this->sendWelcomeEmail($model);
+        });
+
+        $this->updating(function(self $model) {
+            $model->updated_at = now();
+        });
+
+        $this->updated(function(self $model) {
+            Log::info('User updated: ' . $model->id);
+        });
+
+        $this->deleting(function(self $model) {
+            Log::warning('User being deleted: ' . $model->id);
+        });
+
+        $this->deleted(function(self $model) {
+            Log::info('User deleted: ' . $model->id);
+        });
+
+        $this->saving(function(self $model) {
+            // Avant toute sauvegarde
+        });
+
+        $this->saved(function(self $model) {
+            // Après toute sauvegarde
+        });
+
+        $this->restoring(function(self $model) {
+            Log::info('Restoring user: ' . $model->id);
+        });
+
+        $this->restored(function(self $model) {
+            Log::info('User restored: ' . $model->id);
+        });
+    }
+}
+```
+
+### Cycle de Vie
+
+| Événement | Moment | Peut annuler l'opération |
+|-----------|--------|--------|
+| `creating` | Avant la création | Oui |
+| `created` | Après la création | — |
+| `updating` | Avant la mise à jour | Oui |
+| `updated` | Après la mise à jour | — |
+| `deleting` | Avant la suppression | Oui |
+| `deleted` | Après la suppression | — |
+| `restoring` | Avant la restauration | Oui |
+| `restored` | Après la restauration | — |
+| `saving` | Avant toute sauvegarde | Oui |
+| `saved` | Après toute sauvegarde | — |
+
+### Observers
+
+```php
+// App/Observers/UserObserver.php
+class UserObserver extends EventObserver
+{
+    public function creating(User $user): void
+    {
+        $user->created_at = now();
+    }
+
+    public function created(User $user): void
+    {
+        Mail::to($user->email)->send(new WelcomeEmail($user));
+    }
+
+    public function updating(User $user): void
+    {
+        $user->updated_at = now();
+    }
+
+    public function deleted(User $user): void
+    {
+        Storage::delete('avatars/' . $user->avatar);
+    }
+}
+
+// Dans le modèle
+protected $observers = [
+    UserObserver::class
+];
+```
+
+Un Observer centralise, dans une classe dédiée, la logique que vous auriez sinon dû répartir dans plusieurs closures au sein de `booted()` — préférable dès que la logique d'un événement dépasse une ou deux lignes, ou doit être testée isolément.
+
+---
+
+## Auto-casting
+
+### Activation par Défaut
+
+```php
+// database/entities/UserEntity.php
+class UserEntity extends Entity
+{
+    #[Property]
+    public DateTime $created_at; // Casté en objet date
+
+    #[Property]
+    public ?DateTime $deleted_at; // Casté en objet date, ou null
+
+    #[Property(length: 1)]
+    public TinyInt|int $is_active; // Casté en booléen (1 → true)
+
+    #[Property(length: 10)]
+    public Integer|int $views; // Casté en int
+}
+
+// Dans le modèle
+$user = User::find(1);
+$createdAt = $user->created_at; // Instance de DateTime
+$isActive = $user->is_active; // bool
+```
+
+### Désactivation
+
+```php
+// Désactiver pour tout le modèle
+class User extends Elegant
+{
+    protected $autoCast = false;
+}
+
+// Désactiver pour un attribut spécifique
+#[Property(autoCast: false)]
+public DateTime $created_at;
+```
+
+### Formatter Personnalisé
+
+```php
 namespace Database\Entities;
 
 use Clicalmani\Database\DataTypes\Integer;
@@ -3003,104 +1626,595 @@ class OrderEntity extends Entity
     #[Property(
         length: 10,
         unsigned: true,
-        nullable: false,
         autoIncrement: true
     ), PrimaryKey]
     public Integer $id;
+
+    #[Property(
+        formatter: 'dateFormat'
+    )]
+    public Date $order_date;
+
+    // ── Méthodes ─────────────────────────
+
+    public function dateFormat(?string $date)
+    {
+        if (!$date) return null;
+        return Carbon::parse($date)
+            ->translatedFormat('d/m/Y'); // Format français
+    }
 }
+
+$date = $order->order_date; // 10/08/2024
 ```
 
-In this example, the `u` alias is assigned to the `User` table, and the `o` alias is assigned to the `Order` table. This helps to avoid conflicts with the `id` column, which is the primary key in both tables.
+---
 
-To define table aliases in your model classes, you can set the `$table` property with the alias:
+## Soft Delete
+
+### Activation
 
 ```php
-<?php
-namespace App\Models;
-
-use Clicalmani\Database\Factory\Models\Elegant;
+use Clicalmani\Database\Traits\SoftDelete;
 
 class User extends Elegant
 {
-    protected $table = 'users u';
-
-    protected $primaryKey = 'u.id';
+    use SoftDelete;
 }
 ```
+
+### Utilisation
 
 ```php
-<?php
-namespace App\Models;
+// Suppression (soft delete)
+$user->delete();
 
-use Clicalmani\Database\Factory\Models\Elegant;
+// Restauration
+$user->restore();
 
-class Order extends Elegant
-{
-    protected $table = 'orders o';
-
-    protected $primaryKey = 'o.id';
+// Vérification
+if ($user->trashed()) {
+    // L'utilisateur est soft deleted
 }
+
+// Inclure les enregistrements soft deleted
+$users = User::withTrashed()->get();
+
+// Uniquement les enregistrements soft deleted
+$users = User::onlyTrashed()->get();
+
+// Suppression définitive
+$user->forceDelete();
 ```
 
-By using table aliases, you can ensure that your queries are clear and avoid conflicts with primary key column names, making it easier to work with complex model relationships.
+---
 
-## Model Attributes Validation
+## Jointures
 
-**Elegant ORM** provides a robust [Validation](validation.md) system to ensure that your model attributes meet specific criteria before they are saved to the database. This helps maintain data integrity and prevents invalid data from being persisted.
-
-### Defining Validation Rules
-
-To define validation rules for your model attributes, you can use the `Clicalmani\Database\Factory\Validate` class on each model entity property.
-
-Here is an example of how to define validation rules in a model entity class:
+### Jointures Simples
 
 ```php
-<?php
+// INNER JOIN
+$posts = Post::innerJoin(User::class)->get();
 
-use Clicalmani\Database\Factory\Entity;
-use Clicalmani\Database\Factory\Validate;
-use Clicalmani\Database\Factory\PrimaryKey;
-use Clicalmani\Database\Factory\Index;
+// LEFT JOIN
+$posts = Post::leftJoin(User::class)->get();
 
-#[Index(
-    name: 'emailUNIQUE',
-    key: 'email',
-    unique: true
-)]
-class UserEntity extends Entity
-{
-    #[Property(
-        length: 10,
-        unsigned: true,
-        nullable: false,
-        autoIncrement: true
-    ), PrimaryKey]
-    public Integer $id;
+// RIGHT JOIN
+$posts = Post::rightJoin(User::class)->get();
 
-    #[Property(
-        length: 191,
-        nullable: false
-    ), Validate('required|string|max:191')]
-    public VarChar $given_name;
-    
-    #[Property(
-        length: 191,
-        nullable: false
-    ), Validate('required|string|max:191')]
-    public VarChar $family_name;
+// CROSS JOIN
+$posts = Post::crossJoin(User::class)->get();
+```
 
-    #[Property(
-        length: 200,
-        nullable: false
-    ), Validate('required|email|unique:users')]
-    public VarChar $email;
+Ces méthodes de jointure au niveau du modèle sont l'équivalent, côté ORM, des méthodes `joinInner`/`joinLeft`/`joinRight`/`joinCross` déjà présentées sur la page [Query Builder](query-builder.md#jointures) — préférez la syntaxe ORM lorsque vous travaillez déjà avec des modèles Elegant, elle résout automatiquement le nom de table à partir de la classe passée en argument.
 
-    #[Property(
-        length: 200,
-        nullable: false
-    ), Validate('required|password|min:8|confirm:1|hash:1')]
-    public VarChar $password;
+### Jointures avec Clés Personnalisées
+
+```php
+// Clés personnalisées
+$posts = Post::innerJoin(
+    User::class,           // Modèle à joindre
+    'author_id',           // Clé étrangère (dans Post)
+    'id'                   // Clé locale (dans User)
+)->get();
+
+// Avec alias explicites
+$posts = Post::innerJoin(
+    User::class,
+    'posts.author_id',
+    'users.id'
+)->get();
+```
+
+### Jointures Avancées avec Conditions
+
+```php
+// Jointure avec conditions supplémentaires
+$posts = Post::join(User::class, function($join) {
+    $join->inner()->on('posts.user_id = users.id')
+         ->where('users.active = ?', [1])
+         ->where('posts.published = ?', [true]);
+})->get();
+
+// Condition OR dans la jointure
+$posts = Post::join(User::class, function($join) {
+    $join->inner()->on('posts.user_id = users.id')
+         ->orWhere('posts.author_id = users.id');
+})->get();
+```
+
+### Jointures Multiples
+
+```php
+// Deux jointures
+$posts = Post::innerJoin(User::class)
+    ->innerJoin(Comment::class)
+    ->where('users.role = ?', ['admin'])
+    ->get();
+
+// Trois jointures
+$orders = Order::innerJoin(User::class)
+    ->innerJoin(Product::class)
+    ->innerJoin(Category::class)
+    ->where('users.active = ?', [1])
+    ->where('orders.status = ?', ['completed'])
+    ->get();
+```
+
+### Jointures avec Alias
+
+```php
+// Alias personnalisés
+$posts = Post::innerJoin(User::class, 'author_id', 'id')
+    ->innerJoin(Profile::class, 'user_id', 'id')
+    ->select('posts.*, users.name as author_name, profiles.bio')
+    ->get();
+```
+
+### Jointures Polymorphiques
+
+```php
+// MorphToMany avec jointure explicite
+$post = Post::find(1);
+$tags = $post->tags()
+    ->innerJoin(Taggable::class, 'tags.id', 'taggable.tag_id')
+    ->where('taggable.taggable_type = ?', [Post::class])
+    ->get();
+```
+
+### Exemples Complets
+
+```php
+// 1. Récupérer tous les posts avec leurs auteurs actifs
+$posts = Post::innerJoin(User::class)
+    ->where('users.active = ?', [1])
+    ->orderBy('posts.created_at DESC')
+    ->get();
+
+// 2. Récupérer les commandes avec utilisateurs et produits
+$orders = Order::innerJoin(User::class, 'user_id', 'id')
+    ->innerJoin(Product::class, 'product_id', 'id')
+    ->where('orders.status = ?', ['completed'])
+    ->where('users.role = ?', ['admin'])
+    ->select('orders.*, users.name, products.title')
+    ->get();
+
+// 3. Récupérer les commentaires avec leurs auteurs
+$comments = Comment::innerJoin(User::class, 'user_id', 'id')
+    ->where('comments.approved = ?', [true])
+    ->orderBy('comments.created_at DESC')
+    ->limit(0, 10)
+    ->get();
+
+// 4. Récupérer les utilisateurs avec leur nombre de posts (LEFT JOIN)
+$users = User::leftJoin(Post::class)
+    ->select('users.*, COUNT(posts.id) as post_count')
+    ->groupBy('users.id')
+    ->get();
+
+// 5. Récupérer les produits avec leurs catégories
+$products = Product::innerJoin(Category::class, 'category_id', 'id')
+    ->where('categories.active = ?', [1])
+    ->where('products.stock > ?', [0])
+    ->orderBy('products.price ASC')
+    ->get();
+```
+
+### Méthodes de Jointure Disponibles
+
+| Méthode | Description | Exemple |
+|---------|-------------|---------|
+| `innerJoin()` | INNER JOIN | `Post::innerJoin(User::class)` |
+| `leftJoin()` | LEFT JOIN | `Post::leftJoin(User::class)` |
+| `rightJoin()` | RIGHT JOIN | `Post::rightJoin(User::class)` |
+| `crossJoin()` | CROSS JOIN | `Post::crossJoin(User::class)` |
+
+---
+
+## Query Scopes Dynamiques
+
+```php
+// Scopes dynamiques via closure
+User::when($condition, function($query) use ($search) {
+    $query->where('name LIKE ?', ["%$search%"]);
+})->get();
+
+// Unless
+User::unless($condition, function($query) {
+    $query->where('active = ?', [true]);
+})->get();
+```
+
+À distinguer des [Scopes](#scopes) nommés et réutilisables évoqués ci-dessus : `when()`/`unless()` s'appliquent au coup par coup, directement dans le code appelant, sans nécessiter de méthode dédiée sur le modèle.
+
+---
+
+## Chunking
+
+```php
+// Traitement par lots de 100
+User::chunk(100, function($users) {
+    foreach ($users as $user) {
+        // Traitement
+        $user->update(['processed' => true]);
+    }
+});
+
+// Chunking par ID (plus performant sur de grandes tables)
+User::chunkById(100, function($users) {
+    foreach ($users as $user) {
+        // Traitement
+        $user->update(['processed' => true]);
+    }
+});
+```
+
+`chunkById()` pagine sur la clé primaire plutôt que sur un `OFFSET` classique — une différence qui compte sur de grandes tables : un `OFFSET` élevé oblige le moteur à parcourir puis ignorer toutes les lignes précédentes à chaque lot, tandis qu'une pagination par clé reste performante quel que soit le nombre de lots déjà traités.
+
+---
+
+## Transactions
+
+```php
+use Clicalmani\Core\Support\Facades\DB;
+```
+
+### Transaction Simple
+
+```php
+// Transaction simple
+DB::transaction(function() use ($user) {
+    $user->save();
+    $user->profile()->create($data);
+});
+
+// Transaction avec valeur de retour
+$result = DB::transaction(function() use ($user) {
+    $user->save();
+    return $user->id;
+});
+
+// Transaction avec gestion manuelle
+DB::beginTransaction();
+try {
+    $user->save();
+    $user->profile()->create($data);
+    DB::commit();
+} catch (\Exception $e) {
+    DB::rollback();
+    throw $e;
 }
 ```
 
-In this example, the `given_name` and `family_name` attributes are required, must be a string, and cannot exceed 191 characters. The `email` attribute is required, must be a valid email address, and must be unique in the `users` table. The `password` attribute is required, must be a password, and must be at least 8 characters long, needs a password confirm field and accept hashing.
+### Gestion des Deadlocks
+
+Un interblocage (*deadlock*) survient lorsque deux transactions attendent mutuellement des ressources verrouillées par l'autre.
+
+```php
+// Méthode deadlock() avec tentatives automatiques
+DB::deadlock(function() use ($user, $data) {
+    // Cette opération sera réessayée automatiquement en cas d'interblocage
+    $user->update($data);
+    $user->profile()->create($data['profile']);
+}, 5, 100); // 5 tentatives, 100ms d'attente entre chaque
+```
+
+`DB::deadlock($callback, $tentatives, $delaiMs)` prend explicitement le nombre maximal de tentatives et le délai (en millisecondes) entre chacune — comme illustré ci-dessus (5 tentatives, 100ms d'intervalle).
+
+```php
+// Avec transaction imbriquée
+DB::deadlock(function() {
+    return DB::transaction(function() {
+        $user = User::find(1);
+        $user->update(['balance' => $user->balance - 100]);
+
+        $recipient = User::find(2);
+        $recipient->update(['balance' => $recipient->balance + 100]);
+
+        return true;
+    });
+}, 3, 200); // 3 tentatives, 200ms d'attente
+```
+
+#### Exemple Complet : Transfert avec Gestion de Deadlock
+
+```php
+class PaymentController extends Controller
+{
+    public function transfer(Request $request)
+    {
+        $validated = $request->validate([
+            'from_user_id' => 'required|exists:users,id',
+            'to_user_id' => 'required|exists:users,id',
+            'amount' => 'required|numeric|min:0.01'
+        ]);
+
+        try {
+            $result = DB::deadlock(function() use ($validated) {
+                return DB::transaction(function() use ($validated) {
+                    // 1. Débiter l'expéditeur
+                    $fromUser = User::find($validated['from_user_id']);
+
+                    if ($fromUser->balance < $validated['amount']) {
+                        throw new \Exception('Solde insuffisant');
+                    }
+
+                    $fromUser->decrement('balance', $validated['amount']);
+
+                    // 2. Créditer le destinataire
+                    $toUser = User::find($validated['to_user_id']);
+                    $toUser->increment('balance', $validated['amount']);
+
+                    // 3. Enregistrer la transaction
+                    Transaction::create([
+                        'from_user_id' => $validated['from_user_id'],
+                        'to_user_id' => $validated['to_user_id'],
+                        'amount' => $validated['amount'],
+                        'status' => 'completed'
+                    ]);
+
+                    return [
+                        'success' => true,
+                        'message' => 'Transfert effectué avec succès'
+                    ];
+                });
+            }, 5, 100); // 5 tentatives, 100ms d'attente
+
+            return response()->json($result);
+
+        } catch (\Exception $e) {
+            return response()->error($e->getMessage());
+        }
+    }
+}
+```
+
+### Isolation des Transactions
+
+```php
+use Clicalmani\Database\DB;
+
+// Définir le niveau d'isolation
+DB::isolateTransaction(
+    DB::TRANSACTION_SERIALIZABLE,
+    'SESSION'
+);
+
+DB::transaction(function() {
+    // Traitement exécuté avec l'isolation SERIALIZABLE
+    $user = User::find(1);
+    $user->update(['balance' => $user->balance - 100]);
+});
+```
+
+Niveaux d'isolation disponibles :
+
+| Constante | Niveau SQL standard |
+|---|---|
+| `DB::TRANSACTION_DIRTY_READS` | READ UNCOMMITTED |
+| `DB::TRANSACTION_NON_REPEATABLE_READS` | READ COMMITTED |
+| `DB::TRANSACTION_PHANTOM_READS` | REPEATABLE READ |
+| `DB::TRANSACTION_SERIALIZABLE` | SERIALIZABLE |
+
+> **Point de vocabulaire :** ces constantes sont nommées d'après le **phénomène qu'elles éliminent** plutôt que d'après le nom SQL standard du niveau — `TRANSACTION_DIRTY_READS` ne signifie pas « active les lectures sales », mais correspond au niveau `READ UNCOMMITTED`, le seul des quatre à ne prévenir *aucun* des trois phénomènes indésirables. Gardez le tableau ci-dessus à portée de main pour éviter toute confusion au moment de choisir la bonne constante.
+
+### Bonnes Pratiques
+
+```php
+// 1. Toujours utiliser les transactions pour les opérations critiques
+DB::transaction(function() {
+    // Opérations atomiques
+});
+
+// 2. Utiliser deadlock() pour les opérations à risque d'interblocage
+DB::deadlock(function() {
+    // Opérations avec risque de deadlock
+}, 5, 100);
+
+// 3. Vérifier l'état de la transaction avant d'en démarrer une nouvelle
+if (!DB::inTransaction()) {
+    DB::beginTransaction();
+    try {
+        // Opérations
+        DB::commit();
+    } catch (\Exception $e) {
+        DB::rollback();
+        throw $e;
+    }
+}
+
+// 4. Limiter la durée des transactions
+DB::transaction(function() {
+    // Opérations rapides uniquement
+    // Ne pas inclure d'opérations longues (appel API, traitement de fichiers, etc.)
+});
+
+// 5. Les transactions imbriquées utilisent un savepoint automatique
+DB::transaction(function() {
+    // Niveau 1
+    DB::transaction(function() {
+        // Niveau 2 — savepoint automatique
+    });
+});
+```
+
+---
+
+## Référence
+
+Elegant ORM fournit une large gamme de méthodes pour interagir avec votre base de données. Voici un récapitulatif complet des méthodes disponibles.
+
+### Méthodes de Récupération
+
+| Méthode | Description | Exemple |
+|---------|-------------|---------|
+| `all()` | Récupère tous les enregistrements | `User::all()` |
+| `find($id)` | Trouve par ID | `User::find(1)` |
+| `findOrFail($id)` | Trouve ou lance une exception | `User::findOrFail(1)` |
+| `findMany($ids)` | Trouve plusieurs IDs | `User::findMany([1, 2, 3])` |
+| `first()` | Récupère le premier enregistrement | `User::first()` |
+| `firstOrFail()` | Premier ou exception | `User::firstOrFail()` |
+| `firstOr($callback)` | Premier ou callback | `User::firstOr(fn() => 'default')` |
+| `get()` | Exécute la requête | `User::where('active = ?', [1])->get()` |
+| `select($fields)` | Sélectionne des colonnes | `User::select('id, name')->get()` |
+| `pluck($field, $key)` | Récupère une liste de valeurs | `User::pluck('name', 'id')` |
+| `value($field)` | Récupère une valeur unique | `User::where('id = ?', [1])->value('name')` |
+| `chunk($size, $callback)` | Traite par lots | `User::chunk(100, fn($users) => ...)` |
+| `chunkById($size, $callback)` | Traite par lots (via ID) | `User::chunkById(100, fn($users) => ...)` |
+| `lazy()` | Stream en flux | `User::lazy()->each(fn($user) => ...)` |
+| `exists()` | Vérifie l'existence | `User::where('email = ?', [$email])->exists()` |
+| `doesntExist()` | Vérifie la non-existence | `User::where('email = ?', [$email])->doesntExist()` |
+
+### Méthodes de Filtrage
+
+| Méthode | Description | Exemple |
+|---------|-------------|---------|
+| `where($criteria, $options)` | Condition WHERE | `User::where('active = ?', [1])` |
+| `orWhere($criteria, $options)` | Condition OR | `User::orWhere('role = ?', ['admin'])` |
+| `whereIn($key, $values)` | WHERE IN | `User::whereIn('role', ['admin', 'user'])` |
+| `whereExists($callback)` | WHERE EXISTS | `User::whereExists(fn($q) => $q->from('posts'))` |
+| `whereNotExists($callback)` | WHERE NOT EXISTS | `User::whereNotExists(fn($q) => ...)` |
+| `whereHas($relation, $callback)` | WHERE HAS | `User::whereHas('posts', fn($q) => $q->where('published', true))` |
+| `whereDoesntHave($relation, $callback)` | WHERE DOESNT HAVE | `User::whereDoesntHave('posts')` |
+| `orWhereHas($relation, $callback)` | OR WHERE HAS | `User::orWhereHas('posts', fn($q) => ...)` |
+| `orWhereDoesntHave($relation, $callback)` | OR WHERE DOESNT HAVE | `User::orWhereDoesntHave('posts')` |
+| `whereRaw($condition)` | WHERE brut | `User::whereRaw('DATE(created_at) = ?', [date('Y-m-d')])` |
+| `whereNull($column)` | WHERE NULL | `User::whereNull('deleted_at')` |
+| `whereNotNull($column)` | WHERE NOT NULL | `User::whereNotNull('deleted_at')` |
+
+### Méthodes de Tri et Groupement
+
+| Méthode | Description | Exemple |
+|---------|-------------|---------|
+| `orderBy($order)` | Tri | `User::orderBy('created_at DESC')` |
+| `orderByRaw($order)` | Tri en SQL brut | `User::orderByRaw('FIELD(role, "admin", "user")')` |
+| `groupBy($group)` | Groupement | `User::groupBy('role')` |
+| `having($criteria)` | HAVING | `User::having('total > ?', [5])` |
+
+### Méthodes de Jointure
+
+| Méthode | Description | Exemple |
+|---------|-------------|---------|
+| `join($model, $callback)` | Jointure personnalisée | `User::join(Post::class, fn($j) => $j->on(...))` |
+| `innerJoin($model, $fk, $lk)` | INNER JOIN | `Post::innerJoin(User::class, 'user_id', 'id')` |
+| `leftJoin($model, $fk, $lk)` | LEFT JOIN | `Post::leftJoin(User::class, 'user_id', 'id')` |
+| `rightJoin($model, $fk, $lk)` | RIGHT JOIN | `Post::rightJoin(User::class, 'user_id', 'id')` |
+| `crossJoin($model)` | CROSS JOIN | `Post::crossJoin(User::class)` |
+
+### Méthodes d'Insertion
+
+| Méthode | Description | Exemple |
+|---------|-------------|---------|
+| `create($attributes)` | Crée un enregistrement | `User::create(['name' => 'John'])` |
+| `insert($attributes)` | Insertion en masse | `User::insert([...])` |
+| `insertIgnore($attributes)` | Insertion IGNORE | `User::insertIgnore([...])` |
+| `insertGetId($attributes)` | Insertion avec retour de l'ID | `User::insertGetId(['name' => 'John'])` |
+| `insertOrFail($attributes)` | Insertion ou exception | `User::insertOrFail([...])` |
+| `save()` | Sauvegarde le modèle | `$user->save()` |
+
+### Méthodes de Mise à Jour
+
+| Méthode | Description | Exemple |
+|---------|-------------|---------|
+| `update($attributes)` | Met à jour | `User::where('id = ?', [1])->update(['name' => 'Jane'])` |
+| `increment($field, $value)` | Incrémente | `User::where('id = ?', [1])->increment('views')` |
+| `decrement($field, $value)` | Décrémente | `User::where('id = ?', [1])->decrement('score', 5)` |
+| `fill($attributes)` | Remplit le modèle | `$user->fill(['name' => 'John'])` |
+| `refresh()` | Rafraîchit le modèle | `$user->refresh()` |
+
+### Méthodes de Suppression
+
+| Méthode | Description | Exemple |
+|---------|-------------|---------|
+| `delete()` | Supprime | `$user->delete()` |
+| `forceDelete()` | Supprime définitivement | `$user->forceDelete()` |
+| `destroy()` | Supprime tout | `User::destroy()` |
+| `restore()` | Restaure (Soft Delete) | `$user->restore()` |
+| `truncate()` | Vide la table | `User::truncate()` |
+
+### Méthodes d'Agrégation
+
+| Méthode | Description | Exemple |
+|---------|-------------|---------|
+| `count($field)` | Compte | `User::count()` |
+| `sum($field)` | Somme | `Order::sum('amount')` |
+| `avg($field)` | Moyenne | `Order::avg('amount')` |
+| `min($field)` | Minimum | `Product::min('price')` |
+| `max($field)` | Maximum | `Product::max('price')` |
+
+### Méthodes de Pagination
+
+| Méthode | Description | Exemple |
+|---------|-------------|---------|
+| `paginate($page, $size)` | Pagination | `User::paginate(1, 10)` |
+| `simplePaginate($page, $size)` | Pagination simple | `User::simplePaginate(1, 10)` |
+
+### Méthodes de Relation
+
+| Méthode | Description | Exemple |
+|---------|-------------|---------|
+| `with($relations)` | Eager Loading | `User::with('posts', 'profile')` |
+| `load($relations)` | Lazy Eager Loading | `$users->load('posts')` |
+| `withCount($relations)` | Compte les relations | `User::withCount('posts')` |
+| `withExists($relations)` | Existence des relations | `User::withExists('posts')` |
+| `has($relation)` | Filtre par relation | `User::has('posts')` |
+
+### Méthodes d'Événements
+
+| Méthode | Description | Exemple |
+|---------|-------------|---------|
+| `registerEvent($event, $callback)` | Enregistre un événement | `$model->registerEvent('creating', fn() => ...)` |
+| `muteEvents($events)` | Coupe des événements | `$user->muteEvents(['created'])->save()` |
+| `saveQuietly()` | Sauvegarde sans déclencher d'événements | `$user->saveQuietly()` |
+
+### Méthodes Utilitaires
+
+| Méthode | Description | Exemple |
+|---------|-------------|---------|
+| `withTrashed()` | Inclut les enregistrements soft deleted | `User::withTrashed()->get()` |
+| `onlyTrashed()` | Uniquement les enregistrements soft deleted | `User::onlyTrashed()->get()` |
+| `trashed()` | Vérifie si soft deleted | `$user->trashed()` |
+| `isDirty($attribute)` | Vérifie si l'attribut a été modifié | `$user->isDirty('name')` |
+| `isClean($attribute)` | Vérifie si l'attribut n'a pas été modifié | `$user->isClean('name')` |
+| `getOriginal($attribute)` | Valeur originale de l'attribut | `$user->getOriginal('name')` |
+| `getDirty($attribute)` | Valeurs modifiées | `$user->getDirty()` |
+| `wasChanged($attributes)` | Vérifie si l'attribut a changé depuis la sauvegarde | `$user->wasChanged('name')` |
+| `fill($attributes)` | Remplit le modèle | `$user->fill(['name' => 'John'])` |
+| `fresh($attributes)` | Recharge le modèle depuis la base | `$user->fresh()` |
+| `on($connection)` | Change de connexion | `User::on('mysql2')->find(1)` |
+| `marker($value)` | Marqueur de placeholder personnalisé | `User::marker(':')->where('id = :id', ['id' => 1])` |
+
+---
+
+## Prochaines Étapes
+
+Maintenant que vous maîtrisez Elegant ORM :
+
+1. **[Entités](entities.md)** → Définir la structure des tables
+2. **[Migrations](migration.md)** → Gérer les modifications de schéma
+3. **[Seeders](seeding.md)** → Peupler la base de données
+
+---
+
+**Elegant ORM compris !** 🚀 → [Entités](entities.md)

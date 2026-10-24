@@ -38,7 +38,7 @@ return [
     'mailers' => [
 
         'smtp' => [
-            'scheme' => env('MAIL_MAILER', 'smtp'),
+            'schema' => env('MAIL_MAILER', 'smtp'),
             'host' => env('MAIL_HOST', '127.0.0.1'),
             'port' => env('MAIL_PORT', 2525),
             'username' => env('MAIL_USERNAME'),
@@ -83,7 +83,12 @@ return [
             ],
         ],
 
+        'null' => [
+            'schema' => 'array'
+        ]
     ],
+
+    'default_layout' => 'base',
 
     /*
     |--------------------------------------------------------------------------
@@ -99,5 +104,19 @@ return [
     'from' => [
         'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
         'name' => env('MAIL_FROM_NAME', 'Example'),
-    ]
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Envoi asynchrone via Messenger
+    |--------------------------------------------------------------------------
+    |
+    | Si activé, les emails ne seront pas envoyés directement au transport
+    | mais poussés sur le bus Messenger (service "messenger"). Nécessite
+    | que le MessengerServiceProvider soit enregistré et configuré.
+    |
+    */
+    'queue' => [
+        'enabled' => env('MAIL_QUEUE', false),
+    ],
 ];

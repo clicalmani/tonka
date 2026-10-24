@@ -1,0 +1,24 @@
+#!/usr/bin/env php
+<?php
+/**
+ * Test Runner Entry Point
+ *
+ * CLI script responsible for initializing the test environment
+ * and executing the test suite lifecycle.
+ *
+ * @package Tonka\Tests
+ * @author clicalmani
+ */
+
+$root = dirname(__DIR__, 1);
+
+/**
+ * Composer Autoloader Initialization
+ */
+require $root . '/vendor/autoload.php';
+
+/**
+ * Bootstrap Application
+ */
+(require_once __DIR__ . '/bootstrap.php')
+    ->handleTest();

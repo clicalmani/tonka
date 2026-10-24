@@ -1,16 +1,19 @@
 <?php 
 namespace App\Models;
 
-use Clicalmani\Foundation\Acme\Model as Elegant;
+use Clicalmani\Database\Traits\HasFactory;
+use Clicalmani\Core\Acme\Model;
 
-class User extends Elegant
+class User extends Model
 {
+    use HasFactory;
+    
     /**
      * Model database table 
      *
      * @var string $table Table name
      */
-    protected $table = "users";
+    protected string $table = "users AS u";
 
     /**
      * Model entity
@@ -25,7 +28,9 @@ class User extends Elegant
      *
      * @var string|array $primary_keys Table primary key.
      */
-    protected $primaryKey = "id";
+    protected string|array $primaryKey = "id";
+
+    protected array $hidden = ['password'];
 
     /**
      * Constructor 

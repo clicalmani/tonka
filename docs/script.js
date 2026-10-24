@@ -42,55 +42,66 @@ window.$docsify = {
     //   defaultTag: 'div',
     //   zIndex: 1000
     // },
-    ads: [
-      {
-        img: './_assets/_img/brown-aesthetic-hijab-giveaway-feed-ads.png',
-        href: 'https://boolan-erp.com'
-      },
-      {
-        img: './_assets/_img/brown-aesthetic-hijab-giveaway-feed-ads.png',
-        href: 'https://boolan-erp.com'
-      },
-      {
-        img: './_assets/_img/blue-professional-modern-gradient-internet-security-ads-instagram-post.png',
-        href: 'https://boolan-erp.com'
-      },
-      {
-        img: './_assets/_img/blue-professional-modern-gradient-internet-security-ads-instagram-post.png',
-        href: 'https://boolan-erp.com'
-      },
-      {
-        img: 'https://dn-lego-static.qbox.me/cps/1638268217-480x300.jpg',
-        href: 'https://boolan-erp.com'
-      },
-      {
-        img: 'https://dn-lego-static.qbox.me/cps/1638267917-480x300.jpg',
-        href: 'https://boolan-erp.com'
-      },
-    ],
+    // ads: [
+    //   {
+    //     img: './_assets/_img/brown-aesthetic-hijab-giveaway-feed-ads.png',
+    //     href: 'https://boolan-erp.com'
+    //   },
+    //   {
+    //     img: './_assets/_img/brown-aesthetic-hijab-giveaway-feed-ads.png',
+    //     href: 'https://boolan-erp.com'
+    //   },
+    //   {
+    //     img: './_assets/_img/blue-professional-modern-gradient-internet-security-ads-instagram-post.png',
+    //     href: 'https://boolan-erp.com'
+    //   },
+    //   {
+    //     img: './_assets/_img/blue-professional-modern-gradient-internet-security-ads-instagram-post.png',
+    //     href: 'https://boolan-erp.com'
+    //   },
+    //   {
+    //     img: 'https://dn-lego-static.qbox.me/cps/1638268217-480x300.jpg',
+    //     href: 'https://boolan-erp.com'
+    //   },
+    //   {
+    //     img: 'https://dn-lego-static.qbox.me/cps/1638267917-480x300.jpg',
+    //     href: 'https://boolan-erp.com'
+    //   },
+    // ],
     markdown: {        
         renderer: {
           code: function (code, lang) {
+            if (lang === 'mermaid') {
+              return '<pre class="mermaid">' + code + '</pre>';
+            }
             let cc = document.createElement('code');
             cc.textContent = code;
             cc.setAttribute('class', 'language-' + lang);
             return '<pre data-lang="' + lang + '" class="line-numbers">' + cc.outerHTML + '</pre>';
           },
           heading(text, depth) {
-            const escapedText = text.toLowerCase().replace(/[^\w]+/g, '-');
+            const escapedText = text
+              .toLowerCase()
+              .normalize('NFD') // Sépare les accents des lettres de base
+              .replace(/[\u0300-\u036f]/g, '') // Supprime les diacritiques générés
+              .replace(/[^\w]+/g, '-'); // Remplace le reste par des tirets
+
             return `
-                    <h${depth} class="heading">
-                      <a id="${escapedText}" class="anchor" href="${location.hash}?id=${escapedText}">
-                        <span class="header-link">#</span>
-                      </a>
-                      ${text}
-                    </h${depth}>`;
+              <h${depth} class="heading">
+                <a id="${escapedText}" class="anchor" href="${location.hash}?id=${escapedText}">
+                  <span class="header-link">#</span>
+                </a>
+                ${text}
+              </h${depth}>`;
           }
         }
     },
     plugins: [
       function (hook, vm) {
-          hook.doneEach(function (html) {              
+          hook.doneEach(function (html) {    
+            if (window.mermaid) {
+              window.mermaid.run({ querySelector: '.mermaid' });
+            }          
             Prism.highlightAll();
           })
       },

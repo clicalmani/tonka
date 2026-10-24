@@ -1,9 +1,10 @@
 <?php
 namespace App\Providers;
 
-use Clicalmani\Foundation\Support\Facades\DB;
-use Clicalmani\Foundation\Auth\Authenticate;
-use Clicalmani\Foundation\Http\RequestInterface;
+use App\Models\AuthAccess;
+use Clicalmani\Core\Auth\Authenticate;
+use Clicalmani\Core\Http\RequestInterface;
+use Clicalmani\Core\Support\Facades\DB;
 
 class AuthServiceProvider extends Authenticate
 {
@@ -11,16 +12,11 @@ class AuthServiceProvider extends Authenticate
 
 	public function getConnectedUserID(?RequestInterface $request) : mixed
 	{
-		if ($payload = verify_token($request->bearerToken())) {
-			return (int) json_decode($payload->jti);
+		if ($user_id = $request->session('user:id')->get()) {
+			return (int)$user_id;
 		}
 		
 		return null;
-	}
-
-	public function boot(): void
-	{
-		$this->serialize(fn() => $this->user->profile);
 	}
 
     /**
@@ -30,11 +26,23 @@ class AuthServiceProvider extends Authenticate
 	 */
 	public function authenticate() : void
 	{
-		DB::table('auth_access')
-			->where('user_id = :user', 'AND', ['user' => (int) $this->user_id])
-			->insert([
-				['user_id' => $this->user_id, 'token' => $this->auth->generateToken()]
-			], true);
+		if ($this->user_id) {
+			DB::table('auth_access')
+				->where('user_id = :user', ['user' => (int) $this->user_id])
+				->insert([
+					['user_id' => $this->user_id, 'token' => token($this->user_id)]
+				])->onDuplicateKeyUpdate(['user_id'])->query();
+		}
+	}
+
+	/**
+	 * Is user authenticated
+	 * 
+	 * @return bool
+	 */
+	public function isAuthenticated() : bool
+	{
+		return !!DB::table('auth_access')->where('user_id = :user_id', ['user_id' => $this->user_id])->get('token')->first();
 	}
 
 	/**
@@ -45,8 +53,14 @@ class AuthServiceProvider extends Authenticate
 	public function isOnline() : bool
 	{
 		$auth = DB::table('auth_access')->where('user_id = :user_id', 'AND', ['user_id' => $this->user_id])->get('token')->first();
-		if ($auth && verify_token($auth['token'])) return true;
-
+		if ($auth && verify_token((string)$auth->token)) return true;
 		return false;
+	}
+
+	public function destroy()
+	{
+		if ($this->user_id) {
+			AuthAccess::where('user_id = ?', [$this->user_id])->first()?->delete();
+		}
 	}
 }

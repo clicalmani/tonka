@@ -1,5 +1,4 @@
 <?php
-
 return [
 
     /**
@@ -15,50 +14,28 @@ return [
 
     /**
      * |-------------------------------------------------------------------
-     * |                      Route Third Party Services
+     * | Redirect Service
      * |-------------------------------------------------------------------
      * 
      */
     'tps' => [
+        // 'maintenance' => App\Auth\MaintenanceRedirect::class,
+        // 404 => App\Auth\MaintenanceRedirect::class,
+    ],
 
-        /**
-         * |-------------------------------------------------------------------
-         * |                    Request Third Party Services
-         * |-------------------------------------------------------------------
-         * 
-         */
-        [
-            // Add Request TPS here
-        ],
-
-        /**
-         * |-------------------------------------------------------------------
-         * |                    Response Third Party Services
-         * |-------------------------------------------------------------------
-         * 
-         */
-        [
-            // Add Response TPS here
-        ]
+    'notifications' => [
+        // Clicalmani\Notification\Channels\BroadcastChannel::class,
+        // Clicalmani\Notification\Channels\DatabaseChannel::class,
+        // Clicalmani\Notification\Channels\EmailChannel::class,
     ],
 
     /**
      * |-------------------------------------------------------------------
-     * | Messages
-     * |-------------------------------------------------------------------
-     * 
-     */
-    'messages' => [
-        // Message Bindings
-    ],
-
-    /**
-     * |-------------------------------------------------------------------
-     * | Console Commands
+     * |                    Console Commands
      * |-------------------------------------------------------------------
      * 
      */
     'commands' => [
-        // Console Command Bindings
+        // ...
     ],
 ];

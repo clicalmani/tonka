@@ -1,16 +1,5 @@
 <?php
-
-/**
- * |----------------------------------------------------------------
- * | Static File Server
- * |----------------------------------------------------------------
- * This script serves static files directly when they exist, bypassing
- * the main application logic for improved performance. 
- * It checks if the requested URI corresponds to a file in the 'public'
- * directory and serves it with the correct MIME type.
- */
-
-$mime_types = [
+ $mime_types = [
     'css' => 'text/css',
     'gif' => 'image/gif',
     'htm' => 'text/html',
@@ -28,7 +17,7 @@ $mime_types = [
 ];
 
  $url = urldecode(
-    parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH)
+    (string) parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH)
 );
 
  $file = __DIR__ . '/public' . $url;

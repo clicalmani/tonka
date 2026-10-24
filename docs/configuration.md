@@ -1,79 +1,83 @@
-- [Introduction](configuration.md?id=introduction)
-- [Environment Configuration](configuration.md?id=environment-configuration)
-- [Retrieving Environment Configuration](configuration.md?id=retrieving-environment-configuration)
-- [Accessing Configuration Values](configuration.md?id=accessing-configuration-values)
-- [App Debug Mode](configuration.md?id=app-debug-mode)
-- [Maintenance Mode](configuration.md?id=maintenance-mode)
+## Configuration
+
+- [Introduction](#introduction)
+- [Configuration de l'Environnement](#configuration-de-l-39-environnement)
+- [Récupération de la Configuration d'Environnement](#recuperation-de-la-configuration-d-39-environnement)
+- [Accès aux Valeurs de Configuration](#acces-aux-valeurs-de-configuration)
+- [Mode Débogage de l'Application](#mode-debogage-de-l-39-application)
+- [Mode Maintenance](#mode-maintenance)
 
 ## Introduction
 
-All **Tonka** configuration files reside in the `config` directory. This directory contains all the necessary configuration files required for the proper functioning of the **Tonka** application. Each file within this directory is structured to handle specific configuration settings, ensuring that the application runs smoothly and efficiently.
+Tous les fichiers de configuration de **Tonka** se trouvent dans le répertoire `config`. Ce répertoire contient l'ensemble des fichiers de configuration nécessaires au bon fonctionnement de l'application **Tonka**. Chaque fichier de ce répertoire est structuré pour gérer des paramètres de configuration spécifiques, garantissant ainsi un fonctionnement fluide et efficace de l'application.
 
-The `config` directory is organized to facilitate easy access and management of configuration files. By centralizing all configuration files in one location, it simplifies the process of updating and maintaining the application's settings. This organization helps in keeping the configuration process streamlined and reduces the chances of errors.
+Le répertoire `config` est organisé pour faciliter l'accès et la gestion des fichiers de configuration. La centralisation de tous les fichiers de configuration en un seul endroit simplifie le processus de mise à jour et de maintenance des paramètres de l'application. Cette organisation permet de rationaliser le processus de configuration et réduit les risques d'erreurs.
 
-In the `config` directory, you will find various configuration files, each serving a specific purpose:
+Dans le répertoire `config`, vous trouverez divers fichiers de configuration, chacun répondant à un objectif précis :
 
-- **Database Configuration**: Manages the settings required to connect and interact with the database.
-- **Application Configuration**: Contains general settings for the application, such as environment variables and application-specific options.
-- **Authentication Configuration**: Handles the settings related to user authentication and authorization.
-- **CORS Configuration**: Manages the settings for Cross-origin Resource Sharing protection to enhance security.
-- **Password Hashing Configuration**: Contains the settings for password hashing algorithms and related security measures.
+* **Configuration de la Base de Données** : Gère les paramètres nécessaires pour se connecter et interagir avec la base de données.
+* **Configuration de l'Application** : Contient les paramètres généraux de l'application, tels que les variables d'environnement et les options spécifiques à l'application.
+* **Configuration de l'Authentification** : Gère les paramètres relatifs à l'authentification et à l'autorisation des utilisateurs.
+* **Configuration CORS** : Gère les paramètres de protection liés au partage de ressources entre origines multiples (CORS) afin de renseigner la sécurité.
+* **Configuration du Hachage de Mots de Passe** : Contient les paramètres pour les algorithmes de hachage de mots de passe et les mesures de sécurité associées.
 
-## Environment Configuration
+## Configuration de l'Environnement
 
-Tonka uses `.env` files to manage application environment variables. All environment variables should be stored in a `.env` file located at the root of the application folder. This file contains key-value pairs that define the environment-specific settings for the application.
+Tonka utilise des fichiers `.env` pour gérer les variables d'environnement de l'application. Toutes les variables d'environnement doivent être stockées dans un fichier `.env` situé à la racine du dossier de l'application. Ce fichier contient des paires clé-valeur qui définissent les paramètres spécifiques à l'environnement pour l'application.
 
-Here is a table presenting the types of environment variables:
+Voici un tableau présentant les types de variables d'environnement :
 
-| Variable Type       | Description                                                                 |
-|---------------------|-----------------------------------------------------------------------------|
-| `AP_KEY`           | The application key.                          |
-| `AP_NAME`           | The application name |
-| `DB_CONNECTION`      | The default database driver used by application.                           |
-| `APP_ENV`           | Defines the environment in which the application is running (e.g., `development`, `production`). |
-| `APP_DEBUG`             | A boolean flag to enable or disable debug mode.                             |
+| Type de Variable | Description |
+| --- | --- |
+| `AP_KEY` | La clé de l'application. |
+| `AP_NAME` | Le nom de l'application. |
+| `DB_CONNECTION` | Le pilote de base de données par défaut utilisé par l'application. |
+| `APP_ENV` | Définit l'environnement dans lequel l'application s'exécute (ex. : `development`, `production`). |
+| `APP_DEBUG` | Un indicateur booléen pour activer ou désactiver le mode débogage. |
 
-!> Ensure that the `.env` file is included in your `.gitignore` to prevent sensitive information from being exposed in version control.
+!> Assurez-vous que le fichier `.env` est inclus dans votre fichier `.gitignore` afin d'éviter d'exposer des informations sensibles dans votre système de contrôle de version.
 
-## Retrieving Environment Configuration
+## Récupération de la Configuration d'Environnement
 
-To retrieve environment configuration values, you can use the `env()` function. This function allows you to access the values stored in your `.env` file. Additionally, the `env()` function provides a second argument that can be used to set a default value in case the environment variable is not set.
+Pour récupérer les valeurs de configuration de l'environnement, vous pouvez utiliser la fonction `env()`. Cette fonction vous permet d'accéder aux valeurs stockées dans votre fichier `.env`. De plus, la fonction `env()` accepte un second argument qui permet de définir une valeur par défaut dans le cas où la variable d'environnement ne serait pas définie.
 
-Here is an example of how to use the `env()` function:
+Voici un exemple d'utilisation de la fonction `env()` :
 
 ```php
 $databaseConnection = env('DB_CONNECTION', 'mysql');
 $appDebug = env('APP_DEBUG', false);
+
 ```
 
-In this example, `env('DB_CONNECTION', 'mysql')` will return the value of the `DB_CONNECTION` environment variable, or `'mysql'` if the variable is not set. Similarly, `env('APP_DEBUG', false)` will return the value of the `APP_DEBUG` environment variable, or `false` if the variable is not set.
+Dans cet exemple, `env('DB_CONNECTION', 'mysql')` renverra la valeur de la variable d'environnement `DB_CONNECTION`, ou `'mysql'` si la variable n'est pas définie. De même, `env('APP_DEBUG', false)` renverra la valeur de la variable d'environnement `APP_DEBUG`, ou `false` si elle n'est pas définie.
 
-## Accessing Configuration Values
+## Accès aux Valeurs de Configuration
 
-To access the application configuration values, you can use the `Config` Facade. The `Config` Facade provides a convenient way to retrieve configuration values defined in your configuration files.
+Pour accéder aux valeurs de configuration de l'application, vous pouvez utiliser la Facade `Config`. La Facade `Config` offre un moyen pratique de récupérer les valeurs de configuration définies dans vos fichiers de configuration.
 
-Here is an example of how to use the `Config` Facade:
+Voici un exemple d'utilisation de la Facade `Config` :
 
 ```php
 $databaseConnection = Config::get('database.default');
 $appName = Config::get('app.name');
+
 ```
 
-In this example, `Config::get('database.default')` will return the default database connection defined in the `database` configuration file, and `Config::get('app.name')` will return the application name defined in the `app` configuration file.
+Dans cet exemple, `Config::get('database.default')` renverra la connexion de base de données par défaut définie dans le fichier de configuration `database`, et `Config::get('app.name')` renverra le nom de l'application défini dans le fichier de configuration `app`.
 
-The `Config` Facade also provides typed retrieval methods to ensure that the configuration values are returned in the expected data type. Here are the methods available:
+La Facade `Config` propose également des méthodes de récupération typées pour garantir que les valeurs de configuration sont renvoyées dans le type de données attendu. Voici les méthodes disponibles :
 
-| Method                | Description                                                                 |
-|-----------------------|-----------------------------------------------------------------------------|
-| `Config::string()`    | Retrieves the configuration value as a string.                              |
-| `Config::integer()`   | Retrieves the configuration value as an integer.                            |
-| `Config::array()`     | Retrieves the configuration value as an array.                              |
-| `Config::float()`     | Retrieves the configuration value as a float.                               |
-| `Config::boolean()`   | Retrieves the configuration value as a boolean.                             |
+| Méthode | Description |
+| --- | --- |
+| `Config::string()` | Récupère la valeur de configuration sous forme de chaîne de caractères (*string*). |
+| `Config::integer()` | Récupère la valeur de configuration sous forme d'entier (*integer*). |
+| `Config::array()` | Récupère la valeur de configuration sous forme de tableau (*array*). |
+| `Config::float()` | Récupère la valeur de configuration sous forme de nombre à virgule flottante (*float*). |
+| `Config::boolean()` | Récupère la valeur de configuration sous forme de booléen (*boolean*). |
 
-These methods help in maintaining type safety and avoiding type-related errors in your application.
+Ces méthodes permettent de maintenir le typage sécurisé et d'éviter les erreurs liées aux types dans votre application.
 
-Here is an example of how to use these typed retrieval methods:
+Voici un exemple d'utilisation de ces méthodes de récupération typées :
 
 ```php
 $appName = Config::string('app.name');
@@ -81,67 +85,72 @@ $maxConnections = Config::integer('database.max_connections');
 $services = Config::array('services');
 $piValue = Config::float('math.pi');
 $isDebugMode = Config::boolean('app.debug');
+
 ```
 
-In this example, `Config::string('app.name')` will return the application name as a string, `Config::integer('database.max_connections')` will return the maximum number of database connections as an integer, `Config::array('services')` will return the services configuration as an array, `Config::float('math.pi')` will return the value of pi as a float, and `Config::boolean('app.debug')` will return the debug mode status as a boolean.
+Dans cet exemple, `Config::string('app.name')` renverra le nom de l'application sous forme de chaîne, `Config::integer('database.max_connections')` renverra le nombre maximal de connexions à la base de données sous forme d'entier, `Config::array('services')` renverra la configuration des services sous forme de tableau, `Config::float('math.pi')` renverra la valeur de pi sous forme de float, et `Config::boolean('app.debug')` renverra le statut du mode débogage sous forme de booléen.
 
-## App Debug Mode
+## Mode Débogage de l'Application
 
-To enable or disable debug mode in the Tonka application, you can use the `APP_DEBUG` environment variable defined in your `.env` file. Debug mode is useful during development as it provides detailed error messages and stack traces, which can help in identifying and fixing issues.
+Pour activer ou désactiver le mode débogage dans l'application Tonka, vous pouvez utiliser la variable d'environnement `APP_DEBUG` définie dans votre fichier `.env`. Le mode débogage est utile lors du développement car il fournit des messages d'erreur détaillés et des traces d'exécution (*stack traces*), ce qui aide à identifier et à résoudre les problèmes.
 
-### Enabling Debug Mode
+### Activer le Mode Débogage
 
-To enable debug mode, set the `APP_DEBUG` variable to `true` in your `.env` file:
+Pour activer le mode débogage, définissez la variable `APP_DEBUG` sur `true` dans votre fichier `.env` :
 
 ```
 APP_DEBUG=true
+
 ```
 
-### Disabling Debug Mode
+### Désactiver le Mode Débogage
 
-To disable debug mode, set the `APP_DEBUG` variable to `false` in your `.env` file:
+Pour désactiver le mode débogage, définissez la variable `APP_DEBUG` sur `false` dans votre fichier `.env` :
 
 ```
 APP_DEBUG=false
+
 ```
 
-### Accessing Debug Mode in Code
+### Accéder au Mode Débogage dans le Code
 
-You can access the debug mode status in your code using the `env()` function or the `Config` Facade. Here are examples of both methods:
+Vous pouvez accéder au statut du mode débogage dans votre code en utilisant la fonction `env()` ou la Facade `Config`. Voici des exemples pour chacune des méthodes :
 
-Using the `env()` function:
+Utilisation de la fonction `env()` :
 
 ```php
 $isDebugMode = env('APP_DEBUG', false);
+
 ```
 
-Using the `Config` Facade:
+Utilisation de la Facade `Config` :
 
 ```php
 $isDebugMode = Config::boolean('app.debug');
+
 ```
 
-In both examples, the value of `APP_DEBUG` will be retrieved from the `.env` file, and you can use the `$isDebugMode` variable to conditionally execute code based on whether debug mode is enabled or not.
+Dans ces deux exemples, la valeur de `APP_DEBUG` sera récupérée depuis le fichier `.env`, et vous pourrez utiliser la variable `$isDebugMode` pour exécuter du code de manière conditionnelle selon que le mode débogage est activé ou non.
 
-By properly managing the `APP_DEBUG` environment variable, you can control the level of error reporting and debugging information displayed by your **Tonka** application, ensuring a smoother development and debugging process.
+En gérant correctement la variable d'environnement `APP_DEBUG`, vous contrôlez le niveau de rapport d'erreurs et d'informations de débogage affichées par votre application **Tonka**, garantissant ainsi un processus de développement et de débogage plus fluide.
 
-## Maintenance Mode
+## Mode Maintenance
 
-Tonka provides maintenance mode through a route service. A route service is a class that extends the `RouteService` base class and implements the `redirect` method. This method is responsible for handling the redirection of requests when the application is in maintenance mode.
+Tonka gère le mode maintenance par le biais d'un service de route (*route service*). Un service de route est une classe qui étend la classe de base `RouteService` et implémente la méthode `redirect`. Cette méthode est chargée de gérer la redirection des requêtes lorsque l'application est en mode maintenance.
 
-Here is an example of a route service class for maintenance mode:
+Voici un exemple de classe de service de route pour le mode maintenance :
 
 ```php
 <?php
 
 namespace App\Authenticate;
 
-use Clicalmani\Foundation\Providers\RouteService;
+use Clicalmani\Core\Providers\RouteService;
 
 class MaintenenceRedirect extends RouteService
 {
     /**
-     * Constructor
+     * Constructeur
      * 
      * @param protected \Clicalmani\Routing\Route|false $route
      */
@@ -151,7 +160,7 @@ class MaintenenceRedirect extends RouteService
     }
 
     /**
-     * Issue a redirect
+     * Émettre une redirection
      * 
      * @return void
      */
@@ -159,25 +168,27 @@ class MaintenenceRedirect extends RouteService
     {
         /**
          * |-------------------------------------------------------
-         * | Maintenence Redirect
+         * | Redirection de Maintenance
          * |-------------------------------------------------------
-         * Here we just set a tempory redirect for all request. You
-         * may redirect on request base or on user base.
+         * | Ici, nous définissons simplement une redirection temporaire
+         * | pour toutes les requêtes. Vous pouvez effectuer une redirection
+         * | en fonction de la requête ou de l'utilisateur.
          */
         if ($this->route) $this->route->redirect = 503;
     }
 }
+
 ```
 
-In this example, the `MaintenenceRedirect` class extends the `RouteService` base class and implements the `redirect` method to return a **503 Service Unavailable** response.
+Dans cet exemple, la classe `MaintenenceRedirect` étend la classe de base `RouteService` et implémente la méthode `redirect` pour renvoyer une réponse **503 Service Unavailable**.
 
-To enable maintenance mode, you can register the `MaintenenceRedirect` in your application's route configuration. This will ensure that all incoming requests are redirected to the maintenance mode response when the application is under maintenance.
+Pour activer le mode maintenance, vous pouvez enregistrer le service `MaintenenceRedirect` dans la configuration de routage de votre application. Cela permettra de s'assurer que toutes les requêtes entrantes sont redirigées vers la réponse du mode maintenance lorsque l'application est en maintenance.
 
-By using a route service for maintenance mode, **Tonka** provides a flexible and customizable way to handle maintenance periods, ensuring that users are informed and requests are properly managed during downtime.
+En utilisant un service de route pour le mode maintenance, **Tonka** offre un moyen flexible et personnalisable de gérer les périodes de maintenance, garantissant que les utilisateurs sont informés et que les requêtes sont correctement traitées pendant l'interruption de service.
 
-By default, **Tonka** does not provide a built-in maintenance mode. To implement maintenance mode, you need to manually create a route service and register it in the `kernel` file located in the `bootstrap` folder under the `tps` section.
+Par défaut, **Tonka** ne fournit pas de mode maintenance intégré. Pour implémenter le mode maintenance, vous devez créer manuellement un service de route et l'enregistrer dans le fichier `kernel` situé dans le dossier `bootstrap`, sous la section `tps`.
 
-Next, register your custom route service in the `kernel` file located in the `bootstrap` folder. Add the service to the `tps` section:
+Ensuite, enregistrez votre service de route personnalisé dans le fichier `kernel` situé dans le dossier `bootstrap`. Ajoutez le service à la section `tps` :
 
 ```php
 // bootstrap/kernel.php
@@ -186,18 +197,18 @@ return [
     'tps' => [
         /**
          * |-------------------------------------------------------------------
-         * |                    Route Third Party Services
+         * |                    Services Tiers de Route (Route TPS)
          * |-------------------------------------------------------------------
          * 
          */
         [
-            // Other services ...
+            // Autres services ...
             \App\Authenticate\MaintenenceRedirect::class,
         ],
 
         /**
          * |-------------------------------------------------------------------
-         * |                    Response Third Party Services
+         * |                    Services Tiers de Réponse (Response TPS)
          * |-------------------------------------------------------------------
          * 
          */
@@ -206,6 +217,7 @@ return [
         ]
     ],
 ];
+
 ```
 
-!> The request object is made available in a route service through `$this->request` that allow you to base your redirect per request or per user.
+!> L'objet requête est rendu disponible dans un service de route via `$this->request`, ce qui vous permet d'effectuer votre redirection par requête ou par utilisateur.

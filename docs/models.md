@@ -24,7 +24,7 @@ Once the command is executed, a file named `User.php` will be created into `app/
 <?php 
 namespace App\Models;
 
-use Clicalmani\Database\Factory\Models\Elegant;
+use Clicalmani\Core\Acme\Model as Elegant;
 
 class User extends Elegant
 {

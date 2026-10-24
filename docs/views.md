@@ -1,445 +1,610 @@
-<h1>Views</h1>
+# Vues (Inertia)
 
-- [Introduction](views.md?id=introduction)
-- [Creating and Rendering Views](views.md?id=creating-and-rendering-views)
-    - [Defining a View Template](views.md?id=defining-a-view-template)
-    - [Rendering the View](views.md?id=rendering-the-view)
-    - [Passing Data to Views](views.md?id=passing-data-to-views)
-    - [Nested View Directories](views.md?id=nested-view-directories)
-    - [Defining Nested Views](views.md?id=defining-nested-views)
-    - [Rendering Nested Views](views.md?id=rendering-nested-views)
-- [Sharing Data With All Views](views.md?id=sharing-data-with-all-views)
-    - [Sharing Data Using the View Facade](views.md?id=sharing-data-using-the-view-facade)
-    - [Example of a View Composer Class](views.md?id=example-of-a-view-composer-class)
-    - [Accessing Shared Data in Views](views.md?id=accessing-shared-data-in-views)
-    - [Defining a View Composer](views.md?id=defining-a-view-composer)
-    - [Accessing Shared Data in Views](views.md?id=accessing-shared-data-in-views)
-    - [Attaching a Composer to Multiple Views](views.md?id=attaching-a-composer-to-multiple-views)
-        - [Defining a Composer for Multiple Views](views.md?id=defining-a-composer-for-multiple-views)
-        - [Accessing Shared Data in Multiple Views](views.md?id=accessing-shared-data-in-multiple-views)
-    - [View Creators](views.md?id=view-creators)
-        - [Defining a View Creator](views.md?id=defining-a-view-creator)
-        - [Accessing Initialized Data in Views](views.md?id=accessing-initialized-data-in-views)
-- [Using Inertia.js with Tonka](#using-inertia.js-with-tonka)
-    - [Setting Up Inertia.js](#setting-up-inertia.js)
-    - [Using the Comet Inertia Starter Kit](#using-the-comet-inertia-starter-kit)
+Tonka s'intègre nativement avec Inertia.js pour construire des interfaces modernes en React ou Vue, sans jamais avoir à exposer une API REST dédiée au front-end. Cette page couvre l'installation, la configuration et l'usage courant de cette intégration.
 
-## Introduction
+- [Vues (Inertia)](#vues-inertia-)
+- [Qu'est-ce qu'Inertia.js ?](#qu-39-est-ce-qu-39-inertia-js-)
+  - [Avantages](#avantages)
+  - [Comment ça fonctionne ?](#comment-ca-fonctionne-)
+- [Installation](#installation)
+  - [Dépendances PHP](#dependances-php)
+  - [Dépendances JavaScript](#dependances-javascript)
+- [Configuration](#configuration)
+  - [Template Racine](#template-racine)
+  - [Vite Configuration](#vite-configuration)
+  - [Point d'Entrée Frontend](#point-d-39-entree-frontend)
+- [Rendu d'une Page](#rendu-d-39-une-page)
+  - [Depuis un Contrôleur](#depuis-un-controleur)
+  - [Avec des Données](#avec-des-donnees)
+- [Partage de Données](#partage-de-donnees)
+  - [Partage Global](#partage-global)
+  - [Partage via la Réponse](#partage-via-la-reponse)
+- [Composants React/Vue](#composants-react-vue)
+  - [Composant React](#composant-react)
+  - [Composant Vue](#composant-vue)
+- [Gestion des Erreurs](#gestion-des-erreurs)
+  - [Validation et Erreurs](#validation-et-erreurs)
+  - [Affichage des Erreurs (React)](#affichage-des-erreurs-react)
+- [Redirection Inertia](#redirection-inertia)
+  - [Redirection Simple](#redirection-simple)
+  - [Redirection Interne](#redirection-interne)
+- [Version et Cache](#version-et-cache)
+  - [Définir la Version](#definir-la-version)
+  - [Vérification de Version](#verification-de-version)
+- [Exemple Complet](#exemple-complet)
+- [Astro (React Starter Kit)](#astro-react-starter-kit-)
+- [Comet (Vue Starter Kit)](#comet-vue-starter-kit-)
+- [Prochaines Étapes](#prochaines-etapes)
 
-Views in **Tonka** are designed to be modular and reusable, allowing developers to create dynamic and interactive user interfaces with ease. This section will guide you through the basics of creating and using views in the **Tonka** framework, including how to define view templates, bind data to views, and handle user interactions.
+---
 
-When using **Tonka**, view templates are usually written using the Twig templating language. A simple view might look something like this:
+## Qu'est-ce qu'Inertia.js ?
+
+Inertia.js est une bibliothèque qui permet de construire une application monopage (SPA) en s'appuyant sur le routage et les contrôleurs **côté serveur**, plutôt que sur un routeur front-end séparé ou une API REST dédiée. Le contrôleur reste responsable de déterminer *quelle* page afficher et *avec quelles données* ; Inertia se charge uniquement du transport de ces données vers le composant React ou Vue correspondant, et de l'orchestration de la navigation sans rechargement complet du navigateur.
+
+En pratique, cela signifie que vous continuez à écrire des routes et des contrôleurs Tonka classiques (voir [Routing](routing.md#routing) et [Contrôleurs](controllers.md#controleurs)) — Inertia ne remplace ni l'un ni l'autre, il élimine simplement la couche d'API intermédiaire habituellement nécessaire entre un backend et une SPA.
+
+### Avantages
+
+- ✅ **Pas d'API dédiée** : pas besoin de construire une API REST séparée pour le front-end
+- ✅ **Pas de routage front-end** : les routes restent définies côté backend, dans `routes/`
+- ✅ **Navigation type SPA** : transitions fluides entre pages, sans rechargement complet
+- ✅ **État transmis directement** : les données sont passées en props au composant, sans sérialisation JSON intermédiaire à gérer manuellement
+- ✅ **Performance** : découpage du code (*code splitting*) et chargement différé (*lazy loading*) pris en charge nativement par l'outillage front-end (Vite)
+
+### Comment ça fonctionne ?
+
+```mermaid
+graph LR
+    A[Route PHP] --> B[Contrôleur]
+    B --> C[Inertia::render]
+    C --> D[Props / Données]
+    D --> E[Composant React/Vue]
+    E --> F[Page rendue]
+```
+
+---
+
+## Installation
+
+### Dépendances PHP
+
+```bash
+composer require inertiajs/tonka-adapter
+```
+
+### Dépendances JavaScript
+
+```bash
+# React
+npm install @inertiajs/react react react-dom
+
+# Vue
+npm install @inertiajs/vue3 vue
+```
+
+```bash
+# Plugin Tonka pour Vite (obligatoire dans les deux cas)
+npm install tonka-vite-plugin
+```
+
+---
+
+## Configuration
+
+### Template Racine
 
 ```twig
-{% extends "base.twig.php" %}
-
-{% block content %}
-    <h1>Hello, Guest</h1>
-{% endblock %}
-```
-
-In this example, the view extends a base template and defines a content block that displays a title and a message. The `{{ }}` syntax is used to output variables passed to the view.
-
-Since this view is stored at `resources/views/greeting.twig.php`, we may return it using the global view helper like so:
-
-```php
-Route::get('/greeting', function () {
-    return view('greeting');
-});
-```
-
-!> Looking for more information on how to write Twig templates? Check out the full [Twig documentation](https://twig.symfony.com/) to get started.
-
-## Creating and Rendering Views
-
-To create a view in **Tonka**, you need to define a template file using the Twig templating language. Once you have your template, you can render it in your application by returning it from a route or controller.
-
-### Defining a View Template
-
-Create a new file in the `resources/views` directory, for example, `resources/views/welcome.twig.php`, and add the following content:
-
-```twig
-{% extends "base.twig.php" %}
-
-{% block content %}
-    <h1>Welcome Home!</h1>
-{% endblock %}
-```
-
-### Rendering the View
-
-To render the view, you can use the global `view` helper function in a route or controller. Here's an example of how to return the `welcome` view from a route:
-
-```php
-Route::get('/welcome', function () {
-    return view('welcome');
-});
-```
-
-When you visit the `/welcome` URL in your browser, you should see the rendered view with the "Welcome Home!" message.
-
-### Passing Data to Views
-
-You can pass data to your views by providing an associative array as the second argument to the `view` helper function. The keys of the array will be available as variables in your Twig template.
-
-```php
-Route::get('/welcome', function () {
-    return view('profile', ['title' => 'Hello, World!', 'message' => 'Welcome to **Tonka**!']);
-});
-```
-
-In your `welcome.twig.php` template, you can access the `title` and the `message` variable like this:
-
-```twig
-{% extends "base.twig.php" %}
-
-{% block content %}
-    <h1>{{ title }}</h1>
-    <p>{{ message }}</p>
-{% endblock %}
-```
-
-You can also pass an array or an object as varialble:
-
-```php
-Route::get('/profile', function () {
-    $user = ['name' => 'John Doe', 'email' => 'john.doe@example.com'];
-    return view('profile', ['user' => $user]);
-});
-```
-
-In your `profile.twig.php` temple, you can access the `user` variable like this:
-
-```twig
-{% extends "base.twig.php" %}
-
-{% block content %}
-    <h1>{{ user.name }}</h1>
-    <p>{{ user.email }}</p>
-{% endblock %}
-```
-
-By following these steps, you can create and render views in **Tonka**, making your application more dynamic and interactive.
-
-## Nested View Directories
-
-**Tonka** allows you to organize your view templates into nested directories, making it easier to manage complex applications with many views. For example, you might have a directory structure like this:
-
-```
-resources/views/
-├── layouts/
-│   └── app.twig.php
-├── partials/
-│   └── header.twig.php
-└── pages/
-    ├── home.twig.php
-    └── about.twig.php
-```
-
-### Defining Nested Views
-
-To define a nested view, create the necessary directories and files within the `resources/views` directory. For example, to create a `home` view inside the `pages` directory, you would create a file at `resources/views/pages/home.twig.php` with the following content:
-
-```twig
-{% extends "layouts.app" %}
-
-{% block content %}
-    <h1>{{ title }}</h1>
-    <p>{{ message }}</p>
-{% endblock %}
-```
-
-### Rendering Nested Views
-
-To render a nested view, use the dot notation to specify the path to the view file. For example, to return the `home` view from a route, you would do the following:
-
-```php
-Route::get('/home', function () {
-    return view('pages.home', ['title' => 'Home Page', 'message' => 'Welcome to the home page!']);
-});
-```
-
-When you visit the `/home` URL in your browser, you should see the rendered view with the title and message you provided.
-
-By organizing your views into nested directories, you can keep your project structure clean and maintainable, especially as your application grows.
-
-## Sharing Data With All Views
-
-In some cases, you might want to share data with all views in your application. **Tonka** provides a convenient way to achieve this using view composers. View composers allow you to bind data to views globally, so you don't have to pass the same data to every view manually.
-
-### Sharing Data Using the View Facade
-
-Occasionally, you may need to share data with all views that are rendered by your application. You may do so using the `View` facade's `share` method. Typically, you should place calls to the `share` method within a service provider's `boot` method. You are free to add them to the `App\Providers\AppServiceProvider` class or generate a separate service provider to house them:
-
-```php
-use Clicalmani\Foundation\Support\Facades\View;
-
-public function boot()
-{
-    View::share('key', 'value');
-}
-```
-
-In this example, the `View::share` method is used to bind a piece of data to all views. The first argument is the key that will be available in the views, and the second argument is the value.
-
-### Accessing Shared Data in Views
-
-Once you have shared the data using the `share` method, you can access it in any view. For example, in your `base.twig.php` template, you might display the shared data:
-
-```twig
+{# resources/views/app.twig #}
 <!DOCTYPE html>
 <html>
 <head>
-    <title>{{ title }}</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    @reactRefresh
+    @vite('resources/css/app.css', 'resources/js/app.tsx')
+    @inertiaHead
 </head>
 <body>
-    <header>
-        <p>Shared Data: {{ key }}</p>
-    </header>
-    <main>
-        {% block content %}{% endblock %}
-    </main>
+    @routes
+    @inertia
 </body>
 </html>
 ```
 
-By using the `share` method, you can easily share data across all views in your application, making it more efficient and maintainable.
+Ce template racine (le seul rendu directement par Twig) sert de point d'ancrage à l'application Inertia : la directive `@inertia` insère le conteneur DOM que le JavaScript ira monter, et `@inertiaHead` réserve l'emplacement où Inertia injectera dynamiquement le titre et les balises meta définis côté composant.
 
-### Defining a View Composer
+### Vite Configuration
 
-To define a view composer, you can use the `View::composer` method in your application's service provider. For example, you might want to share the authenticated user's information with all views:
+```typescript
+// vite.config.ts
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import tonka from 'tonka-vite-plugin';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url'
 
-```php
-use Clicalmani\Foundation\Support\Facades\View;
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-public function boot()
-{
-    View::composer('*', function ($view) {
-        $view->with('authUser', auth()->user());
-    });
-}
-```
-
-In this example, the `View::composer` method is used to bind the `authUser` variable to all views. The `'*'` wildcard means that the data will be available in every view.
-
-### Accessing Shared Data in Views
-
-Once you have defined a view composer, you can access the shared data in any view. For example, in your `base.twig.php` template, you might display the authenticated user's name:
-
-```twig
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{ title }}</title>
-</head>
-<body>
-    <header>
-        <p>Welcome, {{ authUser.name }}</p>
-    </header>
-    <main>
-        {% block content %}{% endblock %}
-    </main>
-</body>
-</html>
-```
-
-By using view composers, you can easily share data across all views in your application, making it more efficient and maintainable.
-
-## Attaching a Composer to Multiple Views
-
-If you need to attach a composer to multiple views, you can specify an array of view names when defining the composer. This allows you to share data with a specific set of views without affecting others.
-
-### Defining a Composer for Multiple Views
-
-To define a composer for multiple views, use the `View::composer` method and pass an array of view names as the first argument. For example, you might want to share the same data with the `dashboard` and `profile` views:
-
-```php
-use Clicalmani\Foundation\Support\Facades\View;
-
-public function boot()
-{
-    View::composer(['dashboard', 'profile'], function ($view) {
-        $view->with('sharedData', 'This data is shared with dashboard and profile views');
-    });
-}
-```
-
-In this example, the `sharedData` variable will be available in both the `dashboard` and `profile` views.
-
-### Accessing Shared Data in Multiple Views
-
-Once you have defined the composer, you can access the shared data in the specified views. For example, in your `dashboard.twig.php` and `profile.twig.php` templates, you might display the shared data:
-
-```twig
-<!-- dashboard.twig.php -->
-{% extends "base.twig.php" %}
-
-{% block content %}
-    <h1>Dashboard</h1>
-    <p>{{ sharedData }}</p>
-{% endblock %}
-```
-
-```twig
-<!-- profile.twig.php -->
-{% extends "base.twig.php" %}
-
-{% block content %}
-    <h1>Profile</h1>
-    <p>{{ sharedData }}</p>
-{% endblock %}
-```
-
-By attaching a composer to multiple views, you can efficiently share data with specific parts of your application, keeping your code organized and maintainable.
-
-## View Creators
-
-In addition to view composers, **Tonka** also supports view creators. View creators are similar to composers, but they are executed immediately when the view is instantiated. This allows you to perform any necessary setup or initialization before the view is rendered.
-
-### Defining a View Creator
-
-To define a view creator, use the `View::creator` method in your application's service provider. For example, you might want to initialize some data for the `dashboard` view:
-
-```php
-// app/Providers/AppServiceProvider.php
-
-use Clicalmani\Foundation\Support\Facades\View;
-
-public function boot()
-{
-    View::creator('dashboard', function ($view) {
-        $view->with('initData', 'This data is initialized for the dashboard view');
-    });
-}
-```
-
-In this example, the `initData` variable will be available in the `dashboard` view as soon as it is instantiated.
-
-### Accessing Initialized Data in Views
-
-Once you have defined the view creator, you can access the initialized data in the specified view. For example, in your `dashboard.twig.php` template, you might display the initialized data:
-
-```twig
-{% extends "base.twig.php" %}
-
-{% block content %}
-    <h1>Dashboard</h1>
-    <p>{{ initData }}</p>
-{% endblock %}
-```
-
-By using view creators, you can perform any necessary setup or initialization for your views, making your application more flexible and maintainable.
-
-## Using Inertia.js with Tonka
-
-**Tonka** supports integration with [Inertia.js](https://inertiajs.com/), allowing you to build modern single-page applications (SPAs) using classic server-side routing and controllers, while leveraging client-side frameworks like Vue or React.
-
-### Setting Up Inertia.js
-
-To use Inertia.js in your Tonka application:
-
-1. **Install Inertia.js** in your frontend project (e.g., with Vue or React).
-2. **Configure your routes** to return Inertia responses instead of traditional views.
-
-### Returning Inertia Responses
-
-Instead of returning a view, use the `inertia` helper to return an Inertia response from your route or controller:
-
-```php
-use Inertia\Inertia;
-
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard', [
-        'user' => auth()->user(),
-        'notifications' => Notification::recent(),
-    ]);
+// https://vite.dev/config/
+export default defineConfig({
+    plugins: [
+        tonka({
+            input: 'resources/js/app.tsx',
+            // SSR (Server-Side Rendering)
+            ssr: false,
+            // HMR : Hot Module Replacement
+            refresh: false,
+        }),
+        react(),
+    ],
+    define: {
+        'process.env': {
+            NODE_ENV: JSON.stringify(process.env.NODE_ENV || 'development'),
+        },
+    }
 });
 ```
 
-In this example, the `Dashboard` component will receive the `user` and `notifications` props.
+### Point d'Entrée Frontend
 
-### Creating Inertia Pages
+```typescript
+// resources/js/app.tsx
+import React, { StrictMode } from 'react';
+import ReactDOM, { Container } from 'react-dom/client';
+import { createInertiaApp } from '@inertiajs/react';
+import { resolvePageComponent } from 'tonka-vite-plugin/helpers';
 
-Your frontend should have a matching component (e.g., `resources/js/Pages/Dashboard.vue` for Vue):
+const appName = import.meta.env.VITE_APP_NAME || 'Tonka';
 
-```vue
-<template>
-  <div>
-    <h1>Welcome, {{ user.name }}</h1>
-    <ul>
-      <li v-for="note in notifications" :key="note.id">{{ note.message }}</li>
-    </ul>
-  </div>
-</template>
-
-<script setup>
-defineProps(['user', 'notifications'])
-</script>
+createInertiaApp({
+  title: (title) => (title ? `${title} - ${appName}` : appName),
+  resolve: name => resolvePageComponent(
+        `./pages/${name}.tsx`,
+        import.meta.glob('./pages/**/*.tsx', { eager: true })
+  ),
+  setup({ el, App, props }) {
+    ReactDOM.createRoot(el as Container)
+        .render(
+          <StrictMode>
+            <App {...props} />
+          </StrictMode>
+        )
+  },
+  progress: {
+    color: '#F64E60',
+  },
+})
 ```
 
-### Sharing Data with All Inertia Pages
+`resolvePageComponent` détermine comment le nom de composant passé à `Inertia::render()` côté PHP (`'User.Index'`, par exemple) est traduit en chemin de fichier front-end (`./pages/User/Index.tsx`) — assurez-vous que l'arborescence de `resources/js/pages/` reflète exactement les noms utilisés dans vos contrôleurs.
 
-You can share data with all Inertia pages by defining shared props in your service provider:
+---
+
+## Rendu d'une Page
+
+### Depuis un Contrôleur
+
+```php
+use Inertia\Inertia;
+
+class UserController extends Controller
+{
+    public function index()
+    {
+        return Inertia::render('User.Index');
+    }
+}
+```
+
+### Avec des Données
+
+```php
+class UserController extends Controller
+{
+    public function show($id)
+    {
+        $user = User::with('posts')->find($id);
+
+        return Inertia::render('User.Show', [
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'posts' => $user->posts
+            ],
+            'can' => [
+                'edit' => auth()->can('edit', $user),
+                'delete' => auth()->can('delete', $user)
+            ]
+        ]);
+    }
+}
+```
+
+Transmettre les autorisations calculées (`can.edit`, `can.delete`) directement en props, plutôt que de laisser le composant front-end deviner ce que l'utilisateur peut faire, évite de dupliquer la logique d'autorisation côté client — le composant se contente d'afficher ou de masquer un bouton selon une valeur booléenne déjà tranchée par le serveur.
+
+---
+
+## Partage de Données
+
+### Partage Global
 
 ```php
 // app/Providers/AppServiceProvider.php
 
-use Inertia\Inertia;
-
-public function boot()
+public function boot(): void
 {
     Inertia::share([
         'appName' => config('app.name'),
-        'authUser' => fn () => auth()->user(),
+        'appUrl' => config('app.url'),
+        'user' => auth()->id()
     ]);
 }
 ```
 
-Now, `appName` and `authUser` will be available as props in all Inertia pages.
+### Partage via la Réponse
 
-### Learn More
+```php
+return Inertia::render('User.Index', [
+    'users' => $users
+])->withViewData([
+    'metaTitle' => 'Liste des utilisateurs',
+    'metaDescription' => 'Gestion des utilisateurs'
+]);
+```
 
-For a full guide on using Inertia.js, see the [official documentation](https://inertiajs.com/).
+---
 
-### Using the Comet Inertia Starter Kit
+## Composants React/Vue
 
-To quickly get started with Inertia.js in your Tonka application, you can use the [Comet Inertia Starter Kit](https://github.com/clicalmani/comet). This kit provides a pre-configured setup with Inertia.js, Vue 3, and Vite, making it easy to scaffold a modern single-page application.
+### Composant React
 
-#### Installation Steps
+```tsx
+// resources/js/pages/User/Index.tsx
+import React from 'react';
+import { Head, Link } from '@inertiajs/react';
 
-1. **Create a New Project**: Open your terminal and run the following command to create a new **Tonka** project:
+interface User {
+    id: number;
+    name: string;
+    email: string;
+}
 
-    ```sh
-    composer create-project clicalmani/comet my-comet-app
-    ```
+interface Props {
+    users: User[];
+}
 
-2. **Install Frontend Dependencies:**
+export default function Index({ users }: Props) {
+    return (
+        <>
+            <Head title="Users" />
+            <div className="container mx-auto p-4">
+                <h1 className="text-2xl font-bold mb-4">Users</h1>
 
-    ```bash
-    npm install
-    ```
+                <Link href="/users/create" className="btn btn-primary">
+                    Create User
+                </Link>
 
-3. **Build Frontend Assets:**
+                <div className="grid gap-4 mt-4">
+                    {users.map((user) => (
+                        <div key={user.id} className="border p-4 rounded">
+                            <h3 className="font-semibold">{user.name}</h3>
+                            <p className="text-gray-600">{user.email}</p>
+                            <Link href={`/users/${user.id}`}>
+                                View Profile
+                            </Link>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </>
+    );
+}
+```
 
-    ```bash
-    npm run dev
-    ```
+### Composant Vue
 
-4. **Configure Environment:**
+```vue
+<!-- resources/js/Pages/User/Index.vue -->
+<template>
+    <div class="container mx-auto p-4">
+        <Head title="Users" />
+        <h1 class="text-2xl font-bold mb-4">Users</h1>
 
-    Copy `.env.example` to `.env` and update any necessary environment variables.
+        <Link href="/users/create" class="btn btn-primary">
+            Create User
+        </Link>
 
-5. **Run Migrations (if applicable):**
+        <div class="grid gap-4 mt-4">
+            <div v-for="user in users" :key="user.id" class="border p-4 rounded">
+                <h3 class="font-semibold">{{ user.name }}</h3>
+                <p class="text-gray-600">{{ user.email }}</p>
+                <Link :href="`/users/${user.id}`">View Profile</Link>
+            </div>
+        </div>
+    </div>
+</template>
 
-    ```bash
-    php tonka migrate:fresh --seed
-    ```
+<script setup lang="ts">
+import { Head, Link } from '@inertiajs/vue3';
 
-6. **Start the Application:**
+defineProps<{
+    users: User[];
+}>();
+</script>
+```
 
-    ```bash
-    php tonka dev
-    ```
+L'usage de `<Link>` à la place d'une ancre `<a>` classique est ce qui préserve la navigation SPA : Inertia intercepte le clic, effectue la requête en arrière-plan et ne remplace que le composant de page, sans rechargement complet — une ancre HTML brute provoquerait une navigation navigateur standard et sortirait du cycle Inertia.
 
-Now you have a Tonka application with Inertia.js and Vue 3 ready to go. You can start building your pages in `resources/js/Pages` and define your routes.
+---
 
+## Gestion des Erreurs
+
+### Validation et Erreurs
+
+```php
+use Clicalmani\Core\Http\RequestInterface;
+use Clicalmani\Validation\AsValidator;
+
+// Dans le contrôleur
+#[AsValidator(
+    // ...
+)]
+public function store(RequestInterface $request)
+{
+    try {
+        $user = User::create($request->validated());
+        return redirect('/users');
+    } catch (\PDOException $e) {
+        return back()->withErrors($e->errors());
+    }
+}
+```
+
+### Affichage des Erreurs (React)
+
+```tsx
+import { useForm } from '@inertiajs/react';
+
+export default function Create() {
+    const { data, setData, post, errors } = useForm({
+        name: '',
+        email: '',
+        password: '',
+    });
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        post('/users');
+    };
+
+    return (
+        <form onSubmit={handleSubmit}>
+            <input
+                value={data.name}
+                onChange={(e) => setData('name', e.target.value)}
+            />
+            {errors.name && (
+                <div className="text-red-600">{errors.name}</div>
+            )}
+
+            <input
+                value={data.email}
+                onChange={(e) => setData('email', e.target.value)}
+            />
+            {errors.email && (
+                <div className="text-red-600">{errors.email}</div>
+            )}
+
+            <button type="submit">Save</button>
+        </form>
+    );
+}
+```
+
+Le hook `useForm` d'Inertia maintient automatiquement l'état du formulaire synchronisé avec les erreurs de validation renvoyées côté serveur : après un échec, `errors.name` est peuplé sans qu'aucun code de correspondance manuel ne soit nécessaire entre le nom du champ PHP et sa contrepartie front-end.
+
+---
+
+## Redirection Inertia
+
+### Redirection Simple
+
+```php
+return Inertia::location('/dashboard');
+```
+
+Déclenche une navigation **complète** du navigateur (rechargement de page) plutôt qu'une transition SPA — à réserver aux cas où l'on quitte volontairement le contexte applicatif Inertia.
+
+### Redirection Interne
+
+```php
+// Redirection avec message flash
+return redirect('/users')
+    ->with('success', 'User created!');
+```
+
+À l'inverse, une redirection classique via `redirect()` reste dans le cycle de vie SPA d'Inertia et constitue le choix par défaut pour toute navigation interne à l'application.
+
+---
+
+## Version et Cache
+
+### Définir la Version
+
+```php
+// app/Providers/AppServiceProvider.php
+
+public function boot(): void
+{
+    Inertia::version('1.0.0');
+
+    // Version dynamique, dérivée du manifeste de build
+    Inertia::version(function() {
+        return md5_file(public_path('build/manifest.json'));
+    });
+}
+```
+
+### Vérification de Version
+
+```tsx
+import { usePage } from '@inertiajs/react';
+
+const { version } = usePage();
+// version est disponible côté client pour comparaison,
+// notamment pour déclencher un rechargement complet
+// lorsqu'elle diverge de celle renvoyée par le serveur.
+```
+
+---
+
+## Exemple Complet
+
+### Contrôleur
+
+```php
+namespace App\Http\Controllers;
+
+use App\Models\User;
+use Inertia\Inertia;
+use App\Http\Requests\UserRequest;
+use Clicalmani\Validation\AsValidator;
+
+class UserController extends Controller
+{
+    public function index()
+    {
+        $users = User::paginate(
+            request()->input('page', 1),
+            request()->input('per_page', 10)
+        );
+
+        return Inertia::render('User.Index', [
+            'users' => $users,
+            'filters' => request()->only(['search'])
+        ]);
+    }
+
+    public function create()
+    {
+        return Inertia::render('User.Create');
+    }
+
+    #[AsValidator(
+        // ...
+    )]
+    public function store(UserRequest $request)
+    {
+        $user = User::create($request->validated());
+
+        return redirect('/users')
+            ->with('success', 'User created successfully!');
+    }
+
+    public function edit($id)
+    {
+        $user = User::find($id);
+
+        return Inertia::render('User.Edit', [
+            'user' => $user
+        ]);
+    }
+
+    #[AsValidator(
+        // ...
+    )]
+    public function update(UserRequest $request, $id)
+    {
+        $user = User::find($id);
+        $user->update($request->validated());
+
+        return redirect('/users')
+            ->with('success', 'User updated successfully!');
+    }
+
+    public function destroy($id)
+    {
+        $user = User::find($id);
+        $user->delete();
+
+        return redirect('/users')
+            ->with('success', 'User deleted successfully!');
+    }
+}
+```
+
+### Service Provider
+
+```php
+namespace App\Providers;
+
+use Clicalmani\Core\Providers\ServiceProvider;
+use Inertia\Inertia;
+
+class AppServiceProvider extends ServiceProvider
+{
+    public function boot(): void
+    {
+        // Partage global
+        Inertia::share([
+            'appName' => config('app.name'),
+            'user' => function() {
+                return auth()->user();
+            },
+            'flash' => function() {
+                return [
+                    'success' => session()->get('success'),
+                    'error' => session()->get('error')
+                ];
+            }
+        ]);
+
+        // Version des assets
+        Inertia::version(function() {
+            return md5_file(public_path('build/manifest.json'));
+        });
+    }
+}
+```
+
+Partager `flash` de façon globale, comme ci-dessus, évite de répéter `'flash' => [...]` dans chaque action de contrôleur qui redirige avec un message — chaque page Inertia reçoit automatiquement les messages flash de la requête précédente, sans effort supplémentaire.
+
+### Route
+
+```php
+// routes/web.php
+use App\Http\Controllers\UserController;
+
+Route::resource('users', UserController::class);
+```
+
+---
+
+## Astro (React Starter Kit)
+
+Pour démarrer un nouveau projet React + Inertia sans reconstruire cette configuration à la main, Tonka fournit un starter kit prêt à l'emploi : **Astro**.
+
+📖 Voir le guide dédié : [Starter Kits → Astro](starter-kits.md#astro)
+
+## Comet (Vue Starter Kit)
+
+De la même manière, **Comet** est le starter kit officiel pour démarrer un projet Vue + Inertia, préconfiguré selon les conventions décrites sur cette page.
+
+📖 Voir le guide dédié : [Starter Kits → Comet](starter-kits.md#comet)
+
+---
+
+## Prochaines Étapes
+
+Maintenant que vous maîtrisez les vues Inertia :
+
+1. **[Validation](validation.md)** → Valider les données
+2. **[Base de Données](database.md)** → Travailler avec les modèles
+3. **[Spark](spark.md)** → Routage frontend
+4. **[DriftQL](driftql.md)** → Requêtes frontend sécurisées
+
+---
+
+**Vues comprises !** 🚀 → [Validation](validation.md)

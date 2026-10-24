@@ -1,86 +1,127 @@
-## Service Container
+## Conteneur de Services
 
-Tonka's service container is a dependency injection system designed to manage the instantiation and lifecycle of services within an application. It allows you to register, resolve, and configure services in a centralized manner, promoting modularity and testability. The container supports features such as singleton and transient lifetimes, automatic dependency resolution, and service configuration.
+- [Introduction](#introduction)
+- [Enregistrement des Services](#enregistrement-des-services)
+- [Résolution des Services](#resolution-des-services)
+- [Cycles de Vie des Services : Singleton vs Transient](#cycles-de-vie-des-services-singleton-vs-transient)
+- [Avancé : Alias, Injection de Paramètres et d'Interfaces](#avance-alias-injection-de-parametres-et-d-39-interfaces)
+- [Débogage et Inspection du Conteneur](#debogage-et-inspection-du-conteneur)
+- [Prochaines Étapes](#prochaines-etapes)
 
-Tonka leverages the Symfony Dependency Injection component to manage and inject dependencies efficiently. This approach enables modular, testable, and maintainable code by allowing services to be defined, configured, and wired together declaratively.
+## Introduction
 
-### Registering Services
+Le conteneur de services de Tonka est un système d'injection de dépendances conçu pour gérer l'instanciation et le cycle de vie des services au sein d'une application. Il vous permet d'enregistrer, de résoudre et de configurer des services de manière centralisée, favorisant ainsi la modularité et la testabilité. Le conteneur prend en charge des fonctionnalités telles que la résolution automatique des dépendances et la configuration des services.
 
-In most cases, you will type-hint dependencies in routes, controllers, event listeners, and other classes, allowing the container to inject them automatically without needing to interact with the container directly. You would probably interact with the sercice container when type-hinting an interface on a route or a controller class and you would like to tell the container how to resolve it.
+Tonka s'appuie sur le composant Symfony Dependency Injection pour gérer et injecter efficacement les dépendances. Cette approche permet un code modulaire, testable et maintenable en permettant aux services d'être définis, configurés et reliés ensemble de manière déclarative.
 
-To register services and their dependencies in Tonka's service container, define them programmatically using the container API. Each service can specify its class, constructor arguments (dependencies), and lifecycle (singleton or transient).
+## Enregistrement des Services
+
+Dans la plupart des cas, vous indiquerez les dépendances par typage (type-hint) dans les routes, les contrôleurs, les écouteurs d'événements et d'autres classes, ce qui permet au conteneur de les injecter automatiquement sans avoir besoin d'interagir directement avec celui-ci. Vous interagirez probablement avec le conteneur de services lorsque vous typierez une interface sur une route ou une classe de contrôleur et que vous souhaiterez indiquer au conteneur comment la résoudre.
+
+Pour enregistrer des services et leurs dépendances dans le conteneur de services de Tonka, définissez-les programmatiquement à l'aide de l'API du conteneur. Chaque service peut spécifier sa classe, ses arguments de constructeur (dépendances) et son cycle de vie (singleton ou transient).
 
 ```php
-$container = \Clicalmani\Foundation\Acme\Container::getInstance();
-$container->set('app.database_connection', App\Database\Connection::class)
-        ->arg(config('database.database_url'));
+// bootstrap/app.php
+use \Clicalmani\Core\Maker\Application;
+return Application::setup(rootPath: dirname(__DIR__))
+    ->withService(function(Application $app) {
+        $app->addService(
+            // ID du service
+            // Classe du service
+            // Configuration du service
+        );
+    });
 ```
 
-Dependencies are injected automatically based on the configuration, ensuring each service receives the required instances.
+Les dépendances sont injectées automatiquement en fonction de la configuration, garantissant que chaque service reçoit les instances requises.
 
-> For further information about registering a service, read the [Testing](testing.md) documentation.
+> Pour plus d'informations sur l'enregistrement d'un service, consultez la section [Fournisseur de Services](providers.md).
 
-### Resolving Services
+## Résolution des Services
 
-Once services are registered, you can resolve them from the container as needed. The container automatically injects dependencies according to the configuration.
+Une fois les services enregistrés, vous pouvez les résoudre depuis le conteneur selon vos besoins. Le conteneur injecte automatiquement les dépendances conformément à la configuration.
 
-**Example:**
+**Exemple :**
 ```php
-// Retrieve the user repository service
-$userRepository = $container->get('app.user_repository');
+// Récupérer le service de dépôt utilisateur
+$userRepository = container()->get('app.user_repository');
 ```
 
-This approach ensures that each service is constructed with its required dependencies, promoting loose coupling and easier testing.
+Cette approche garantit que chaque service est construit avec ses dépendances requises, favorisant un couplage lâche et des tests plus faciles.
 
-### Service Lifetimes: Singleton vs Transient
+### Cycles de Vie des Services : Singleton vs Transient
 
-Tonka's service container supports two primary service lifetimes:
+Le conteneur de services de Tonka prend en charge deux cycles de vie principaux :
 
-- **Singleton**: The container creates a single instance of the service and returns the same instance every time it is requested. This is the default behavior.
-- **Transient**: The container creates a new instance of the service each time it is requested.
+- **Singleton** : Le conteneur crée une seule instance du service et renvoie la même instance à chaque fois qu'elle est demandée. C'est le comportement par défaut.
+- **Transient** : Le conteneur crée une nouvelle instance du service à chaque fois qu'elle est demandée.
 
 ```php
-// Singleton (default)
-$container->register('app.singleton_service', App\Service\SingletonService::class);
+// Singleton (par défaut)
+$app->addService(function($config) {
+    'app.singleton_service', 
+    App\Service\SingletonService::class,
+    function($config) {
+        $config->share(false); // Comportement par défaut
+    }
+});
 
 // Transient
-$container->register('app.transient_service', App\Service\TransientService::class)
-          ->setShared(false);
+$app->addService(function($config) {
+    'app.singleton_service', 
+    App\Service\SingletonService::class,
+    function($config) {
+        $config->share(true); // Activer le mode transient
+    }
+});
 ```
 
-Choosing the appropriate lifetime helps manage resources and application behavior effectively.
+Choisir le cycle de vie approprié permet de gérer efficacement les ressources et le comportement de l'application.
 
-### Advanced: Aliases, Parameter and interface Injection
+### Avancé : Alias, Injection de Paramètres et d'Interfaces
 
-Tonka's service container also supports service aliases and parameter injection for greater flexibility.
+Le conteneur de services de Tonka prend également en charge les alias de services et l'injection de paramètres pour une plus grande flexibilité.
 
-**Service Aliases:**  
-You can define alternative names for services, allowing you to swap implementations easily.
+**Alias de Services :**  
+Vous pouvez définir des noms alternatifs pour les services, ce qui vous permet de remplacer facilement les implémentations.
 
 ```php
-$container->set('mailer', App\Service\SmtpMailer::class)
-    ->alias('app.mailer');
+$app->addService(function($config) {
+    'app.singleton_service', 
+    App\Service\SingletonService::class,
+    function($config) {
+        // Configuration du service
+    },
+    ['singleton_service', App\Service\SingletonService::class] // Alias
+});
 ```
 
-Now, resolving `mailer` will return the `app.mailer` service.
+Désormais, résoudre `singleton_service` renverra le service `app.singleton_service`.
 
-**Parameter Injection:**  
-Inject configuration values or environment variables into your services using parameters.
+**Injection de Paramètres :**  
+Injectez des valeurs de configuration ou des variables d'environnement dans vos services à l'aide de paramètres.
 
 ```php
-$container->set('app.mail', App\Service\Mailer::class)
-    ->args([config('app.mailer_transport')])
+$app->addService(function($config) {
+    'app.mail', 
+    App\Service\SingletonService::class,
+    function($config) {
+        $config->args([
+            [config('app.mailer_transport')]
+        ]);
+    }
+});
 ```
 
-**Interface Injection:**
-You may type-hint an interface on a route or a controller class, the service container will automatically resolve the dependence by looking in the same path. If your interface is location in a different path you must instruct the service container how to resolve it. You may use `injectInterfaces` method in your AppServiceProvider to your resolve your interface dependencies:
+**Injection d'Interfaces :**
+Vous pouvez typer une interface sur une route ou une classe de contrôleur ; le conteneur de services résoudra automatiquement la dépendance en recherchant dans le même chemin. Si votre interface est située dans un chemin différent, vous devez indiquer au conteneur de services comment la résoudre. Vous pouvez utiliser la méthode `injectInterfaces` dans votre AppServiceProvider pour résoudre vos dépendances d'interface :
 
 ```php
 // app/Provider/AppServiceProvider.php
 
-use Clicalmani\Foundation\Acme\Container;
+use Clicalmani\Core\Acme\Container;
 
-public function boot() : void
+public function boot(Container $container) : void
 {
     Container::injectInterfaces([
         MailTransportInterface::class => TransportInterface::class
@@ -88,20 +129,35 @@ public function boot() : void
 }
 ```
 
-This approach keeps your configuration flexible and environment-specific.
+Cette approche maintient votre configuration flexible et adaptée à l'environnement.
 
-### Debugging and Inspecting the Container
+### Débogage et Inspection du Conteneur
 
-To debug or inspect registered services and parameters, use the container's built-in methods or Symfony's console commands (if available):
+Pour déboguer ou inspecter les services et paramètres enregistrés, utilisez la méthode helper `container()` :
 
 ```php
-// List all service IDs
-$serviceIds = $container->getServiceIds();
+// Lister tous les ID de services
+$serviceIds = container()->getServiceIds();
 
-// Check if a service exists
-if ($container->has('app.mailer')) {
-    // Service is registered
+// Vérifier si un service existe
+if (container()->has('app.mailer')) {
+    // Le service est enregistré
 }
 ```
 
-These tools help you verify your configuration and troubleshoot issues efficiently.
+Ces outils vous aident à vérifier votre configuration et à résoudre les problèmes efficacement.
+
+---
+
+## Prochaines Étapes
+
+Le conteneur de services de Tonka étant désormais posée, les ressources suivantes permettent d'approfondir sa mise en œuvre pratique :
+
+1. **[Routing](routing.md)** → Définir et structurer vos routes
+2. **[Contrôleurs](controllers.md)** → Implémenter la logique métier
+3. **[Base de Données](database.md)** → Exploiter les modèles Elegant ORM
+4. **[Vues](views.md)** → Concevoir l'interface utilisateur
+
+---
+
+**Conteneur de services comprise !** 🚀 → [Routing](routing.md)
