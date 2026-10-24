@@ -1,6 +1,6 @@
 <?php
 
-use Clicalmani\Foundation\Support\Facades\Route;
+use Clicalmani\Core\Support\Facades\Route;
 
 /**
  * |-------------------------------------------------------------------------------

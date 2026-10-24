@@ -53,7 +53,7 @@
 			<div class="flex items-center gap-3">
 				<img src="/logo.svg" alt="Logo" class="w-8 h-8">
 				<span class="text-xl font-semibold tracking-tight text-slate-900">Tonka</span>
-				<span class="text-xs font-mono bg-slate-100 text-slate-500 px-2 py-1 rounded hidden sm:inline">v2.5</span>
+				<span class="text-xs font-mono bg-slate-100 text-slate-500 px-2 py-1 rounded hidden sm:inline">v3.0</span>
 			</div>
 
 			<!-- Server Status -->

@@ -5,15 +5,13 @@
     "keywords": ["framework", "tonka"],
     "license": "MIT",
     "require": {
-        "clicalmani/console": "^2.5.8",
-        "clicalmani/cookie": "^1.1.2",
-        "clicalmani/database": "^3.1.8",
-        "clicalmani/foundation": "^3.2.0",
-        "clicalmani/psr": "^1.0.8",
-        "clicalmani/routing": "^2.2.5",
-        "clicalmani/validation": "^3.1.0",
-        "clicalmani/xpower": "^1.2.3",
-        "filp/whoops": "^2.18"
+        "clicalmani/console": "^2.7.0",
+        "clicalmani/database": "^3.3.8",
+        "clicalmani/foundation": "^3.4.0",
+        "clicalmani/psr": "^1.1.0",
+        "clicalmani/routing": "^2.5.0",
+        "clicalmani/validation": "^3.2.0",
+        "clicalmani/xpower": "^1.2.0"
     },
     "autoload": {
         "psr-4": {

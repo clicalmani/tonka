@@ -12,7 +12,7 @@
 
 namespace App\Http;
 
-use Clicalmani\Foundation\Maker\HttpKernel;
+use Clicalmani\Core\Maker\HttpKernel;
 
 class Kernel extends HttpKernel
 {
