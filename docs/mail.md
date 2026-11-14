@@ -182,9 +182,8 @@ Un mailable est une classe qui étend `Clicalmani\Core\Mail\Mailable` et implém
 namespace App\Mail;
 
 use Clicalmani\Core\Mail\Mailable;
-use Clicalmani\Core\Mail\MailableInterface;
 
-class WelcomeMail extends Mailable implements MailableInterface
+class WelcomeMail extends Mailable
 {
     public function __construct(
         private string $name,
@@ -326,26 +325,28 @@ use App\Mail\WelcomeMail;
 use Clicalmani\Core\Support\Facades\Mail;
 
 // Via la façade
-Mail::to('user@example.com')->send(new WelcomeMail($user->name, $user->email));
+Mail::send(new WelcomeMail($user->name, $user->email));
 
 // Via le helper
-mailer()->to('user@example.com')->send(new WelcomeMail($user->name, $user->email));
+mailer()->send(new WelcomeMail($user->name, $user->email));
 ```
 
 ### Envoi en File d'Attente
 
 ```php
 // Mise en file pour un traitement immédiat en arrière-plan
-Mail::to('user@example.com')
-    ->queue(new WelcomeMail($user->name, $user->email));
+Mail::queue(new WelcomeMail($user->name, $user->email));
 
 // Mise en file avec délai (300 secondes = 5 minutes)
-Mail::to('user@example.com')
-    ->later(300)
+Mail::later(300)
     ->send(new WelcomeMail($user->name, $user->email));
 ```
 
 L'envoi différé s'appuie sur le système de messagerie de Tonka (voir [Messenger](messenger.md)) — assurez-vous qu'un worker est actif pour traiter ces jobs d'envoi.
+
+Vous pouvez également attribuer valeur `true` à la variable d'environnement `MAIL_QUEUE` pour evenyer automatiquement tous mails avec à travers le système de messagerie de Tonka.
+
+!> Le système de messagerie de Tonka s'attend à des classes sérialisables.
 
 ### Envoi avec Destinataires
 
@@ -354,7 +355,7 @@ L'envoi différé s'appuie sur le système de messagerie de Tonka (voir [Messeng
 Mail::to('user@example.com')->send($mail);
 
 // Plusieurs destinataires
-Mail::to(['user1@example.com', 'user2@example.com'])->send($mail);
+Mail::to(['email' => 'user1@example.com', 'name' => 'User 1'], 'user2@example.com')->send($mail);
 
 // Avec CC et BCC
 Mail::to('user@example.com')
@@ -364,8 +365,8 @@ Mail::to('user@example.com')
 
 // CC et BCC multiples
 Mail::to('user@example.com')
-    ->cc(['admin1@example.com', 'admin2@example.com'])
-    ->bcc(['log1@example.com', 'log2@example.com'])
+    ->cc('admin1@example.com', 'admin2@example.com')
+    ->bcc('log1@example.com', 'log2@example.com')
     ->send($mail);
 
 // Reply-To
@@ -387,10 +388,10 @@ Les templates sont écrits en Twig et stockés dans `resources/views/emails`. Un
 {% extends layout %}
 
 {% block content %}
-<h1>Hello {{ name }}!</h1>
-<p>Welcome to {{ app_name }}.</p>
-<p>Your email address: {{ email }}</p>
-<p>We're thrilled to have you on board.</p>
+    <h1>Hello {{ name }}!</h1>
+    <p>Welcome to {{ app_name }}.</p>
+    <p>Your email address: {{ email }}</p>
+    <p>We're thrilled to have you on board.</p>
 {% endblock %}
 ```
 
